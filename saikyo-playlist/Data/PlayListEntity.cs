@@ -115,9 +115,10 @@ namespace saikyo_playlist.Data
 
         public PlayListDetailsEntity()
         {
+            Id = "";
             ItemSeq = 0;
             Type = "";
-            itemId = "";
+            ItemId = "";
             Title = "";
             TitleAlias = "";
             PlayCount = 0;

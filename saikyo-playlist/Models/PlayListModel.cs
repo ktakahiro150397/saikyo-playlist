@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
+using saikyo_playlist.Data;
 
 namespace saikyo_playlist.Models
 {
@@ -60,6 +61,38 @@ namespace saikyo_playlist.Models
                 item3.PlayCount = 0;
 
                 PlayLists.Add(item3);
+            }
+
+        }
+
+        public PlayListModel(ApplicationDbContext dbContext, string playListHeaderId)
+        {
+            var details = dbContext.PlayListHeaders
+                .Join(
+                    dbContext.PlayListDetails,
+                    headerItem => headerItem.Id,
+                    detailItem => detailItem.PlayListHeadersEntityId,
+                    (header, detail) =>
+                       new PlayListItem()
+                       {
+                           Type = PlayListItemPlatformType.Youtube,
+                           ItemId = detail.ItemId,
+                           Title = detail.Title,
+                           TitleAlias = detail.TitleAlias,
+                           PlayCount = detail.PlayCount
+                       }
+
+                ).ToList();
+
+            if (details == null || details.Count == 0)
+            {
+                //対象IDでデータが見つからなかった
+                throw new KeyNotFoundException($"プレイリスト情報を取得できませんでした。ID : {playListHeaderId}");
+            }
+            else
+            {
+                //取得したプレイリストを設定
+                PlayLists = details;
             }
 
         }

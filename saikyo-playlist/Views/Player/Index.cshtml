@@ -13,9 +13,10 @@
     @foreach (var item in Model.PlayLists)
     {
         <div>
-            <p>
+            
+            <a onclick="javascript:onPlayListItemClick(this);" item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
                 @(item.ItemId + " / " + item.Title + " / " + item.TitleAlias)
-            </p>
+            </a>
         </div>
     }
 </div>
@@ -98,5 +99,15 @@
         console.log("currentIndex : " + currentIndex);
         player.loadVideoById(playList[currentIndex].itemId);
     }
+
+function onPlayListItemClick(sender) {
+    console.log("次に再生するID：" + sender.getAttribute("item-itemId"));
+    
+    //インデックスを変更
+    currentIndex = sender.getAttribute("item-itemSeq");
+    player.loadVideoById(sender.getAttribute("item-itemId"));
+
+
+}
 
 </script>
