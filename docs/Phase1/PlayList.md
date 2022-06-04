@@ -43,7 +43,7 @@
 |アイテム連番|`itemSeq`|0から始まるプレイリストに振られている整数。|
 |タイトル|`title`|アイテムの元々の名称。<br/>Youtube : 動画名|
 |タイトルエイリアス|`titleAlias`|ユーザーによって付けられたプレイリストへの別名。|
-|再生回数|`playCount`|このプレイリスト内でアイテムが再生された回数。<br>(最後まで再生された場合に+1される)|
+|再生回数|`playCount`|このプレイリスト内でアイテムが再生された回数。<br>(最後まで再生された場合に+1する)|
 
 <br>
 
@@ -61,4 +61,36 @@
 
 - クライアントサイド
   - 指定インデックスの曲を再生する : 初回ロード時0、リンククリック時そのインデックスを指定する
+
+<br>
+
+## DB構造
+
+- PlayListHeaders
+
+プレイリストのヘッダー情報を格納する。
+
+|列名|型|内容|制約|
+|--|--|--|--|
+|Id|nvarchar(512) not null|プレイリストごとのユニークなID。<br>登録時、ULIDを採番する。|PK|
+|AspNetUsersId|nvarchar(450) not null|このプレイリストを作成したユーザーのID。|PK / FK(AspNetUsers.Id)|
+|Name|nvarchar(128) not null|プレイリストの名称。||
+|TimeStamp|varbinary(max) not null|楽観的同時実行制御のためのタイムスタンプ。||
+
+<br>
+
+- PlayListDetails
+
+プレイリストの詳細情報を格納する。
+
+|列名|型|内容|制約|
+|--|--|--|--|
+|PlayListHeadersId|nvarchar(512) not null|`PlayListDetails`テーブルで採番したID。|PK / FK|
+|itemSeq|int not null|0から始まるプレイリストの連番。|PK|
+|type|nvarchar(32) not null|プレイリストのプラットフォーム。<br>`youtube`,`spotify`,`applemusic`のいずれか。|PK|
+|itemId|nvarchar(512) not null|アイテムを特定するためのプラットフォームごとのID。|PK|
+|title|nvarchar(500) not null|アイテムの元々の名称。<br>Youtube:動画名||
+|titleAlias|nvarchar(500) null|ユーザーによって付けられたアイテムの別名。||
+|playCount|int null|アイテムがプレイリスト内で最後まで再生された数。||
+|TimeStamp|varbinary(max) not null|楽観的同時実行制御のためのタイムスタンプ。||
 
