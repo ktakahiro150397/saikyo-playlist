@@ -1,0 +1,97 @@
+﻿@model PlayerPlayListModel
+
+<h1>
+    プレイヤーIndex
+</h1>
+
+@*<script src="https://www.youtube.com/iframe_api" async>
+</script>*@
+
+<div id="player"></div>
+
+<div>
+    @foreach (var item in Model.VideoId)
+    {
+        <div>
+            <p>
+                @(item.Id + " / " + item.Title + " / " + item.PlayCount)
+            </p>
+        </div>
+    }
+</div>
+
+
+<script>
+
+    var player;
+
+    document.onreadystatechange = function() {
+        if (document.readyState === 'complete') {
+            console.log('document is complete');
+            // 2. This code loads the IFrame Player API code asynchronously.
+              var tag = document.createElement('script');
+
+              tag.src = "https://www.youtube.com/iframe_api";
+              var firstScriptTag = document.getElementsByTagName('script')[0];
+              firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+    }
+
+
+    function onYouTubeIframeAPIReady() {
+        console.log("onYouTubeIframeAPIReady!");
+
+        player = new YT.Player('player', {
+            height: '360',
+            width: '640',
+            videoId: 'nNe6o3ivrXA',
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        console.log('onPlayerReady');
+        event.target.mute();
+        event.target.playVideo();
+    }
+
+    function onPlayerStateChange(event) {
+        console.log('ステータス変更 : ' + event.data);
+        if (event.data == 0) {
+            console.log('再生終了');
+
+            console.log("次の動画を再生");
+            getNextPlayVideoId();
+            // player.loadVideoById(id);
+
+        }
+        if (event.data == 3) {
+            console.log("バッファリング中...");
+        }
+        if (event.data == -1) {
+
+            console.log("再生未開始のため、再生開始");
+            player.playVideo();
+        }
+    }
+
+    function getNextPlayVideoId() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetNextPlayVideoId","Player")',
+            contentType: "application/json; charset=utf-8;",
+            dataType: "json",
+            success: function(result) {
+                console.log("Called GetNextPlayVideoId!");
+                console.log("result:" + result.nextId);
+                player.loadVideoById(result.nextId);
+            }
+        });
+    }
+
+
+
+</script>
