@@ -1,4 +1,4 @@
-﻿@model PlayerPlayListModel
+﻿@model PlayListModel
 
 <h1>
     プレイヤーIndex
@@ -10,30 +10,40 @@
 <div id="player"></div>
 
 <div>
-    @foreach (var item in Model.VideoId)
+    @foreach (var item in Model.PlayLists)
     {
         <div>
             <p>
-                @(item.Id + " / " + item.Title + " / " + item.PlayCount)
+                @(item.ItemId + " / " + item.Title + " / " + item.TitleAlias)
             </p>
         </div>
     }
 </div>
 
+<div>
+    <h2>プレイリストJSON</h2>
+    <p>@Model.PlayListJson</p>
+</div>
 
 <script>
 
+    //プレイリスト管理変数
+    var playListId = "";
+    var playList = @Html.Raw(Model.PlayListJson);
+    var currentIndex = 0;
+    var maxIndex = playList.length - 1;
+
     var player;
+    console.log(playList);
 
     document.onreadystatechange = function() {
         if (document.readyState === 'complete') {
             console.log('document is complete');
-            // 2. This code loads the IFrame Player API code asynchronously.
-              var tag = document.createElement('script');
+            var tag = document.createElement('script');
 
-              tag.src = "https://www.youtube.com/iframe_api";
-              var firstScriptTag = document.getElementsByTagName('script')[0];
-              firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         }
     }
 
@@ -44,7 +54,7 @@
         player = new YT.Player('player', {
             height: '360',
             width: '640',
-            videoId: 'nNe6o3ivrXA',
+            videoId: playList[currentIndex].itemId,
             events: {
                 'onReady': onPlayerReady,
                 'onStateChange': onPlayerStateChange
@@ -64,8 +74,7 @@
             console.log('再生終了');
 
             console.log("次の動画を再生");
-            getNextPlayVideoId();
-            // player.loadVideoById(id);
+            playNextVideo();
 
         }
         if (event.data == 3) {
@@ -78,20 +87,16 @@
         }
     }
 
-    function getNextPlayVideoId() {
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("GetNextPlayVideoId","Player")',
-            contentType: "application/json; charset=utf-8;",
-            dataType: "json",
-            success: function(result) {
-                console.log("Called GetNextPlayVideoId!");
-                console.log("result:" + result.nextId);
-                player.loadVideoById(result.nextId);
-            }
-        });
+    function playNextVideo() {
+        //インデックスを加算
+        if (currentIndex === maxIndex) {
+            currentIndex = 0;
+        } else {
+            currentIndex += 1;
+        }
+
+        console.log("currentIndex : " + currentIndex);
+        player.loadVideoById(playList[currentIndex].itemId);
     }
-
-
 
 </script>
