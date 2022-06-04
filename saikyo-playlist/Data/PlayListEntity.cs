@@ -76,7 +76,7 @@ namespace saikyo_playlist.Data
         /// アイテムを特定するためのプラットフォームごとのID。
         /// </summary>
         [Comment("アイテムを特定するためのプラットフォームごとのID。")]
-        public string itemId { get; set; }
+        public string ItemId { get; set; }
 
         /// <summary>
         /// アイテムの元々の名称。
