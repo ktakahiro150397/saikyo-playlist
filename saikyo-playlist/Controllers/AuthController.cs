@@ -11,7 +11,7 @@ namespace saikyo_playlist.Controllers
         private UserManager<IdentityUser> UserManager { get; set; }
 
         private SignInManager<IdentityUser> SignInManager { get; set; }
-        
+
 
         public AuthController(UserManager<IdentityUser> _userManager,
             SignInManager<IdentityUser> _signInManager)
@@ -33,8 +33,8 @@ namespace saikyo_playlist.Controllers
             if (ModelState.IsValid)
             {
                 //新規ユーザーの作成
-                var user = new IdentityUser() { UserName = model.UserName};
-                var result = await UserManager.CreateAsync(user,model.Password);
+                var user = new IdentityUser() { UserName = model.UserName };
+                var result = await UserManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
@@ -48,7 +48,7 @@ namespace saikyo_playlist.Controllers
 
                     //if (loginResult.Succeeded)
                     //{
-                       
+
                     //}
                     //else
                     //{
@@ -56,7 +56,7 @@ namespace saikyo_playlist.Controllers
                     //    ViewData["Create_Result"] = $"{model.UserName}でのログインに失敗しました。アカウントは作成されています。";
                     //    return View();
                     //}
-                   
+
                 }
                 else
                 {
@@ -75,5 +75,32 @@ namespace saikyo_playlist.Controllers
 
 
         }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(IdentityInputCreateNewModel model)
+        {
+
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
+
+            if (result.Succeeded)
+            {
+                //ログイン成功
+                return View("../Home/Index");
+            }
+            else
+            {
+                //ログイン失敗
+                ViewData["Login_Result"] = $"{model.UserName}でのログインに失敗しました。";
+                return View();
+            }
+        }
+
+
     }
 }
