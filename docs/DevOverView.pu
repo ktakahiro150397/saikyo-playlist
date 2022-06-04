@@ -7,6 +7,7 @@ package ローカル開発環境 {
     (Visual Studio 2022) as vs2022
     (Git) as git
     (GitHub Desktop) as githubdesktop
+    (SQLServer Management Studio) as SSMS
 }
 
 package Azure {
@@ -24,10 +25,12 @@ vs2022 -> git : コード変更をローカル環境にプッシュ
 git --> remote : コード変更をリモート環境にプッシュ
 remote --> vs2022 : コード内容を複製
 
+
 githubActions -> remote : mainブランチ内容を取得
 githubActions --> appservice : mainブランチをデプロイ
 
 vs2022 --> DB : 参照
+SSMS --> DB : 参照・管理 
 appservice --> DB : 参照
 
 @enduml
