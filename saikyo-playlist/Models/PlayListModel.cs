@@ -6,7 +6,7 @@ namespace saikyo_playlist.Models
 {
     public class PlayListModel
     {
-
+        public string PlayListName { get; set; }
 
         public IList<PlayListItem> PlayLists { get; set; }
 
@@ -67,7 +67,13 @@ namespace saikyo_playlist.Models
 
         public PlayListModel(ApplicationDbContext dbContext, string playListHeaderId)
         {
+
+            var header = dbContext.PlayListHeaders
+                    .Where(item => item.PlayListHeadersEntityId == playListHeaderId)
+                    .FirstOrDefault();
+
             var details = dbContext.PlayListHeaders
+                .Where(item => item.PlayListHeadersEntityId == playListHeaderId)
                 .Join(
                     dbContext.PlayListDetails,
                     headerItem => headerItem.PlayListHeadersEntityId,
@@ -84,7 +90,9 @@ namespace saikyo_playlist.Models
 
                 ).ToList();
 
-            if (details == null || details.Count == 0)
+
+
+            if (header == null || details == null || details.Count == 0)
             {
                 //対象IDでデータが見つからなかった
                 throw new KeyNotFoundException($"プレイリスト情報を取得できませんでした。ID : {playListHeaderId}");
@@ -92,6 +100,7 @@ namespace saikyo_playlist.Models
             else
             {
                 //取得したプレイリストを設定
+                PlayListName = header.Name;
                 PlayLists = details;
             }
 

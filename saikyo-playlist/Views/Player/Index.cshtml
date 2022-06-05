@@ -1,7 +1,7 @@
 ﻿@model PlayListModel
 
 <h1>
-    プレイヤーIndex
+    @Model.PlayListName
 </h1>
 
 @*<script src="https://www.youtube.com/iframe_api" async>
@@ -17,14 +17,17 @@
             <a onclick="javascript:onPlayListItemClick(this);" item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
                 @(item.ItemId + " / " + item.Title + " / " + item.TitleAlias)
             </a>
+
+            <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
+
         </div>
     }
 </div>
 
-<div>
+@*<div>
     <h2>プレイリストJSON</h2>
     <p>@Model.PlayListJson</p>
-</div>
+</div>*@
 
 <script>
 
@@ -65,8 +68,8 @@
 
     function onPlayerReady(event) {
         console.log('onPlayerReady');
-        event.target.mute();
-        event.target.playVideo();
+        //event.target.mute();
+        //event.target.playVideo();
     }
 
     function onPlayerStateChange(event) {

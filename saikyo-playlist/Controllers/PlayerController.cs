@@ -26,10 +26,11 @@ namespace saikyo_playlist.Controllers
         }
 
         [HttpGet]
-        public IActionResult IdTest()
+        public IActionResult Play(string playListHeaderId)
         {
-            var playListModel = new PlayListModel(ApplicationDbContext, "1");
+            var playListModel = new PlayListModel(ApplicationDbContext, playListHeaderId);
             return View("Index", playListModel);
         }
+
     }
 }

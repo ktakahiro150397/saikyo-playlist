@@ -5,6 +5,9 @@ namespace saikyo_playlist.Models.PlayListManage
 {
     public class CreatePlayListViewModel
     {
+
+        public string PlayListHeaderId { get; set; }
+
         [Required]
         [Display(Name = "プレイリスト名")]
         public string Title { get; set; }
@@ -15,6 +18,7 @@ namespace saikyo_playlist.Models.PlayListManage
 
         public CreatePlayListViewModel()
         {
+            PlayListHeaderId = "";
             Title = "";
             Urls = "";
         }

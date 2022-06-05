@@ -50,6 +50,34 @@ namespace saikyo_playlist.Repository
         }
 
         /// <summary>
+        /// 既存のプレイリストを更新します。
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> UpdateExistPlayListAsync(string playListId, string playListName, string registerDataStr)
+        {
+            var ret = false;
+
+            //ヘッダー・詳細を同一トランザクションでインサートする
+            using (var tran = dbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    //プレイリストの登録
+                    await UpdatePlayListAsync(playListId,playListName, user.Id, registerDataStr);
+
+                    tran.Commit();
+                    ret = true;
+                }
+                catch
+                {
+                    tran.Rollback();
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
         /// データのIDに使用できる一意の文字列を返します。
         /// </summary>
         /// <returns></returns>
@@ -85,6 +113,47 @@ namespace saikyo_playlist.Repository
 
                 await dbContext.PlayListHeaders.AddAsync(header);
                 await dbContext.SaveChangesAsync();
+
+                ret = true;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"プレイリストの登録時にエラーが発生しました。", ex);
+            }
+
+            return ret;
+        }
+
+        private async Task<bool> UpdatePlayListAsync(string playListId,string playListName, string aspNetUserdId, string registerDataStr)
+        {
+            var ret = false;
+
+            try
+            {
+                //既存データの取得
+                var header = dbContext.PlayListHeaders
+                        .Where(item => item.PlayListHeadersEntityId == playListId).FirstOrDefault();
+
+                if(header != null)
+                {
+                    //ヘッダーの割当
+                    header.PlayListHeadersEntityId = playListId;
+                    header.Name = playListName;
+                    header.AspNetUserdId = aspNetUserdId;
+                    header.Details = CreateDetailData(header, registerDataStr);
+
+                    //既存の詳細プレイリストを削除
+                    dbContext.RemoveRange(dbContext.PlayListDetails.Where(item => item.PlayListHeadersEntityId == playListId));
+
+                    //await dbContext.PlayListHeaders.AddAsync(header);
+                    await dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new ApplicationException($"「{playListId}」のプレイリストが見つかりませんでした。");
+                }
+
+                
 
                 ret = true;
             }

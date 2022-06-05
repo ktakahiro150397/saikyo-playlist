@@ -18,8 +18,12 @@ else
     @foreach (var item in Model.managePlayListItems)
     {
         <div>
-            <a>
-                @item.UserId / @item.PlayListName
+            <a href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
+                @item.PlayListHeaderId / @item.PlayListName
+            </a>
+            <span style="margin-left:20px;" ></span>
+            <a href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
+                編集
             </a>
         </div>
 

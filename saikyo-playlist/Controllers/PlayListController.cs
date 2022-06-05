@@ -48,7 +48,6 @@ namespace saikyo_playlist.Controllers
 
             var loginUserInfo = await UserManager.GetUserAsync(User);
 
-
             var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo);
             var createResult = await playListRepo.CreateNewPlayListAsync(model.Title, model.Urls);
 
@@ -66,5 +65,67 @@ namespace saikyo_playlist.Controllers
             }
 
         }
+
+        [HttpGet]
+        public IActionResult Edit(string playListHeaderId)
+        {
+            //対象IDのデータを取得
+            var playListData = ApplicationDbContext.PlayListHeaders
+                .Where(item => item.PlayListHeadersEntityId == playListHeaderId)
+                .Join(
+                    ApplicationDbContext.PlayListDetails,
+                    header => header.PlayListHeadersEntityId,
+                    detail => detail.PlayListHeadersEntityId,
+                    (header,detail) =>
+                        new
+                        {
+                            Name = header.Name,
+                            Details = header.Details
+                        }
+                ).FirstOrDefault();
+
+            if (playListData == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+
+                var model = new CreatePlayListViewModel();
+                model.PlayListHeaderId = playListHeaderId;
+
+                model.Title = playListData.Name;
+
+                model.Urls = String.Join("", playListData.Details.Select(item => @"https://www.youtube.com/watch?v=" + item.ItemId + "," + item.Title + "," + item.TitleAlias + Environment.NewLine));
+
+                return View(model);
+
+            }
+
+
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> Edit(CreatePlayListViewModel model)
+        {
+            var loginUserInfo = await UserManager.GetUserAsync(User);
+
+            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo);
+            var createResult = await playListRepo.UpdateExistPlayListAsync(model.PlayListHeaderId, model.Title, model.Urls);
+
+            if (createResult)
+            {
+                //登録成功
+                var indexModel = new ManagePlayListViewModel(ApplicationDbContext);
+                return View("Index", indexModel);
+
+            }
+            else
+            {
+                //登録失敗
+                return View(model);
+            }
+        }
+
     }
 }
