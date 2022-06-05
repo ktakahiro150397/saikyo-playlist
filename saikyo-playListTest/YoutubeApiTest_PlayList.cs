@@ -21,7 +21,7 @@
 
             try
             {
-                var result = _repo.GetYoutubePlayListInfo(playListId).Result;
+                var result = _repo.GetYoutubePlayListInfo(playListId);
 
                 if(result == null)
                 {
@@ -34,7 +34,6 @@
                 Assert.Fail(ex.Message);
 
             }
-
         }
 
         [TestMethod]
@@ -45,7 +44,7 @@
 
             try
             {
-                var result = _repo.GetYoutubePlayListInfo(playListId).Result;
+                var result = _repo.GetYoutubePlayListInfo(playListId);
 
                 if (result == null)
                 {
@@ -59,5 +58,30 @@
 
             }
         }
+
+        [TestMethod]
+        public void GetVideoInfoTest_3()
+        {
+            //1041件
+            var playListId = "PLEL7lWbWu6s6hLK9hhpREBXvNiV3sWOR9";
+
+            try
+            {
+                var result = _repo.GetYoutubePlayListInfo(playListId);
+
+                if (result == null)
+                {
+                    Assert.Fail();
+                }
+                Assert.AreEqual(1041, result.items.Count);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+
+            }
+        }
+
+
     }
 }

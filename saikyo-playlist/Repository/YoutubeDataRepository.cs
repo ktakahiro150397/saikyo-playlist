@@ -7,7 +7,6 @@ namespace saikyo_playlist.Repository
 {
     public class YoutubeDataRepository
     {
-
         private string ApiKey = "";
 
         private HttpClient _httpClient;
@@ -41,7 +40,7 @@ namespace saikyo_playlist.Repository
             return myDeserializedClass;
         }
 
-        public async Task<YoutubePlayListAPIResponseModel?> GetYoutubePlayListInfo(string playListId)
+        public YoutubePlayListAPIResponseModel? GetYoutubePlayListInfo(string playListId)
         {
             var requestUrl = GetYoutubePlayListInfoUrl(playListId, "");
 
@@ -103,25 +102,6 @@ namespace saikyo_playlist.Repository
             }
 
         }
-
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 }
