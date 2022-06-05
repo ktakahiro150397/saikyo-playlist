@@ -1,0 +1,31 @@
+﻿@model saikyo_playlist.Models.PlayListManage.CreatePlayListViewModel
+
+
+<h1>
+    プレイリスト作成
+</h1>
+<hr />
+
+<div>
+    <div>
+        <form method="post">
+            <h2>
+                新しいプレイリストを作成します。
+            </h2>
+            <hr />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+                <input asp-for="Title" class="form-control" />
+                <label asp-for="Title"></label>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <textarea asp-for="Urls" class="form-control"></textarea>
+                <label asp-for="Urls"></label>
+                <span asp-validation-for="Urls" class="text-danger"></span>
+            </div>
+            <button id="createSubmit" type="submit">プレイリスト作成</button>
+        </form>
+    </div>
+</div>

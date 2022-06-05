@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using saikyo_playlist.Data;
 
@@ -11,9 +12,10 @@ using saikyo_playlist.Data;
 namespace saikyo_playlist.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220604233138_AddDetailContext")]
+    partial class AddDetailContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,7 +228,7 @@ namespace saikyo_playlist.Data.Migrations
 
             modelBuilder.Entity("saikyo_playlist.Data.PlayListDetailsEntity", b =>
                 {
-                    b.Property<string>("PlayListDetailsEntityId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)")
                         .HasComment("プレイリスト詳細ごとに採番されるユニークなID。");
 
@@ -269,7 +271,7 @@ namespace saikyo_playlist.Data.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComment("プレイリストのプラットフォーム種別。");
 
-                    b.HasKey("PlayListDetailsEntityId");
+                    b.HasKey("Id");
 
                     b.HasIndex("PlayListHeadersEntityId");
 
@@ -278,7 +280,7 @@ namespace saikyo_playlist.Data.Migrations
 
             modelBuilder.Entity("saikyo_playlist.Data.PlayListHeadersEntity", b =>
                 {
-                    b.Property<string>("PlayListHeadersEntityId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)")
                         .HasComment("プレイリストごとに採番されるユニークなID。");
 
@@ -299,7 +301,7 @@ namespace saikyo_playlist.Data.Migrations
                         .HasColumnType("rowversion")
                         .HasComment("タイムスタンプ。");
 
-                    b.HasKey("PlayListHeadersEntityId");
+                    b.HasKey("Id");
 
                     b.ToTable("PlayListHeaders");
                 });

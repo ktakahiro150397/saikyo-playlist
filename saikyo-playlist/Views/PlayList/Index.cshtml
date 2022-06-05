@@ -1,0 +1,42 @@
+﻿@model saikyo_playlist.Models.PlayListManage.ManagePlayListViewModel
+
+<h1>プレイリスト一覧</h1>
+
+<div>
+    <h2>
+        <a href="@Url.Action("AddFromPlayList","PlayList")">
+            プレイリストURLから作成する
+        </a>
+    </h2>
+</div>
+
+
+@if (Model.managePlayListItems.Count == 0)
+{
+    @*プレイリストが存在しない*@
+    <p>
+        プレイリストが存在しません。
+    </p>
+
+
+}
+else
+{
+
+    @foreach (var item in Model.managePlayListItems)
+    {
+        <div>
+            <a href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
+                @item.PlayListHeaderId / @item.PlayListName
+            </a>
+            <span style="margin-left:20px;" ></span>
+            <a href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
+                編集
+            </a>
+        </div>
+
+    }
+
+
+}
+

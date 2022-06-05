@@ -1,0 +1,116 @@
+﻿@model PlayListModel
+
+<h1>
+    @Model.PlayListName
+</h1>
+
+@*<script src="https://www.youtube.com/iframe_api" async>
+</script>*@
+
+<div id="player"></div>
+
+<div>
+    @foreach (var item in Model.PlayLists)
+    {
+        <div>
+            
+            <a onclick="javascript:onPlayListItemClick(this);" item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
+                @(item.ItemId + " / " + item.Title + " / " + item.TitleAlias)
+            </a>
+
+            <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
+
+        </div>
+    }
+</div>
+
+@*<div>
+    <h2>プレイリストJSON</h2>
+    <p>@Model.PlayListJson</p>
+</div>*@
+
+<script>
+
+    //プレイリスト管理変数
+    var playListId = "";
+    var playList = @Html.Raw(Model.PlayListJson);
+    var currentIndex = 0;
+    var maxIndex = playList.length - 1;
+
+    var player;
+    console.log(playList);
+
+    document.onreadystatechange = function() {
+        if (document.readyState === 'complete') {
+            console.log('document is complete');
+            var tag = document.createElement('script');
+
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+    }
+
+
+    function onYouTubeIframeAPIReady() {
+        console.log("onYouTubeIframeAPIReady!");
+
+        player = new YT.Player('player', {
+            height: '360',
+            width: '640',
+            videoId: playList[currentIndex].itemId,
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        console.log('onPlayerReady');
+        //event.target.mute();
+        //event.target.playVideo();
+    }
+
+    function onPlayerStateChange(event) {
+        console.log('ステータス変更 : ' + event.data);
+        if (event.data == 0) {
+            console.log('再生終了');
+
+            console.log("次の動画を再生");
+            playNextVideo();
+
+        }
+        if (event.data == 3) {
+            console.log("バッファリング中...");
+        }
+        if (event.data == -1) {
+
+            console.log("再生未開始のため、再生開始");
+            player.playVideo();
+        }
+    }
+
+    function playNextVideo() {
+        //インデックスを加算
+        if (currentIndex === maxIndex) {
+            currentIndex = 0;
+        } else {
+            currentIndex += 1;
+        }
+
+        console.log("currentIndex : " + currentIndex);
+        player.loadVideoById(playList[currentIndex].itemId);
+    }
+
+function onPlayListItemClick(sender) {
+    console.log("次に再生するID：" + sender.getAttribute("item-itemId"));
+    
+    //インデックスを変更
+    currentIndex = sender.getAttribute("item-itemSeq");
+    player.loadVideoById(sender.getAttribute("item-itemId"));
+
+
+}
+
+</script>
