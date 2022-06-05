@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
-using saikyo_playlist.Data;
+using saikyo_playlist.Data.Video;
+using saikyo_playlist.Data.PlayList;
 
 namespace saikyo_playlist.Repository
 {
@@ -13,27 +14,41 @@ namespace saikyo_playlist.Repository
 
         private const string videoInfoEndPointUrl = "https://www.googleapis.com/youtube/v3/videos";
 
+        private const string playListInfoEndPointUrl = "https://www.googleapis.com/youtube/v3/playlistItems";
+
         public YoutubeDataRepository(string apiKey)
         {
             ApiKey = apiKey;
             _httpClient = new HttpClient();
         }
 
-        public async Task<YoutubeAPIResponseModel?> GetYoutubeVideoInfo(string videoId)
+        public async Task<YoutubeVideoAPIResponseModel?> GetYoutubeVideoInfo(string videoId)
         {
 
             var requestUrl = GetYoutubeVideoInfoUrl(videoId);
             var msg = await _httpClient.GetStringAsync(requestUrl);
 
-            YoutubeAPIResponseModel? myDeserializedClass;
+            YoutubeVideoAPIResponseModel? myDeserializedClass;
             if (msg == null)
             {
                 myDeserializedClass = null;
             }
             else
             {
-                myDeserializedClass = JsonSerializer.Deserialize<YoutubeAPIResponseModel>(msg);
+                myDeserializedClass = JsonSerializer.Deserialize<YoutubeVideoAPIResponseModel>(msg);
             }
+
+            return myDeserializedClass;
+        }
+
+        public async Task<YoutubePlayListAPIResponseModel?> GetYoutubePlayListInfo(string playListId)
+        {
+            var requestUrl = GetYoutubePlayListInfoUrl(playListId, "");
+
+            YoutubePlayListAPIResponseModel? myDeserializedClass = new YoutubePlayListAPIResponseModel();
+
+            //再帰的にAPIへアクセス
+            GetYoutubePlayListRecurrsive(ref myDeserializedClass, playListId, "");
 
             return myDeserializedClass;
         }
@@ -44,6 +59,50 @@ namespace saikyo_playlist.Repository
             return url;
         }
 
+        private string GetYoutubePlayListInfoUrl(string playListId,string nextPageToken)
+        {
+            var url = $"{playListInfoEndPointUrl}?part=snippet&key={ApiKey}&playlistId={playListId}";
+            if(nextPageToken != "")
+            {
+                url += $"&pageToken={nextPageToken}";
+            }
+
+            return url;
+        }
+
+        private void GetYoutubePlayListRecurrsive(ref YoutubePlayListAPIResponseModel result, string playListId,string nextPageToken)
+        {
+            var requestUrl = GetYoutubePlayListInfoUrl(playListId, nextPageToken);
+
+            var msg = _httpClient.GetStringAsync(requestUrl).Result;
+            if (msg == null)
+            {
+                //応答なし、アクセス終了
+                return;
+            }
+            else
+            {
+                YoutubePlayListAPIResponseModel? deserialized = JsonSerializer.Deserialize<YoutubePlayListAPIResponseModel>(msg);
+                if(deserialized == null)
+                {
+                    return;
+                }
+                result.items.AddRange(deserialized.items);
+
+                if (deserialized.nextPageToken != "")
+                {
+                    //次のページが存在する
+                    GetYoutubePlayListRecurrsive(ref result,playListId, deserialized.nextPageToken);
+                }
+                else
+                {
+                    //次のページが存在しない
+                    return;
+                }
+
+            }
+
+        }
 
 
 

@@ -1,7 +1,7 @@
 ﻿namespace saikyo_playListTest
 {
     [TestClass]
-    public class YoutubeApiTest
+    public class YoutubeApiTest_Video
     {
         private YoutubeDataRepository _repo { get; set; }
 

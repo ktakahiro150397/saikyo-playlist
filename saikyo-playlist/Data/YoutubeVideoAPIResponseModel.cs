@@ -1,15 +1,13 @@
-﻿namespace saikyo_playlist.Data
+﻿namespace saikyo_playlist.Data.Video
 {
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-    public class YoutubeAPIResponseModel
+    public class YoutubeVideoAPIResponseModel
     {
         public string kind { get; set; }
         public string etag { get; set; }
         public List<Item> items { get; set; }
         public PageInfo pageInfo { get; set; }
     }
-
-
 
     public class Default
     {
