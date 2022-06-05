@@ -1,0 +1,30 @@
+﻿@model saikyo_playlist.Models.PlayListManage.ManagePlayListViewModel
+
+<h1>プレイリスト一覧</h1>
+
+
+@if (Model.managePlayListItems.Count == 0)
+{
+    @*プレイリストが存在しない*@
+    <p>
+        プレイリストが存在しません。
+    </p>
+
+
+}
+else
+{
+
+    @foreach (var item in Model.managePlayListItems)
+    {
+        <div>
+            <a>
+                @item.UserId / @item.PlayListName
+            </a>
+        </div>
+
+    }
+
+
+}
+
