@@ -14,7 +14,7 @@ namespace saikyo_playlist.Data
         /// プレイリストごとに採番されるユニークなID。
         /// </summary>
         [Comment("プレイリストごとに採番されるユニークなID。")]
-        public string Id { get; set; }
+        public string PlayListHeadersEntityId { get; set; }
 
         /// <summary>
         /// このプレイリストを作成したユーザーのID。
@@ -42,7 +42,7 @@ namespace saikyo_playlist.Data
 
         public PlayListHeadersEntity()
         {
-            Id = "";
+            PlayListHeadersEntityId = "";
             AspNetUserdId = "";
             Name = "";
             TimeStamp = new byte[0];
@@ -58,7 +58,7 @@ namespace saikyo_playlist.Data
         /// プレイリスト詳細ごとに採番されるユニークなID。
         /// </summary>
         [Comment("プレイリスト詳細ごとに採番されるユニークなID。")]
-        public string Id { get; set; }
+        public string PlayListDetailsEntityId { get; set; }
 
         /// <summary>
         /// 0から始まるプレイリストの連番。
@@ -115,7 +115,7 @@ namespace saikyo_playlist.Data
 
         public PlayListDetailsEntity()
         {
-            Id = "";
+            PlayListDetailsEntityId = "";
             ItemSeq = 0;
             Type = "";
             ItemId = "";

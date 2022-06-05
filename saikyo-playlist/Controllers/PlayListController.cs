@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using saikyo_playlist.Data;
 using saikyo_playlist.Models.PlayListManage;
+using saikyo_playlist.Repository;
+using System.Security.Claims;
 
 namespace saikyo_playlist.Controllers
 {
@@ -8,8 +11,18 @@ namespace saikyo_playlist.Controllers
     {
         private ApplicationDbContext ApplicationDbContext { get; set; }
 
-        public PlayListController(ApplicationDbContext dbContext)
+        private UserManager<IdentityUser> UserManager { get; set; }
+
+        private SignInManager<IdentityUser> SignInManager { get; set; }
+
+
+
+        public PlayListController(UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
+            ApplicationDbContext dbContext)
         {
+            UserManager = userManager;
+            SignInManager = signInManager;
             ApplicationDbContext = dbContext;
         }
 
@@ -30,13 +43,28 @@ namespace saikyo_playlist.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreatePlayListViewModel model)
+        public async Task<IActionResult> Create(CreatePlayListViewModel model)
         {
 
+            var loginUserInfo = await UserManager.GetUserAsync(User);
 
 
+            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo);
+            var createResult = await playListRepo.CreateNewPlayListAsync(model.Title, model.Urls);
 
-            return View("Index");
+            if (createResult)
+            {
+                //登録成功
+                var indexModel = new ManagePlayListViewModel(ApplicationDbContext);
+                return View("Index", indexModel);
+
+            }
+            else
+            {
+                //登録失敗
+                return View(model);
+            }
+
         }
     }
 }

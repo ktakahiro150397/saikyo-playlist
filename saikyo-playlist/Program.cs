@@ -7,7 +7,11 @@ var connectionString = builder.Configuration.GetConnectionString("ApplicationDbC
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    options.UseSqlServer(connectionString);
+    options.EnableSensitiveDataLogging(true);
+}
+    );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>()

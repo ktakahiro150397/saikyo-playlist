@@ -70,7 +70,7 @@ namespace saikyo_playlist.Models
             var details = dbContext.PlayListHeaders
                 .Join(
                     dbContext.PlayListDetails,
-                    headerItem => headerItem.Id,
+                    headerItem => headerItem.PlayListHeadersEntityId,
                     detailItem => detailItem.PlayListHeadersEntityId,
                     (header, detail) =>
                        new PlayListItem()

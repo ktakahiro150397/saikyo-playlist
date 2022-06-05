@@ -41,7 +41,7 @@ namespace saikyo_playlist.Models.PlayListManage
             var headers = dbContext.PlayListHeaders
                 .Select(item => new ManagePlayListItem()
                 {
-                    PlayListHeaderId = item.Id,
+                    PlayListHeaderId = item.PlayListHeadersEntityId,
                     PlayListName = item.Name,
                     UserId = item.AspNetUserdId
                 }).ToList();
