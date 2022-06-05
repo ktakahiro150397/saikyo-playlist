@@ -16,11 +16,16 @@ namespace saikyo_playlist.Models.PlayListManage
         [Display(Name = "追加URL")]
         public string Urls { get; set; }
 
+        [Required]
+        [Display(Name = "プレイリストURL")]
+        public string PlayListUrl { get; set; }
+
         public CreatePlayListViewModel()
         {
             PlayListHeaderId = "";
             Title = "";
             Urls = "";
+            PlayListUrl = "";
         }
     }
 

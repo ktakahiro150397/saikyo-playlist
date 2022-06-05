@@ -2,6 +2,14 @@
 
 <h1>プレイリスト一覧</h1>
 
+<div>
+    <h2>
+        <a href="@Url.Action("AddFromPlayList","PlayList")">
+            プレイリストURLから作成する
+        </a>
+    </h2>
+</div>
+
 
 @if (Model.managePlayListItems.Count == 0)
 {

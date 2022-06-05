@@ -85,10 +85,13 @@ namespace saikyo_playlist.Models
                            ItemId = detail.ItemId,
                            Title = detail.Title,
                            TitleAlias = detail.TitleAlias,
-                           PlayCount = detail.PlayCount
+                           PlayCount = detail.PlayCount,
+                           ItemSeq = detail.ItemSeq
                        }
 
-                ).ToList();
+                )
+                .OrderBy(item => item.ItemSeq)
+                .ToList();
 
 
 

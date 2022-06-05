@@ -76,7 +76,7 @@ namespace saikyo_playlist.Controllers
                     ApplicationDbContext.PlayListDetails,
                     header => header.PlayListHeadersEntityId,
                     detail => detail.PlayListHeadersEntityId,
-                    (header,detail) =>
+                    (header, detail) =>
                         new
                         {
                             Name = header.Name,
@@ -104,7 +104,7 @@ namespace saikyo_playlist.Controllers
 
 
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Edit(CreatePlayListViewModel model)
         {
@@ -126,6 +126,36 @@ namespace saikyo_playlist.Controllers
                 return View(model);
             }
         }
+
+        [HttpGet]
+        public IActionResult AddFromPlayList()
+        {
+            var model = new CreatePlayListViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddFromPlayList(CreatePlayListViewModel model)
+        {
+            var loginUserInfo = await UserManager.GetUserAsync(User);
+
+            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo);
+            var createResult = await playListRepo.CreateNewPlayListFromPlayListUrlAsync(model.Title, model.PlayListUrl);
+
+            if (createResult)
+            {
+                //登録成功
+                var indexModel = new ManagePlayListViewModel(ApplicationDbContext);
+                return View("Index", indexModel);
+
+            }
+            else
+            {
+                //登録失敗
+                return View(model);
+            }
+        }
+
 
     }
 }
