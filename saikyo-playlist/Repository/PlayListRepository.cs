@@ -12,11 +12,13 @@ namespace saikyo_playlist.Repository
 
         private ApplicationDbContext dbContext;
         private IdentityUser user;
+        private string _youtubeApiKey;
 
-        public PlayListRepository(ApplicationDbContext applicationDbContext, IdentityUser identityUser)
+        public PlayListRepository(ApplicationDbContext applicationDbContext, IdentityUser identityUser, string youtubeApiKey)
         {
             dbContext = applicationDbContext;
             user = identityUser;
+            _youtubeApiKey = youtubeApiKey;
         }
 
         /// <summary>
@@ -311,7 +313,7 @@ namespace saikyo_playlist.Repository
                 }
 
                 //プレイリストのデータをすべて取得する
-                var youtubeRepo = new YoutubeDataRepository("AIzaSyCl2eOWfYiO9cwiqWbRkuWw4ywI2OMZYfA");
+                var youtubeRepo = new YoutubeDataRepository(_youtubeApiKey);
                 var playListData = youtubeRepo.GetYoutubePlayListInfo(playListId);
 
                 if (playListData == null)

@@ -15,15 +15,17 @@ namespace saikyo_playlist.Controllers
 
         private SignInManager<IdentityUser> SignInManager { get; set; }
 
-
+        private IConfiguration Configuration { get; set; }
 
         public PlayListController(UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            ApplicationDbContext dbContext)
+            ApplicationDbContext dbContext,
+            IConfiguration configurationManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
             ApplicationDbContext = dbContext;
+            Configuration = configurationManager;
         }
 
         [HttpGet]
@@ -48,7 +50,7 @@ namespace saikyo_playlist.Controllers
 
             var loginUserInfo = await UserManager.GetUserAsync(User);
 
-            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo);
+            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo, Configuration["YoutubeAPIKey"]);
             var createResult = await playListRepo.CreateNewPlayListAsync(model.Title, model.Urls);
 
             if (createResult)
@@ -110,7 +112,7 @@ namespace saikyo_playlist.Controllers
         {
             var loginUserInfo = await UserManager.GetUserAsync(User);
 
-            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo);
+            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo, Configuration["YoutubeAPIKey"]);
             var createResult = await playListRepo.UpdateExistPlayListAsync(model.PlayListHeaderId, model.Title, model.Urls);
 
             if (createResult)
@@ -139,7 +141,7 @@ namespace saikyo_playlist.Controllers
         {
             var loginUserInfo = await UserManager.GetUserAsync(User);
 
-            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo);
+            var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo, Configuration["YoutubeAPIKey"]);
             var createResult = await playListRepo.CreateNewPlayListFromPlayListUrlAsync(model.Title, model.PlayListUrl);
 
             if (createResult)
