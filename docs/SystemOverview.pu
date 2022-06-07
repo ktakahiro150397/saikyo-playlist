@@ -1,0 +1,22 @@
+@startuml "概要"
+
+title "概要図"
+
+:ユーザー: as User
+
+package Saikyo-PlayList{
+    (WEBサイト) AS WebSite
+    (データベース) as DB
+}
+
+package Youtube {
+    (URL)
+}
+
+User -- URL : 集める
+User -- WebSite : 登録・再生
+WebSite -> DB : データ登録
+DB -> WebSite : データ読み出し
+
+
+@enduml
