@@ -6,6 +6,9 @@ namespace saikyo_playlist.Models
 {
     public class PlayListModel
     {
+
+        public string PlayListHeaderId { get; set; }
+
         public string PlayListName { get; set; }
 
         public IList<PlayListItem> PlayLists { get; set; }
@@ -67,6 +70,8 @@ namespace saikyo_playlist.Models
 
         public PlayListModel(ApplicationDbContext dbContext, string playListHeaderId)
         {
+
+            PlayListHeaderId = playListHeaderId;
 
             var header = dbContext.PlayListHeaders
                     .Where(item => item.PlayListHeadersEntityId == playListHeaderId)

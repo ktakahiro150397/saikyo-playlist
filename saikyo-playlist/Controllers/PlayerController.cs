@@ -39,6 +39,7 @@ namespace saikyo_playlist.Controllers
         public IActionResult AddPlayCount(string playListHeaderId,int itemSeq)
         {
 
+            var ret = 0;
             try
             {
                 var detail = ApplicationDbContext.PlayListDetails
@@ -53,6 +54,7 @@ namespace saikyo_playlist.Controllers
 
                 //データの再生回数を1つ増やす
                 detail.PlayCount += 1;
+                ret = detail.PlayCount;
                 ApplicationDbContext.SaveChanges();
 
             }catch(Exception ex)
@@ -61,7 +63,8 @@ namespace saikyo_playlist.Controllers
                 return BadRequest();
             }
 
-            return Ok();
+            // カウント後の再生回数を返す
+            return Ok(new { playCount = ret });
 
         }
 

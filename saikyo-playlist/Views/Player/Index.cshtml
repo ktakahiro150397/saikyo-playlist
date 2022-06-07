@@ -1,4 +1,5 @@
-﻿
+﻿@model  PlayListModel
+
 <h1>
     @Model.PlayListName
 </h1>
@@ -13,7 +14,8 @@
             <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
 
             <a onclick="javascript:onPlayListItemClick(this);" item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
-                @(item.ItemSeq + " / " + item.Title + " / " + item.TitleAlias + " / " + item.PlayCount)
+                @(item.ItemSeq + " / " + item.Title + " / " + item.TitleAlias + " / ")
+                <span id="playCount_@item.ItemSeq">@item.PlayCount</span>
             </a>
 
 
@@ -24,7 +26,7 @@
 <script>
 
     //プレイリスト管理変数
-    var playListId = "";
+    var playListHeaderId = "@Html.Raw(Model.PlayListHeaderId)";
     var playList = @Html.Raw(Model.PlayListJson);
     var currentIndex = 0;
     var maxIndex = playList.length - 1;
@@ -82,6 +84,9 @@
     }
 
     function playNextVideo() {
+
+        var prevIndex = currentIndex;
+
         //インデックスを加算
         if (currentIndex === maxIndex) {
             currentIndex = 0;
@@ -91,6 +96,9 @@
 
         console.log("currentIndex : " + currentIndex);
         player.loadVideoById(playList[currentIndex].itemId);
+
+        //再生回数を加算
+        addPlayCount(playListHeaderId, prevIndex);
     }
 
 function onPlayListItemClick(sender) {
@@ -102,5 +110,29 @@ function onPlayListItemClick(sender) {
 
 
 }
+
+    function addPlayCount(playListId,seq) {
+        //対象のパラメータで再生回数を増やすAPIを呼び出す
+        var req = new XMLHttpRequest();
+
+        req.onreadystatechange = function () {
+            if (req.readyState == 4) {
+                //通信完了
+                if (req.status == 200) {
+                    console.log("addPlayCount 200OK");
+                    console.log("responseText : " + req.responseText);
+                    console.log("parsed : " + JSON.parse(req.responseText));
+                    document.getElementById("playCount_" + seq).innerText = JSON.parse(req.responseText)["playCount"];
+
+                }
+            } else {
+                console.log("addPlayCount calling...");
+            }
+        }
+
+        req.open("GET", "/Player/addPlayCount?playListHeaderId=" + playListId + "&itemSeq=" + seq);
+        req.send(null);
+
+    }
 
 </script>
