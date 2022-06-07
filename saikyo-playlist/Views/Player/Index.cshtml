@@ -1,5 +1,4 @@
-﻿@model PlayListModel
-
+﻿
 <h1>
     @Model.PlayListName
 </h1>
@@ -14,7 +13,7 @@
             <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
 
             <a onclick="javascript:onPlayListItemClick(this);" item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
-                @(item.ItemSeq + " / " + item.Title + " / " + item.TitleAlias)
+                @(item.ItemSeq + " / " + item.Title + " / " + item.TitleAlias + " / " + item.PlayCount)
             </a>
 
 
@@ -29,9 +28,6 @@
     var playList = @Html.Raw(Model.PlayListJson);
     var currentIndex = 0;
     var maxIndex = playList.length - 1;
-
-    document.getElementById("maxIndexDisplay").innerText = maxIndex;
-    document.getElementById("currentIndexDisplay").innerText = currentIndex;
 
     var player;
     console.log(playList);
@@ -94,7 +90,6 @@
         }
 
         console.log("currentIndex : " + currentIndex);
-        document.getElementById("currentIndexDisplay").innerText = currentIndex;
         player.loadVideoById(playList[currentIndex].itemId);
     }
 
@@ -103,7 +98,6 @@ function onPlayListItemClick(sender) {
 
     //インデックスを変更
     currentIndex = parseInt(sender.getAttribute("item-itemSeq"));
-    document.getElementById("currentIndexDisplay").innerText = currentIndex;
     player.loadVideoById(sender.getAttribute("item-itemId"));
 
 
