@@ -79,6 +79,8 @@
 
 ## DB構造
 
+### アイテム情報
+
 - ItemLibraries
 
 プレイリストに追加するアイテムを格納する。
@@ -121,3 +123,31 @@
 |TimeStamp|varbinary(max)|楽観的同時実行制御のためのタイムスタンプ。||
 
 <br>
+
+
+### タグ情報
+
+- Tags
+
+アイテムライブラリに紐づけるタグ情報を格納するマスタテーブル。
+
+|列名|.NET型|内容|制約|
+|--|--|--|--|
+|Id|string|タグごとのユニークなID。||
+|Name|string|タグの名前||
+|AspNetUsersId|string|このプレイリストを作成したユーザーのID。|FK|
+|TimeStamp|varbinary(max)|楽観的同時実行制御のためのタイムスタンプ。||
+
+<br>
+
+- TagMaps
+
+アイテムライブラリとタグを紐づける中間テーブル。
+
+|列名|.NET型|内容|制約|
+|--|--|--|--|
+|Id|string|タグマップごとのユニークなID。||
+|ItemLibraryId|string|`ItemLibraries`テーブルのID。|FK|
+|TagId|string|`Tags`テーブルのID。|FK|
+|TimeStamp|varbinary(max)|楽観的同時実行制御のためのタイムスタンプ。||
+
