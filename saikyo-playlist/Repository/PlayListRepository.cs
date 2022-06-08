@@ -250,12 +250,16 @@ namespace saikyo_playlist.Repository
                             throw new ApplicationException($"URLからのID取得に失敗しました。");
                         }
 
+                        //アイテムライブラリに追加・または取得する
+                        var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
+                        var libraryItem = itemLibraryRepo.InsertOrRetrieve(LibraryItemPlatform.Youtube, itemIdFromUrl, commaSeparated[1]);
+
+                        //プレイリスト詳細を設定し、追加する
                         var detail = new PlayListDetailsEntity();
                         detail.PlayListDetailsEntityId = GetUniqueId();
-                        detail.ItemId = itemIdFromUrl;
                         detail.ItemSeq = dataStrItem.Index;
-                        detail.Title = commaSeparated[1];
-                        detail.TitleAlias = commaSeparated[2];
+                        detail.ItemLibrariesEntityId = libraryItem.ItemLibrariesEntityId;
+                        detail.ItemLibrariesEntity = libraryItem;
                         detail.PlayListHeadersEntityId = header.PlayListHeadersEntityId;
                         detail.PlayListHeadersEntity = header;
                         ret.Add(detail);
@@ -336,16 +340,19 @@ namespace saikyo_playlist.Repository
                 foreach (var item in playListData.items.Select((item, index) => new { Item = item, Index = index }))
                 {
 
+                    //アイテムライブラリに追加・または取得する
+                    var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
+                    var libraryItem = itemLibraryRepo.InsertOrRetrieve(LibraryItemPlatform.Youtube, item.Item.snippet.resourceId.videoId, item.Item.snippet.title);
+
+                    //プレイリスト詳細を設定し、追加する
                     var detail = new PlayListDetailsEntity();
                     detail.PlayListDetailsEntityId = GetUniqueId();
-                    detail.ItemId = item.Item.snippet.resourceId.videoId;
                     detail.ItemSeq = item.Index;
-                    detail.Title = item.Item.snippet.title;
-                    detail.TitleAlias = "";
+                    detail.ItemLibrariesEntityId = libraryItem.ItemLibrariesEntityId;
+                    detail.ItemLibrariesEntity = libraryItem;
                     detail.PlayListHeadersEntityId = header.PlayListHeadersEntityId;
                     detail.PlayListHeadersEntity = header;
                     ret.Add(detail);
-
                 }
             }
             catch (Exception ex)
