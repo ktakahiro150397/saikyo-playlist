@@ -89,7 +89,7 @@
 |--|--|--|--|
 |Id|string|アイテムごとのユニークなID。<br>登録時、ULIDを採番する。|
 |AspNetUsersId|string|このアイテムを所有しているユーザーのID。|
-|type|string|プレイリストのプラットフォーム。<br>`youtube`,`spotify`,`applemusic`のいずれか。|
+|type|int|プレイリストのプラットフォーム。<br>`youtube=1`,`spotify=2`,`applemusic=3`のいずれか。|
 |itemId|string|アイテムを特定するためのプラットフォームごとのID。|
 |title|string|アイテムの元々の名称。<br>Youtube:動画名|
 |titleAlias|string|ユーザーによって付けられたアイテムの別名。|
