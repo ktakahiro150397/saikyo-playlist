@@ -1,16 +1,19 @@
-﻿namespace saikyo_playListTest
+﻿using Microsoft.Extensions.Configuration;
+using System.Reflection;
+
+namespace saikyo_playListTest
 {
     [TestClass]
     public class YoutubeApiTest_Video
     {
         private YoutubeDataRepository _repo { get; set; }
 
-        private const string apiKey = "AIzaSyCl2eOWfYiO9cwiqWbRkuWw4ywI2OMZYfA";
+        private IConfiguration Configuration { get; set; }
 
-        [TestInitialize]
-        public void TestInit()
+        public YoutubeApiTest_Video()
         {
-            _repo = new YoutubeDataRepository(apiKey);
+            Configuration = new ConfigurationBuilder().AddUserSecrets<YoutubeApiTest_Video>().Build();
+            _repo = new YoutubeDataRepository(Configuration["YoutubeAPIKey"]);
         }
 
         [TestMethod]
