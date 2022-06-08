@@ -79,16 +79,33 @@
 
 ## DB構造
 
+- ItemLibraries
+
+プレイリストに追加するアイテムを格納する。
+
+|列名|.NET型|内容|制約|
+|--|--|--|--|
+|Id|string|アイテムごとのユニークなID。<br>登録時、ULIDを採番する。|
+|AspNetUsersId|string|このアイテムを所有しているユーザーのID。|
+|type|string|プレイリストのプラットフォーム。<br>`youtube`,`spotify`,`applemusic`のいずれか。|
+|itemId|string|アイテムを特定するためのプラットフォームごとのID。|
+|title|string|アイテムの元々の名称。<br>Youtube:動画名|
+|titleAlias|string|ユーザーによって付けられたアイテムの別名。|
+|playCount|int|アイテムがプレイリスト内で最後まで再生された数。|
+|TimeStamp|byte[]|楽観的同時実行制御のためのタイムスタンプ。|
+
+<br>
+
 - PlayListHeaders
 
 プレイリストのヘッダー情報を格納する。
 
-|列名|型|内容|制約|
+|列名|.NET型|内容|制約|
 |--|--|--|--|
-|Id|nvarchar(512) not null|プレイリストごとのユニークなID。<br>登録時、ULIDを採番する。|PK|
-|AspNetUsersId|nvarchar(450) not null|このプレイリストを作成したユーザーのID。|PK / FK(AspNetUsers.Id)|
-|Name|nvarchar(128) not null|プレイリストの名称。||
-|TimeStamp|varbinary(max) not null|楽観的同時実行制御のためのタイムスタンプ。||
+|Id|string|プレイリストごとのユニークなID。<br>登録時、ULIDを採番する。|
+|AspNetUsersId|string|このプレイリストを作成したユーザーのID。|FK|
+|Name|string|プレイリストの名称。|
+|TimeStamp|byte[]|楽観的同時実行制御のためのタイムスタンプ。|
 
 <br>
 
@@ -96,14 +113,11 @@
 
 プレイリストの詳細情報を格納する。
 
-|列名|型|内容|制約|
+|列名|.NET型|内容|制約|
 |--|--|--|--|
-|PlayListHeadersId|nvarchar(512) not null|`PlayListDetails`テーブルで採番したID。|PK / FK|
-|itemSeq|int not null|0から始まるプレイリストの連番。|PK|
-|type|nvarchar(32) not null|プレイリストのプラットフォーム。<br>`youtube`,`spotify`,`applemusic`のいずれか。|PK|
-|itemId|nvarchar(512) not null|アイテムを特定するためのプラットフォームごとのID。|PK|
-|title|nvarchar(500) not null|アイテムの元々の名称。<br>Youtube:動画名||
-|titleAlias|nvarchar(500) null|ユーザーによって付けられたアイテムの別名。||
-|playCount|int null|アイテムがプレイリスト内で最後まで再生された数。||
-|TimeStamp|varbinary(max) not null|楽観的同時実行制御のためのタイムスタンプ。||
+|PlayListHeadersId|string|`PlayListDetails`テーブルで採番したID。|FK|
+|ItemLibraryId|string|アイテムを特定するためのプラットフォームごとのID。|FK|
+|ItemSeq|int|0から始まるプレイリストの連番。|
+|TimeStamp|varbinary(max)|楽観的同時実行制御のためのタイムスタンプ。||
 
+<br>
