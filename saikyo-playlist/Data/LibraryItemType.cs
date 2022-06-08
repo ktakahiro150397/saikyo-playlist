@@ -1,4 +1,4 @@
-﻿]namespace saikyo_playlist.Data
+﻿namespace saikyo_playlist.Data
 {
 
     /// <summary>
@@ -23,10 +23,8 @@
         public static string GetPlatformName(this LibraryItemPlatform platform)
         {
             string[] names = { "なし", "Youtube", "Spotify", "Apple Music" };
-            
+
             return names[(int)platform];
         }
     }
-
-
 }
