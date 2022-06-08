@@ -1,16 +1,19 @@
-﻿namespace saikyo_playListTest
+﻿using Microsoft.Extensions.Configuration;
+
+namespace saikyo_playListTest
 {
     [TestClass]
     public class YoutubeApiTest_PlayList
     {
         private YoutubeDataRepository _repo { get; set; }
 
-        private const string apiKey = "AIzaSyCl2eOWfYiO9cwiqWbRkuWw4ywI2OMZYfA";
+        private IConfiguration Configuration { get; set; }
 
-        [TestInitialize]
-        public void TestInit()
+
+        public YoutubeApiTest_PlayList()
         {
-            _repo = new YoutubeDataRepository(apiKey);
+            Configuration = new ConfigurationBuilder().AddUserSecrets<YoutubeApiTest_Video>().Build();
+            _repo = new YoutubeDataRepository(Configuration["YoutubeAPIKey"]);
         }
 
         [TestMethod]
@@ -62,7 +65,7 @@
         [TestMethod]
         public void GetVideoInfoTest_3()
         {
-            //1041件
+            //ぜんぶぶち込み太郎
             var playListId = "PLEL7lWbWu6s6hLK9hhpREBXvNiV3sWOR9";
 
             try
@@ -73,7 +76,7 @@
                 {
                     Assert.Fail();
                 }
-                Assert.AreEqual(1041, result.items.Count);
+                Assert.AreEqual(1121, result.items.Count);
             }
             catch (Exception ex)
             {
