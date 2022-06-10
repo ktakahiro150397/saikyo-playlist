@@ -71,6 +71,9 @@ namespace saikyo_playlist.Controllers
         [HttpGet]
         public IActionResult Edit(string playListHeaderId)
         {
+            //TODO : ライブラリIDの管理を行うよう修正する
+
+
             //対象IDのデータを取得
             var playListData = ApplicationDbContext.PlayListHeaders
                 .Where(item => item.PlayListHeadersEntityId == playListHeaderId)
@@ -98,7 +101,7 @@ namespace saikyo_playlist.Controllers
 
                 model.Title = playListData.Name;
 
-                model.Urls = String.Join("", playListData.Details.Select(item => @"https://www.youtube.com/watch?v=" + item.ItemId + "," + item.Title + "," + item.TitleAlias + Environment.NewLine));
+                //model.Urls = String.Join("", playListData.Details.Select(item => @"https://www.youtube.com/watch?v=" + item.ItemId + "," + item.Title + "," + item.TitleAlias + Environment.NewLine));
 
                 return View(model);
 
