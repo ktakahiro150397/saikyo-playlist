@@ -21,7 +21,12 @@ namespace saikyo_playlist.Repository
             _httpClient = new HttpClient();
         }
 
-        public async Task<YoutubeVideoAPIResponseModel?> GetYoutubeVideoInfo(string videoId)
+        /// <summary>
+        /// URLから、Youtubeの動画情報を取得します。
+        /// </summary>
+        /// <param name="videoId">動画のID。</param>
+        /// <returns></returns>
+        public async Task<YoutubeVideoRetrieveResult?> GetYoutubeVideoInfo(string videoId)
         {
 
             var requestUrl = GetYoutubeVideoInfoUrl(videoId);
@@ -31,13 +36,27 @@ namespace saikyo_playlist.Repository
             if (msg == null)
             {
                 myDeserializedClass = null;
+                return null;
             }
             else
             {
                 myDeserializedClass = JsonSerializer.Deserialize<YoutubeVideoAPIResponseModel>(msg);
-            }
 
-            return myDeserializedClass;
+                if(myDeserializedClass == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    var ret = new YoutubeVideoRetrieveResult();
+                    ret.Url = videoId;
+                    ret.Title = myDeserializedClass.items[0].snippet.title;
+                    ret.ItemId = myDeserializedClass.items[0].id;
+
+                    return ret;
+                }
+                
+            }
         }
 
         public YoutubePlayListAPIResponseModel? GetYoutubePlayListInfo(string playListId)

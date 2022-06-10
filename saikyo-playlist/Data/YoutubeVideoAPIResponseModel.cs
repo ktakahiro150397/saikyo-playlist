@@ -1,5 +1,28 @@
 ﻿namespace saikyo_playlist.Data.Video
 {
+
+    public class YoutubeVideoRetrieveResult
+    {
+        /// <summary>
+        /// Youtube動画のID。
+        /// </summary>
+        public string ItemId { get; set; }
+
+        /// <summary>
+        /// タイトル。
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// 動画へのURL。
+        /// </summary>
+        public string Url { get; set; }
+
+    }
+
+
+
+
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class YoutubeVideoAPIResponseModel
     {

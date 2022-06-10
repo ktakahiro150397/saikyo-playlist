@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using saikyo_playlist.Data;
+using saikyo_playlist.Data.Video;
+using saikyo_playlist.Helpers;
+using saikyo_playlist.Models;
 using saikyo_playlist.Models.PlayListManage;
 using saikyo_playlist.Repository;
-using System.Security.Claims;
 
 namespace saikyo_playlist.Controllers
 {
@@ -159,6 +161,54 @@ namespace saikyo_playlist.Controllers
                 //登録失敗
                 return View(model);
             }
+        }
+
+        [HttpGet]
+        public IActionResult AddItem()
+        {
+            return View(new AddItemViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddItem(AddItemViewModel model)
+        {
+            try
+            {
+                //プラットフォームを判別し、データを取得する
+                var repo = new YoutubeDataRepository(Configuration["YoutubeAPIKey"]);
+
+                var videoId = YoutubeHelpers.GetVideoIdFromUrl(model.Url);
+                YoutubeVideoRetrieveResult? item;
+                if (videoId != null)
+                {
+                    item = await repo.GetYoutubeVideoInfo(videoId);
+
+                    if(item == null)
+                    {
+                        throw new ApplicationException($"URL:「{model.Url}」から動画情報が取得できませんでした。");
+                    }
+                }
+                else
+                {
+                    throw new ApplicationException($"URL:「{model.Url}」から動画IDが取得できませんでした。");
+                }
+
+                //取得したデータをライブラリに追加
+                var loginUserInfo = await UserManager.GetUserAsync(User);
+                var libRepo = new ItemLibraryRepository(ApplicationDbContext, loginUserInfo);
+
+                //入力されている場合、タイトルはそちらを使用
+                libRepo.InsertOrRetrieve(model.Platform, item.ItemId, model.TitleAlias != "" ? model.TitleAlias : item.Title);
+
+            }catch (Exception ex)
+            {
+                model.ErrorMessage = "追加に失敗しました。";
+                return View(model);
+            }
+
+
+
+            return Redirect("./PlayList");
         }
 
 
