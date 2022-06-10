@@ -38,6 +38,7 @@ namespace saikyo_playlist.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult AddPlayCount(string playListHeaderId,int itemSeq)
         {
+            //TODO : ライブラリIDから再生回数を加算するよう修正
 
             var ret = 0;
             try
@@ -53,8 +54,8 @@ namespace saikyo_playlist.Controllers
                 }
 
                 //データの再生回数を1つ増やす
-                detail.PlayCount += 1;
-                ret = detail.PlayCount;
+                //detail.PlayCount += 1;
+                //ret = detail.PlayCount;
                 ApplicationDbContext.SaveChanges();
 
             }catch(Exception ex)
