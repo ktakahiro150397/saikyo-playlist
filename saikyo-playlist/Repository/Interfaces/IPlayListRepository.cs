@@ -9,6 +9,11 @@ namespace saikyo_playlist.Repository.Interfaces
     /// </summary>
     public interface IPlayListRepository
     {
+        /// <summary>
+        /// ログインユーザーのプレイリストヘッダーをすべて取得します。
+        /// </summary>
+        /// <returns></returns>
+        public Task<IEnumerable<PlayListHeadersEntity>> GetPlayListHeaderAll();
 
         /// <summary>
         /// プレイリストの新規作成を行います。

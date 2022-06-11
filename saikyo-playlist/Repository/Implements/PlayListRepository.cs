@@ -388,6 +388,11 @@ namespace saikyo_playlist.Repository.Implements
         {
             throw new NotImplementedException();
         }
+
+        public Task<IEnumerable<PlayListHeadersEntity>> GetPlayListHeaderAll()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
