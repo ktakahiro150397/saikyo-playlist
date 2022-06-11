@@ -20,10 +20,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.TestPlatform" Version="17.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\saikyo-playlist\saikyo-playlist.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Microsoft.TestPlatform" />
+  </ItemGroup>
 </Project>
