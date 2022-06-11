@@ -27,8 +27,8 @@ namespace saikyo_playListTest
                 var result = _repo.GetYoutubeVideoInfo(targetVideoId).Result;
 
 
-                Assert.AreEqual(targetVideoId,result.items[0].id);
-                Assert.AreEqual("少女マイノリティ OP 『Minority』 Full 夢乃ゆき",result.items[0].snippet.title);
+                Assert.AreEqual(targetVideoId,result.ItemId);
+                Assert.AreEqual("少女マイノリティ OP 『Minority』 Full 夢乃ゆき",result.Title);
 
             }
             catch (Exception ex)
@@ -48,8 +48,8 @@ namespace saikyo_playListTest
                 var result = _repo.GetYoutubeVideoInfo(targetVideoId).Result;
 
 
-                Assert.AreEqual(targetVideoId, result.items[0].id);
-                Assert.AreEqual("Raspberry Cube - Raspberry Cube (Main Theme)", result.items[0].snippet.title);
+                Assert.AreEqual(targetVideoId, result.ItemId);
+                Assert.AreEqual("Raspberry Cube - Raspberry Cube (Main Theme)", result.Title);
 
             }
             catch (Exception ex)
@@ -69,8 +69,8 @@ namespace saikyo_playListTest
                 var result = _repo.GetYoutubeVideoInfo(targetVideoId).Result;
 
 
-                Assert.AreEqual(targetVideoId, result.items[0].id);
-                Assert.AreEqual("fhána / 青空のラプソディ - MUSIC VIDEO", result.items[0].snippet.title);
+                Assert.AreEqual(targetVideoId, result.ItemId);
+                Assert.AreEqual("fhána / 青空のラプソディ - MUSIC VIDEO", result.Title);
 
             }
             catch (Exception ex)

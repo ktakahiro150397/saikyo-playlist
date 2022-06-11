@@ -42,7 +42,7 @@ namespace saikyo_playListTest
         [TestMethod]
         public void GetVideoInfoTest_2()
         {
-            //287件
+            //288件
             var playListId = "PLEL7lWbWu6s5SH0Os8RuYqc_7_5ZcgJ0y";
 
             try
@@ -53,7 +53,7 @@ namespace saikyo_playListTest
                 {
                     Assert.Fail();
                 }
-                Assert.AreEqual(287, result.items.Count);
+                Assert.AreEqual(288, result.items.Count);
             }
             catch (Exception ex)
             {
