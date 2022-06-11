@@ -39,7 +39,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="header">削除対象のプレイリストヘッダーエンティティ。</param>
         /// <param name="playListDetailId">削除を行うプレイリスト詳細のID。</param>
         /// <returns></returns>
-        public Task<PlayListOperationResult> RemoveItemFromPlayList(PlayListHeadersEntity header, string playListDetailId);
+        public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(PlayListHeadersEntity header, string playListDetailId);
 
         /// <summary>
         /// プレイリストの対象のアイテムを更新します。
@@ -47,7 +47,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="header">更新対象のプレイリストヘッダーエンティティ。</param>
         /// <param name="playListDetailId">更新するプレイリスト詳細のエンティティ。</param>
         /// <returns></returns>
-        public Task<PlayListOperationResult> RemoveItemFromPlayList(PlayListHeadersEntity header, PlayListDetailsEntity detail);
+        public Task<PlayListOperationResult> UpdatePlayListItemAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail);
 
 
     }
