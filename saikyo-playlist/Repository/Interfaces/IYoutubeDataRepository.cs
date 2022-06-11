@@ -22,7 +22,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// </summary>
         /// <param name="url">動画のURL。</param>
         /// <returns></returns>
-        Task<IEnumerable<YoutubeVideoRetrieveOperationResult?>> GetYoutubePlayListInfoAsync(string url);
+        Task<YoutubeVideoRetrieveOperationResult?> GetYoutubePlayListInfoAsync(string url);
 
 
 

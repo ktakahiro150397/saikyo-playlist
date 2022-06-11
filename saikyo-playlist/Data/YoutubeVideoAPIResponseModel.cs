@@ -47,7 +47,7 @@
         /// <summary>
         /// 再生リスト内のインデックス。
         /// </summary>
-        public string? ItemSeq { get; set; }
+        public int? ItemSeq { get; set; }
 
         public YoutubeVideoRetrieveResult()
         {
@@ -72,6 +72,11 @@
         /// (取得時)対象アイテムが存在しない
         /// </summary>
         NotFound,
+
+        /// <summary>
+        /// 正しくないURLが入力されている
+        /// </summary>
+        InvalidUrl,
 
         /// <summary>
         /// 操作時に予期せぬエラー

@@ -123,7 +123,7 @@ namespace saikyo_playlist.Repository.Implements
             throw new NotImplementedException();
         }
 
-        Task<IEnumerable<YoutubeVideoRetrieveOperationResult?>> IYoutubeDataRepository.GetYoutubePlayListInfoAsync(string url)
+        Task<YoutubeVideoRetrieveOperationResult?> IYoutubeDataRepository.GetYoutubePlayListInfoAsync(string url)
         {
             throw new NotImplementedException();
         }
