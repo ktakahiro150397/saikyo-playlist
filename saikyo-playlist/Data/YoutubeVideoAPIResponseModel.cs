@@ -1,6 +1,8 @@
 ﻿namespace saikyo_playlist.Data.Video
 {
-
+    /// <summary>
+    /// YoutubeからAPI経由で取得したデータ。
+    /// </summary>
     public class YoutubeVideoRetrieveResult
     {
         /// <summary>
@@ -17,6 +19,11 @@
         /// 動画へのURL。
         /// </summary>
         public string Url { get; set; }
+
+        /// <summary>
+        /// 再生リスト内のインデックス。
+        /// </summary>
+        public string ItemSeq { get; set; }
 
     }
 

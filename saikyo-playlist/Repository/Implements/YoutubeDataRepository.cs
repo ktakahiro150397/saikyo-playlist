@@ -5,7 +5,7 @@ using saikyo_playlist.Data.PlayList;
 
 namespace saikyo_playlist.Repository.Implements
 {
-    public class YoutubeDataRepository
+    public class YoutubeDataRepository : IYoutubeDataRepository
     {
         private string ApiKey = "";
 
@@ -21,11 +21,6 @@ namespace saikyo_playlist.Repository.Implements
             _httpClient = new HttpClient();
         }
 
-        /// <summary>
-        /// URLから、Youtubeの動画情報を取得します。
-        /// </summary>
-        /// <param name="videoId">動画のID。</param>
-        /// <returns></returns>
         public async Task<YoutubeVideoRetrieveResult?> GetYoutubeVideoInfo(string videoId)
         {
 
