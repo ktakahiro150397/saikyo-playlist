@@ -2,7 +2,7 @@
 using saikyo_playlist.Data;
 using System.Web;
 
-namespace saikyo_playlist.Repository
+namespace saikyo_playlist.Repository.Implements
 {
     /// <summary>
     /// プレイリスト作成・取得に関する機能を提供します。

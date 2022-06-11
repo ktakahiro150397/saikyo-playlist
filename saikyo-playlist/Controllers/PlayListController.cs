@@ -6,6 +6,7 @@ using saikyo_playlist.Helpers;
 using saikyo_playlist.Models;
 using saikyo_playlist.Models.PlayListManage;
 using saikyo_playlist.Repository;
+using saikyo_playlist.Repository.Implements;
 
 namespace saikyo_playlist.Controllers
 {
@@ -198,7 +199,7 @@ namespace saikyo_playlist.Controllers
                 var libRepo = new ItemLibraryRepository(ApplicationDbContext, loginUserInfo);
 
                 //入力されている場合、タイトルはそちらを使用
-                libRepo.InsertOrRetrieve(model.Platform, item.ItemId, model.TitleAlias != "" ? model.TitleAlias : item.Title);
+                await libRepo.InsertOrRetrieveAsync(model.Platform, item.ItemId, model.TitleAlias != "" ? model.TitleAlias : item.Title);
 
             }catch (Exception ex)
             {

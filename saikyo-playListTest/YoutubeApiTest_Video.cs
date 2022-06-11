@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using saikyo_playlist.Repository.Implements;
 using System.Reflection;
 
 namespace saikyo_playListTest

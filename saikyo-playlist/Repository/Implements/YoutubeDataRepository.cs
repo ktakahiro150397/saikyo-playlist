@@ -3,7 +3,7 @@ using System.Text.Json;
 using saikyo_playlist.Data.Video;
 using saikyo_playlist.Data.PlayList;
 
-namespace saikyo_playlist.Repository
+namespace saikyo_playlist.Repository.Implements
 {
     public class YoutubeDataRepository
     {
@@ -42,7 +42,7 @@ namespace saikyo_playlist.Repository
             {
                 myDeserializedClass = JsonSerializer.Deserialize<YoutubeVideoAPIResponseModel>(msg);
 
-                if(myDeserializedClass == null)
+                if (myDeserializedClass == null)
                 {
                     return null;
                 }
@@ -55,7 +55,7 @@ namespace saikyo_playlist.Repository
 
                     return ret;
                 }
-                
+
             }
         }
 
@@ -77,10 +77,10 @@ namespace saikyo_playlist.Repository
             return url;
         }
 
-        private string GetYoutubePlayListInfoUrl(string playListId,string nextPageToken)
+        private string GetYoutubePlayListInfoUrl(string playListId, string nextPageToken)
         {
             var url = $"{playListInfoEndPointUrl}?part=snippet&key={ApiKey}&playlistId={playListId}";
-            if(nextPageToken != "")
+            if (nextPageToken != "")
             {
                 url += $"&pageToken={nextPageToken}";
             }
@@ -88,7 +88,7 @@ namespace saikyo_playlist.Repository
             return url;
         }
 
-        private void GetYoutubePlayListRecurrsive(ref YoutubePlayListAPIResponseModel result, string playListId,string nextPageToken)
+        private void GetYoutubePlayListRecurrsive(ref YoutubePlayListAPIResponseModel result, string playListId, string nextPageToken)
         {
             var requestUrl = GetYoutubePlayListInfoUrl(playListId, nextPageToken);
 
@@ -101,7 +101,7 @@ namespace saikyo_playlist.Repository
             else
             {
                 YoutubePlayListAPIResponseModel? deserialized = JsonSerializer.Deserialize<YoutubePlayListAPIResponseModel>(msg);
-                if(deserialized == null)
+                if (deserialized == null)
                 {
                     return;
                 }
@@ -110,7 +110,7 @@ namespace saikyo_playlist.Repository
                 if (deserialized.nextPageToken != "")
                 {
                     //次のページが存在する
-                    GetYoutubePlayListRecurrsive(ref result,playListId, deserialized.nextPageToken);
+                    GetYoutubePlayListRecurrsive(ref result, playListId, deserialized.nextPageToken);
                 }
                 else
                 {
