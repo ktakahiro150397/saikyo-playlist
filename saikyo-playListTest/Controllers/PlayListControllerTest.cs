@@ -11,6 +11,48 @@ namespace saikyo_playListTest.Controllers
     public class PlayListControllerTest
     {
 
+        public Mock<UserManager<IdentityUser>> userManagerMoq;
+
+        public Mock<IConfiguration> configMoq;
+
+        public Mock<IItemLibraryRepository> itemLibRepo;
+
+        public Mock<IYoutubeDataRepository> youtubeRepo;
+
+        public PlayListController controller;
+
+        public PlayListControllerTest()
+        {
+            //moqを利用してコントローラーのインスタンスを作成
+            //Arrange
+            var store = new Mock<IUserStore<IdentityUser>>();
+            userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
+            configMoq = new Mock<IConfiguration>();
+            itemLibRepo = new Mock<IItemLibraryRepository>();
+            youtubeRepo = new Mock<IYoutubeDataRepository>();
+
+            controller = new PlayListController(
+                userManagerMoq.Object,
+                itemLibRepo.Object,
+                youtubeRepo.Object,
+                configMoq.Object);
+        }
+
+        #region "Index Action"
+
+        /// <summary>
+        /// プレイリスト一覧　成功
+        /// </summary>
+        [Fact]
+        public void Index_ReturnAViewWithModel()
+        {
+            
+        }
+
+        #endregion
+
+        #region "AddItem Action"
+
         /// <summary>
         /// アイテムライブラリへの追加画面：GET
         /// </summary>
@@ -18,17 +60,6 @@ namespace saikyo_playListTest.Controllers
         public void AddItem_ReturnsAViewResult()
         {
             //Arrange
-            var store = new Mock<IUserStore<IdentityUser>>();
-            var userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
-            var configMoq = new Mock<IConfiguration>();
-            var itemLibRepo = new Mock<IItemLibraryRepository>();
-            var youtubeRepo = new Mock<IYoutubeDataRepository>();
-
-            var controller = new PlayListController(
-                userManagerMoq.Object, 
-                itemLibRepo.Object,
-                youtubeRepo.Object,
-                configMoq.Object);
 
             //Act
             var actResult = controller.AddItem();
@@ -47,22 +78,11 @@ namespace saikyo_playListTest.Controllers
         {
 
             //Arrange
-            var store = new Mock<IUserStore<IdentityUser>>();
-            var userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
-            var configMoq = new Mock<IConfiguration>();
-            var itemLibRepo = new Mock<IItemLibraryRepository>();
             itemLibRepo.Setup(repo => repo.InsertAsync(It.IsAny<LibraryItemPlatform>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<IdentityUser>()))
                 .Verifiable();
-            var youtubeRepo = new Mock<IYoutubeDataRepository>();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
                 .ReturnsAsync(new YoutubeVideoRetrieveOperationResult() { OperationResult = YoutubeAPIRetrieveOperationResultType.Success })
                 .Verifiable();
-
-            var controller = new PlayListController(
-                userManagerMoq.Object,
-                itemLibRepo.Object,
-                youtubeRepo.Object,
-                configMoq.Object);
 
             var model = new AddItemViewModel()
             {
@@ -91,22 +111,11 @@ namespace saikyo_playListTest.Controllers
         public async Task AddItem_ReturnAViewWithInvalidModelState_NoUrl()
         {
             //Arrange
-            var store = new Mock<IUserStore<IdentityUser>>();
-            var userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
-            var configMoq = new Mock<IConfiguration>();
-            var itemLibRepo = new Mock<IItemLibraryRepository>();
             itemLibRepo.Setup(repo => repo.InsertAsync(It.IsAny<LibraryItemPlatform>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
-            var youtubeRepo = new Mock<IYoutubeDataRepository>();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
                 .ReturnsAsync(new YoutubeVideoRetrieveOperationResult() { OperationResult = YoutubeAPIRetrieveOperationResultType.Success })
                 .Verifiable();
-
-            var controller = new PlayListController(
-                userManagerMoq.Object,
-                itemLibRepo.Object,
-                youtubeRepo.Object,
-                configMoq.Object);
 
             var model = new AddItemViewModel()
             {
@@ -135,19 +144,8 @@ namespace saikyo_playListTest.Controllers
         public async Task AddItem_ReturnAViewWithInvalidModelState_NoDataFromVideoUrl()
         {
             //Arrange
-            var store = new Mock<IUserStore<IdentityUser>>();
-            var userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
-            var configMoq = new Mock<IConfiguration>();
-            var itemLibRepo = new Mock<IItemLibraryRepository>();
-            var youtubeRepo = new Mock<IYoutubeDataRepository>();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
                 .Verifiable();
-
-            var controller = new PlayListController(
-                userManagerMoq.Object,
-                itemLibRepo.Object,
-                youtubeRepo.Object,
-                configMoq.Object);
 
             var model = new AddItemViewModel()
             {
@@ -175,19 +173,8 @@ namespace saikyo_playListTest.Controllers
         public async Task AddItem_ReturnAViewWithInvalidModelState_InvalidVideoUrl()
         {
             //Arrange
-            var store = new Mock<IUserStore<IdentityUser>>();
-            var userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
-            var configMoq = new Mock<IConfiguration>();
-            var itemLibRepo = new Mock<IItemLibraryRepository>();
-            var youtubeRepo = new Mock<IYoutubeDataRepository>();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
                 .Verifiable();
-
-            var controller = new PlayListController(
-                userManagerMoq.Object,
-                itemLibRepo.Object,
-                youtubeRepo.Object,
-                configMoq.Object);
 
             var model = new AddItemViewModel()
             {
@@ -207,7 +194,9 @@ namespace saikyo_playListTest.Controllers
 
         }
 
+        #endregion
+
     }
 
-   
+
 }
