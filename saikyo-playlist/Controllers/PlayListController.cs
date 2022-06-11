@@ -37,13 +37,13 @@ namespace saikyo_playlist.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
 
-            //var model = new ManagePlayListViewModel(ApplicationDbContext);
+            var model = new ManagePlayListViewModel(PlayListRepository);
+            await model.Initialize();
 
-            //return View(model);
-            return View();
+            return View(model);
         }
 
         [HttpGet]

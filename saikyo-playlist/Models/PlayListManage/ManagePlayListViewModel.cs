@@ -1,4 +1,5 @@
 ﻿using saikyo_playlist.Data;
+using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Models.PlayListManage
 {
@@ -6,6 +7,9 @@ namespace saikyo_playlist.Models.PlayListManage
     {
 
         public IList<ManagePlayListItem> managePlayListItems { get; set; } = new List<ManagePlayListItem>();
+
+        private IPlayListRepository PlayListRepository { get; set; }
+
 
         public ManagePlayListViewModel()
         {
@@ -35,18 +39,33 @@ namespace saikyo_playlist.Models.PlayListManage
             }
         }
 
-        public ManagePlayListViewModel(ApplicationDbContext dbContext)
+        public ManagePlayListViewModel(IPlayListRepository playListRepos)
         {
-            //一覧に表示するヘッダー情報を取得する
-            var headers = dbContext.PlayListHeaders
-                .Select(item => new ManagePlayListItem()
-                {
-                    PlayListHeaderId = item.PlayListHeadersEntityId,
-                    PlayListName = item.Name,
-                    UserId = item.AspNetUserdId
-                }).ToList();
+            PlayListRepository = playListRepos;
+        }
 
-            managePlayListItems = headers;
+        /// <summary>
+        /// このViewModelを初期化します。
+        /// </summary>
+        /// <returns></returns>
+        public async Task Initialize() {
+
+            var playList = await PlayListRepository.GetPlayListHeaderAll();
+
+            if(playList == null)
+            {
+                //データなし
+            }
+            else
+            {
+                managePlayListItems = playList.Select(
+                    elem => new ManagePlayListItem()
+                    {
+                        PlayListHeaderId = elem.PlayListHeadersEntityId,
+                        PlayListName = elem.Name,
+                        UserId = elem.AspNetUserdId
+                    }).ToList();
+            }
         }
 
     }

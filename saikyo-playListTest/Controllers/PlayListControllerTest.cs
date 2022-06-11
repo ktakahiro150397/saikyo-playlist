@@ -51,13 +51,32 @@ namespace saikyo_playListTest.Controllers
         [Fact]
         public void Index_ReturnAViewWithModel()
         {
+            //Arrange
+            playlistRepo.Setup(repo => repo.GetPlayListHeaderAll())
+                .ReturnsAsync(new List<PlayListHeadersEntity>()
+                {
+                    new PlayListHeadersEntity()
+                    {
+                        Name = "test_header_name_1",
+                        AspNetUserdId = "test_user_id_1"
+                    },
+                    new PlayListHeadersEntity()
+                    {
+                        Name = "test_header_name_2",
+                        AspNetUserdId = "test_user_id_2"
+                    },
+                })
+                .Verifiable();
+
+
             //Act
             var actResult = controller.Index();
 
             //Assert
-            var viewResult = Assert.IsType<ViewResult>(actResult);
+            var viewResult = Assert.IsType<ViewResult>(actResult.Result);
             var model = Assert.IsAssignableFrom<ManagePlayListViewModel>(viewResult.Model);
-            
+            Assert.Equal(2, model.managePlayListItems.Count);
+            playlistRepo.Verify();
         }
 
         #endregion
