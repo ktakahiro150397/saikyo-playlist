@@ -363,4 +363,43 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
     }
+
+
+
+    public class PlayListOperationResult
+    {
+        /// <summary>
+        /// 操作結果
+        /// </summary>
+        public PlayListOperationResultType OperationResult { get; set; }
+
+        /// <summary>
+        /// エラーが発生している場合、その例外オブジェクト。
+        /// </summary>
+        public Exception? Exception { get; set; }
+    }
+
+    /// <summary>
+    /// プレイリストエンティティへの操作結果を表します。
+    /// </summary>
+    public enum PlayListOperationResultType
+    {
+        /// <summary>
+        /// 操作に成功
+        /// </summary>
+        Success,
+
+        /// <summary>
+        /// (更新・削除時)対象のデータが存在しなかった
+        /// </summary>
+        NotFound,
+
+        /// <summary>
+        /// 操作時に予期せぬエラー
+        /// </summary>
+        UnExpectedError,
+
+    }
+
+
 }
