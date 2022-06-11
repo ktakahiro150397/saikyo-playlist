@@ -19,17 +19,21 @@ namespace saikyo_playlist.Controllers
 
         private IYoutubeDataRepository YoutubeDataRepository { get; set; }
 
+        private IPlayListRepository PlayListRepository { get; set; }
+
         private IConfiguration Configuration { get; set; }
 
         public PlayListController(UserManager<IdentityUser> userManager,
             IItemLibraryRepository itemLibraryRepository,
             IYoutubeDataRepository youtubeDataRepository,
+            IPlayListRepository playListRepository,
             IConfiguration configurationManager)
         {
             UserManager = userManager;
             ItemLibraryRepository = itemLibraryRepository;
             YoutubeDataRepository = youtubeDataRepository;
             Configuration = configurationManager;
+            PlayListRepository = playListRepository;
         }
 
         [HttpGet]

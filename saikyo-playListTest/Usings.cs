@@ -4,7 +4,7 @@ global using saikyo_playlist.Controllers;
 global using saikyo_playlist.Models;
 global using saikyo_playlist.Repository.Interfaces;
 global using Xunit;
-global using saikyo_playlist.Repository;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.AspNetCore.Identity;
 global using saikyo_playlist.Data;
+global using saikyo_playlist.Repository.Implements;

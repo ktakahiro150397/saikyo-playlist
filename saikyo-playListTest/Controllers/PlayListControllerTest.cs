@@ -2,6 +2,7 @@
 
 using saikyo_playlist.Data.Video;
 using saikyo_playlist.Helpers;
+using saikyo_playlist.Models.PlayListManage;
 using saikyo_playlist.Repository.Implements;
 
 namespace saikyo_playListTest.Controllers
@@ -19,6 +20,8 @@ namespace saikyo_playListTest.Controllers
 
         public Mock<IYoutubeDataRepository> youtubeRepo;
 
+        public Mock<IPlayListRepository> playlistRepo;
+
         public PlayListController controller;
 
         public PlayListControllerTest()
@@ -30,11 +33,13 @@ namespace saikyo_playListTest.Controllers
             configMoq = new Mock<IConfiguration>();
             itemLibRepo = new Mock<IItemLibraryRepository>();
             youtubeRepo = new Mock<IYoutubeDataRepository>();
+            playlistRepo = new Mock<IPlayListRepository>();
 
             controller = new PlayListController(
                 userManagerMoq.Object,
                 itemLibRepo.Object,
                 youtubeRepo.Object,
+                playlistRepo.Object,
                 configMoq.Object);
         }
 
@@ -46,6 +51,12 @@ namespace saikyo_playListTest.Controllers
         [Fact]
         public void Index_ReturnAViewWithModel()
         {
+            //Act
+            var actResult = controller.Index();
+
+            //Assert
+            var viewResult = Assert.IsType<ViewResult>(actResult);
+            var model = Assert.IsAssignableFrom<ManagePlayListViewModel>(viewResult.Model);
             
         }
 
