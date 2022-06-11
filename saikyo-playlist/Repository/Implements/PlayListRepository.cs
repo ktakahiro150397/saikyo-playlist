@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using saikyo_playlist.Data;
+using saikyo_playlist.Repository.Interfaces;
 using System.Web;
 
 namespace saikyo_playlist.Repository.Implements
@@ -7,7 +8,7 @@ namespace saikyo_playlist.Repository.Implements
     /// <summary>
     /// プレイリスト作成・取得に関する機能を提供します。
     /// </summary>
-    public class PlayListRepository
+    public class PlayListRepository : IPlayListRepository
     {
 
         private ApplicationDbContext dbContext;
@@ -361,6 +362,31 @@ namespace saikyo_playlist.Repository.Implements
             }
 
             return ret;
+        }
+
+        public Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, IEnumerable<PlayListDetailsEntity> detailList)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(PlayListHeadersEntity header, string playListDetailId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PlayListOperationResult> UpdatePlayListItemAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail)
+        {
+            throw new NotImplementedException();
         }
     }
 
