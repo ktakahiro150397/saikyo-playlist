@@ -2,6 +2,7 @@
 using System.Text.Json;
 using saikyo_playlist.Data.Video;
 using saikyo_playlist.Data.PlayList;
+using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Repository.Implements
 {
@@ -115,6 +116,16 @@ namespace saikyo_playlist.Repository.Implements
 
             }
 
+        }
+
+        public Task<YoutubeVideoRetrieveResult?> GetYoutubeVideoInfoAsync(string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<YoutubeVideoRetrieveResult>> GetYoutubePlayListInfoAsync(string url)
+        {
+            throw new NotImplementedException();
         }
     }
 

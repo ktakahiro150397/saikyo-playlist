@@ -1,5 +1,6 @@
 ﻿
 
+using saikyo_playlist.Data.Video;
 using saikyo_playlist.Repository.Implements;
 
 namespace saikyo_playListTest.Controllers
@@ -20,10 +21,12 @@ namespace saikyo_playListTest.Controllers
             var userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
             var configMoq = new Mock<IConfiguration>();
             var itemLibRepo = new Mock<IItemLibraryRepository>();
+            var youtubeRepo = new Mock<IYoutubeDataRepository>();
 
             var controller = new PlayListController(
                 userManagerMoq.Object, 
                 itemLibRepo.Object,
+                youtubeRepo.Object,
                 configMoq.Object);
 
             //Act
@@ -47,18 +50,22 @@ namespace saikyo_playListTest.Controllers
             var userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
             var configMoq = new Mock<IConfiguration>();
             var itemLibRepo = new Mock<IItemLibraryRepository>();
-            itemLibRepo.Setup(repo => repo.InsertAsync(It.IsAny<LibraryItemPlatform>(), It.IsAny<string>(), It.IsAny<string>()))
+            itemLibRepo.Setup(repo => repo.InsertAsync(It.IsAny<LibraryItemPlatform>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<IdentityUser>()))
                 .Verifiable();
-
+            var youtubeRepo = new Mock<IYoutubeDataRepository>();
+            youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
+                .ReturnsAsync(new YoutubeVideoRetrieveResult() { ItemId = "moq" })
+                .Verifiable();
 
             var controller = new PlayListController(
                 userManagerMoq.Object,
                 itemLibRepo.Object,
+                youtubeRepo.Object,
                 configMoq.Object);
 
             var model = new AddItemViewModel()
             {
-                Url = "www.testUrl.com",
+                Url = "https://www.youtube.com?v=aaa",
                 TitleAlias = "テスト",
                 Platform = LibraryItemPlatform.Youtube,
                 ErrorMessage = ""
@@ -69,8 +76,9 @@ namespace saikyo_playListTest.Controllers
 
             //Assert
             var viewResult = Assert.IsType<RedirectResult>(actResult);
+            Assert.Equal("/PlayList", viewResult.Url);
             itemLibRepo.Verify();
-
+            youtubeRepo.Verify();
 
         }
 

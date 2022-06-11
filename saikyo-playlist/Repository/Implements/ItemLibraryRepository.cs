@@ -17,7 +17,7 @@ namespace saikyo_playlist.Repository.Implements
             this.user = user;
         }
 
-        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId)
+        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +27,7 @@ namespace saikyo_playlist.Repository.Implements
             throw new NotImplementedException();
         }
 
-        public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title)
+        public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title, IdentityUser user)
         {
             throw new NotImplementedException();
         }

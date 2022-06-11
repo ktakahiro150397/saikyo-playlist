@@ -17,15 +17,18 @@ namespace saikyo_playlist.Controllers
 
         private IItemLibraryRepository ItemLibraryRepository { get; set; }
 
+        private IYoutubeDataRepository YoutubeDataRepository { get; set; }
 
         private IConfiguration Configuration { get; set; }
 
         public PlayListController(UserManager<IdentityUser> userManager,
             IItemLibraryRepository itemLibraryRepository,
+            IYoutubeDataRepository youtubeDataRepository,
             IConfiguration configurationManager)
         {
             UserManager = userManager;
             ItemLibraryRepository = itemLibraryRepository;
+            YoutubeDataRepository = youtubeDataRepository;
             Configuration = configurationManager;
         }
 
@@ -178,14 +181,11 @@ namespace saikyo_playlist.Controllers
         {
             try
             {
-                //プラットフォームを判別し、データを取得する
-                var repo = new YoutubeDataRepository(Configuration["YoutubeAPIKey"]);
-
                 var videoId = YoutubeHelpers.GetVideoIdFromUrl(model.Url);
                 YoutubeVideoRetrieveResult? item;
                 if (videoId != null)
                 {
-                    item = await repo.GetYoutubeVideoInfo(videoId);
+                    item = await YoutubeDataRepository.GetYoutubeVideoInfoAsync(videoId);
 
                     if(item == null)
                     {
@@ -201,7 +201,10 @@ namespace saikyo_playlist.Controllers
                 var loginUserInfo = await UserManager.GetUserAsync(User);
 
                 //入力されている場合、タイトルはそちらを使用
-                await ItemLibraryRepository.InsertOrRetrieveAsync(model.Platform, item.ItemId, model.TitleAlias != "" ? model.TitleAlias : item.Title);
+                await ItemLibraryRepository.InsertAsync(model.Platform,
+                    item.ItemId,
+                    model.TitleAlias != "" ? model.TitleAlias : item.Title,
+                    loginUserInfo);
 
             }catch (Exception ex)
             {
