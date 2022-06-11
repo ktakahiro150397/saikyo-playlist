@@ -10,11 +10,13 @@ namespace saikyo_playlist.Repository.Implements
 
         private ApplicationDbContext dbContext;
         private IdentityUser user;
+        private IConfiguration configuration;
 
-        public ItemLibraryRepository(ApplicationDbContext dbContext, IdentityUser user)
+        public ItemLibraryRepository(ApplicationDbContext dbContext, IdentityUser user, IConfiguration configuration)
         {
             this.dbContext = dbContext;
             this.user = user;
+            this.configuration = configuration;
         }
 
         public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user)

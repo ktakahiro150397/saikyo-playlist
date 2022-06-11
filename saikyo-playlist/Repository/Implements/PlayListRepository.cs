@@ -251,15 +251,15 @@ namespace saikyo_playlist.Repository.Implements
                         }
 
                         //アイテムライブラリに追加・または取得する
-                        var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
-                        var libraryItem = await itemLibraryRepo.InsertOrRetrieveAsync(LibraryItemPlatform.Youtube, itemIdFromUrl, commaSeparated[1]);
+                        //var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
+                        //var libraryItem = await itemLibraryRepo.InsertOrRetrieveAsync(LibraryItemPlatform.Youtube, itemIdFromUrl, commaSeparated[1]);
 
                         //プレイリスト詳細を設定し、追加する
                         var detail = new PlayListDetailsEntity();
                         detail.PlayListDetailsEntityId = GetUniqueId();
                         detail.ItemSeq = dataStrItem.Index;
-                        detail.ItemLibrariesEntityId = libraryItem.ItemLibrariesEntityId;
-                        detail.ItemLibrariesEntity = libraryItem;
+                        //detail.ItemLibrariesEntityId = libraryItem.ItemLibrariesEntityId;
+                        //detail.ItemLibrariesEntity = libraryItem;
                         detail.PlayListHeadersEntityId = header.PlayListHeadersEntityId;
                         detail.PlayListHeadersEntity = header;
                         ret.Add(detail);
@@ -341,15 +341,15 @@ namespace saikyo_playlist.Repository.Implements
                 {
 
                     //アイテムライブラリに追加・または取得する
-                    var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
-                    var libraryItem = await itemLibraryRepo.InsertOrRetrieveAsync(LibraryItemPlatform.Youtube, item.Item.snippet.resourceId.videoId, item.Item.snippet.title);
+                    //var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
+                    //var libraryItem = await itemLibraryRepo.InsertOrRetrieveAsync(LibraryItemPlatform.Youtube, item.Item.snippet.resourceId.videoId, item.Item.snippet.title);
 
                     //プレイリスト詳細を設定し、追加する
                     var detail = new PlayListDetailsEntity();
                     detail.PlayListDetailsEntityId = GetUniqueId();
                     detail.ItemSeq = item.Index;
-                    detail.ItemLibrariesEntityId = libraryItem.ItemLibrariesEntityId;
-                    detail.ItemLibrariesEntity = libraryItem;
+                    //detail.ItemLibrariesEntityId = libraryItem.ItemLibrariesEntityId;
+                    //detail.ItemLibrariesEntity = libraryItem;
                     detail.PlayListHeadersEntityId = header.PlayListHeadersEntityId;
                     detail.PlayListHeadersEntity = header;
                     ret.Add(detail);
