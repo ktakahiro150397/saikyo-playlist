@@ -1,6 +1,7 @@
 ﻿
 
 using saikyo_playlist.Data.Video;
+using saikyo_playlist.Helpers;
 using saikyo_playlist.Repository.Implements;
 
 namespace saikyo_playListTest.Controllers
@@ -54,7 +55,7 @@ namespace saikyo_playListTest.Controllers
                 .Verifiable();
             var youtubeRepo = new Mock<IYoutubeDataRepository>();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
-                .ReturnsAsync(new YoutubeVideoRetrieveResult() { ItemId = "moq" })
+                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult() { OperationResult = YoutubeAPIRetrieveOperationResultType.Success })
                 .Verifiable();
 
             var controller = new PlayListController(
@@ -98,7 +99,7 @@ namespace saikyo_playListTest.Controllers
                 .Verifiable();
             var youtubeRepo = new Mock<IYoutubeDataRepository>();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
-                .ReturnsAsync(new YoutubeVideoRetrieveResult() { ItemId = "moq" })
+                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult() { OperationResult = YoutubeAPIRetrieveOperationResultType.Success })
                 .Verifiable();
 
             var controller = new PlayListController(

@@ -15,14 +15,14 @@ namespace saikyo_playlist.Repository.Interfaces
         /// </summary>
         /// <param name="url">動画のURL。</param>
         /// <returns></returns>
-        Task<YoutubeVideoRetrieveResult?> GetYoutubeVideoInfoAsync(string url);
+        Task<YoutubeVideoRetrieveOperationResult?> GetYoutubeVideoInfoAsync(string url);
 
         /// <summary>
         /// URLから、Youtube再生リストの一覧を取得します。
         /// </summary>
         /// <param name="url">動画のURL。</param>
         /// <returns></returns>
-        Task<IEnumerable<YoutubeVideoRetrieveResult>> GetYoutubePlayListInfoAsync(string url);
+        Task<IEnumerable<YoutubeVideoRetrieveOperationResult?>> GetYoutubePlayListInfoAsync(string url);
 
 
 

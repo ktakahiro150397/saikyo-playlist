@@ -49,7 +49,7 @@ namespace saikyo_playlist.Repository.Implements
         /// <summary>
         /// 操作結果
         /// </summary>
-        public ItemLibraryOperationResultType AddResult { get; set; }
+        public ItemLibraryOperationResultType OperationResult { get; set; }
 
         /// <summary>
         /// エラーが発生している場合、その例外オブジェクト。

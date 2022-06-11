@@ -182,7 +182,7 @@ namespace saikyo_playlist.Controllers
             try
             {
                 var videoId = YoutubeHelpers.GetVideoIdFromUrl(model.Url);
-                YoutubeVideoRetrieveResult? item;
+                YoutubeVideoRetrieveOperationResult? item;
                 if (videoId != null)
                 {
                     item = await YoutubeDataRepository.GetYoutubeVideoInfoAsync(videoId);
@@ -202,8 +202,8 @@ namespace saikyo_playlist.Controllers
 
                 //入力されている場合、タイトルはそちらを使用
                 await ItemLibraryRepository.InsertAsync(model.Platform,
-                    item.ItemId,
-                    model.TitleAlias != "" ? model.TitleAlias : item.Title,
+                    item.RetrieveResult[0].ItemId,
+                    model.TitleAlias != "" ? model.TitleAlias : item.RetrieveResult[0].Title,
                     loginUserInfo);
 
             }catch (Exception ex)
