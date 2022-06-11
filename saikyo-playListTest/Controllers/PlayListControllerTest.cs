@@ -22,12 +22,11 @@ namespace saikyo_playListTest.Controllers
             var itemLibRepo = new Mock<IItemLibraryRepository>();
             var controller = new PlayListController(
                 userManagerMoq.Object, 
-                null, 
                 itemLibRepo.Object,
                 configMoq.Object);
 
             //Act
-            var actResult = controller.Index();
+            var actResult = controller.AddItem();
 
             //Assert
             var viewResult = Assert.IsType<ViewResult>(actResult);
