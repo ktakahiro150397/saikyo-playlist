@@ -7,27 +7,29 @@ using saikyo_playlist.Models;
 using saikyo_playlist.Models.PlayListManage;
 using saikyo_playlist.Repository;
 using saikyo_playlist.Repository.Implements;
+using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Controllers
 {
     public class PlayListController : Controller
     {
-        private ApplicationDbContext ApplicationDbContext { get; set; }
+        private ApplicationDbContext? ApplicationDbContext { get; set; }
 
         private UserManager<IdentityUser> UserManager { get; set; }
 
-        private SignInManager<IdentityUser> SignInManager { get; set; }
+        private IItemLibraryRepository ItemLibraryRepository { get; set; }
+
 
         private IConfiguration Configuration { get; set; }
 
         public PlayListController(UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
             ApplicationDbContext dbContext,
+            IItemLibraryRepository itemLibraryRepository,
             IConfiguration configurationManager)
         {
             UserManager = userManager;
-            SignInManager = signInManager;
             ApplicationDbContext = dbContext;
+            ItemLibraryRepository = itemLibraryRepository;
             Configuration = configurationManager;
         }
 
@@ -196,18 +198,15 @@ namespace saikyo_playlist.Controllers
 
                 //取得したデータをライブラリに追加
                 var loginUserInfo = await UserManager.GetUserAsync(User);
-                var libRepo = new ItemLibraryRepository(ApplicationDbContext, loginUserInfo);
 
                 //入力されている場合、タイトルはそちらを使用
-                await libRepo.InsertOrRetrieveAsync(model.Platform, item.ItemId, model.TitleAlias != "" ? model.TitleAlias : item.Title);
+                await ItemLibraryRepository.InsertOrRetrieveAsync(model.Platform, item.ItemId, model.TitleAlias != "" ? model.TitleAlias : item.Title);
 
             }catch (Exception ex)
             {
                 model.ErrorMessage = "追加に失敗しました。";
                 return View(model);
             }
-
-
 
             return Redirect("./PlayList");
         }

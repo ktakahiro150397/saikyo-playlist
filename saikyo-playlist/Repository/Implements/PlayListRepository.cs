@@ -75,7 +75,7 @@ namespace saikyo_playlist.Repository.Implements
                     header.PlayListHeadersEntityId = headerId;
                     header.Name = playListName;
                     header.AspNetUserdId = user.Id;
-                    header.Details = CreateDetailDataFromPlayListUrl(header, playListUrl);
+                    header.Details = await CreateDetailDataFromPlayListUrl(header, playListUrl);
 
                     //プレイリストの登録
                     await InsertPlayListData(header);
@@ -152,7 +152,7 @@ namespace saikyo_playlist.Repository.Implements
                 header.PlayListHeadersEntityId = headerId;
                 header.Name = playListName;
                 header.AspNetUserdId = aspNetUserdId;
-                header.Details = CreateDetailData(header, registerDataStr);
+                header.Details = await CreateDetailData(header, registerDataStr);
 
                 await dbContext.PlayListHeaders.AddAsync(header);
                 await dbContext.SaveChangesAsync();
@@ -183,7 +183,7 @@ namespace saikyo_playlist.Repository.Implements
                     header.PlayListHeadersEntityId = playListId;
                     header.Name = playListName;
                     header.AspNetUserdId = aspNetUserdId;
-                    header.Details = CreateDetailData(header, registerDataStr);
+                    header.Details = await CreateDetailData(header, registerDataStr);
 
                     //既存の詳細プレイリストを削除
                     dbContext.RemoveRange(dbContext.PlayListDetails.Where(item => item.PlayListHeadersEntityId == playListId));
@@ -215,7 +215,7 @@ namespace saikyo_playlist.Repository.Implements
         /// <param name="registerDataStr"></param>
         /// <returns></returns>
         /// <exception cref="ApplicationException"></exception>
-        private IList<PlayListDetailsEntity> CreateDetailData(PlayListHeadersEntity header, string registerDataStr)
+        private async Task<IList<PlayListDetailsEntity>> CreateDetailData(PlayListHeadersEntity header, string registerDataStr)
         {
 
             var ret = new List<PlayListDetailsEntity>();
@@ -252,7 +252,7 @@ namespace saikyo_playlist.Repository.Implements
 
                         //アイテムライブラリに追加・または取得する
                         var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
-                        var libraryItem = itemLibraryRepo.InsertOrRetrieve(LibraryItemPlatform.Youtube, itemIdFromUrl, commaSeparated[1]);
+                        var libraryItem = await itemLibraryRepo.InsertOrRetrieveAsync(LibraryItemPlatform.Youtube, itemIdFromUrl, commaSeparated[1]);
 
                         //プレイリスト詳細を設定し、追加する
                         var detail = new PlayListDetailsEntity();
@@ -300,7 +300,7 @@ namespace saikyo_playlist.Repository.Implements
         /// <param name="registerDataStr"></param>
         /// <returns></returns>
         /// <exception cref="ApplicationException"></exception>
-        private IList<PlayListDetailsEntity> CreateDetailDataFromPlayListUrl(PlayListHeadersEntity header, string playListUrl)
+        private async Task<IList<PlayListDetailsEntity>> CreateDetailDataFromPlayListUrl(PlayListHeadersEntity header, string playListUrl)
         {
 
             var ret = new List<PlayListDetailsEntity>();
@@ -342,7 +342,7 @@ namespace saikyo_playlist.Repository.Implements
 
                     //アイテムライブラリに追加・または取得する
                     var itemLibraryRepo = new ItemLibraryRepository(dbContext, user);
-                    var libraryItem = itemLibraryRepo.InsertOrRetrieve(LibraryItemPlatform.Youtube, item.Item.snippet.resourceId.videoId, item.Item.snippet.title);
+                    var libraryItem = await itemLibraryRepo.InsertOrRetrieveAsync(LibraryItemPlatform.Youtube, item.Item.snippet.resourceId.videoId, item.Item.snippet.title);
 
                     //プレイリスト詳細を設定し、追加する
                     var detail = new PlayListDetailsEntity();
