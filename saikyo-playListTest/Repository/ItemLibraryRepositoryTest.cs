@@ -12,7 +12,9 @@ namespace saikyo_playListTest.Repository
 
         public Mock<ApplicationDbContext> ApplicationDbContextMoq;
 
-        public Mock<UserManager<IdentityUser>> userManagerMoq;
+        //public Mock<UserManager<IdentityUser>> userManagerMoq;
+
+        public Mock<IdentityUser> user;
 
         public Mock<IConfiguration> configMoq;
 
@@ -22,10 +24,12 @@ namespace saikyo_playListTest.Repository
         {
 
             var store = new Mock<IUserStore<IdentityUser>>();
-            userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
+            //userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
             //var loginUserInfo = await UserManager.GetUserAsync(User);
-            userManagerMoq.Setup(userManager => userManager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(new IdentityUser { Id = "test_user_id" });
+            //userManagerMoq.Setup(userManager => userManager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            //    .ReturnsAsync(new IdentityUser { Id = "test_user_id" });
+            user = new Mock<IdentityUser>();
+            user.Setup(user => user.Id).Returns("test_user_id");
 
             configMoq = new Mock<IConfiguration>();
 
@@ -43,7 +47,7 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContextMoq = new Mock<ApplicationDbContext>();
             ApplicationDbContextMoq.Setup(context => context.ItemLibraries).Returns(ItemLibraryDbSetMoq.Object);
 
-            _repo = new ItemLibraryRepository(ApplicationDbContextMoq.Object, userManagerMoq.Object);
+            _repo = new ItemLibraryRepository(ApplicationDbContextMoq.Object, user.Object);
 
         }
 

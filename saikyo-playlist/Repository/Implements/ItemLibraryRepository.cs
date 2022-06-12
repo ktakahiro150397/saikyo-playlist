@@ -9,9 +9,9 @@ namespace saikyo_playlist.Repository.Implements
     {
 
         private ApplicationDbContext dbContext;
-        private UserManager<IdentityUser> user;
+        private IdentityUser user;
 
-        public ItemLibraryRepository(ApplicationDbContext dbContext, UserManager<IdentityUser> user)
+        public ItemLibraryRepository(ApplicationDbContext dbContext, IdentityUser user)
         {
             this.dbContext = dbContext;
             this.user = user;
@@ -22,9 +22,13 @@ namespace saikyo_playlist.Repository.Implements
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync()
+        public async Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var ret = dbContext.ItemLibraries
+                .Where(item => item.AspNetUserdId == user.Id)
+                .ToArray();
+
+            return ret;
         }
 
         public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title)
