@@ -17,9 +17,37 @@ namespace saikyo_playlist.Repository.Implements
             //this.user = user;
         }
 
-        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user)
+        public async Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user)
         {
-            throw new NotImplementedException();
+            var ret = new ItemLibraryOperationResult();
+
+            try
+            {
+                var delTarget = await dbContext.ItemLibraries
+                    .Where(item => item.ItemLibrariesEntityId == libraryEntityId && item.AspNetUserdId == user.Id)
+                    .FirstOrDefaultAsync();
+
+                if (delTarget != null)
+                {
+                    //削除対象が存在
+                    dbContext.ItemLibraries.Remove(delTarget);
+                    await dbContext.SaveChangesAsync();
+
+                    ret.OperationResult = ItemLibraryOperationResultType.Success;
+                }
+                else
+                {
+                    ret.OperationResult = ItemLibraryOperationResultType.NotFound;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ret.OperationResult = ItemLibraryOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
         }
 
         public async Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync(IdentityUser user)
@@ -37,20 +65,35 @@ namespace saikyo_playlist.Repository.Implements
 
             try
             {
-                var addItem = new ItemLibrariesEntity()
+                //ItemId・プラットフォームで重複があるかどうかを確認
+                var dupItem = dbContext.ItemLibraries
+                    .Where(item => item.ItemId == itemId && item.Platform == platform && item.AspNetUserdId == user.Id)
+                    .FirstOrDefault();
+
+                if(dupItem != null)
                 {
-                    ItemLibrariesEntityId = GetUniqueId(),
-                    ItemId = itemId,
-                    Title = title,
-                    //AspNetUserdId = user.Id,
-                    Platform = platform,
-                    PlayCount = 0,
-                };
+                    //重複あり
+                    ret.OperationResult = ItemLibraryOperationResultType.Duplicate;
+                }
+                else
+                {
+                    var addItem = new ItemLibrariesEntity()
+                    {
+                        ItemLibrariesEntityId = GetUniqueId(),
+                        ItemId = itemId,
+                        Title = title,
+                        AspNetUserdId = user.Id,
+                        Platform = platform,
+                        PlayCount = 0,
+                    };
 
-                dbContext.ItemLibraries.Add(addItem);
-                dbContext.SaveChanges();
+                    dbContext.ItemLibraries.Add(addItem);
+                    dbContext.SaveChanges();
 
-                ret.OperationResult = ItemLibraryOperationResultType.Success;
+                    ret.OperationResult = ItemLibraryOperationResultType.Success;
+                }
+
+                
             }
             catch (Exception ex)
             {

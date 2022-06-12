@@ -174,7 +174,7 @@ namespace saikyo_playListTest.Repository
             //Assert
             //インサートされているはずのデータを取得する
             var insertData = ApplicationDbContext.ItemLibraries
-                .Where(item => item.ItemLibrariesEntityId == itemId)
+                .Where(item => item.ItemId == itemId)
                 .Where(item => item.AspNetUserdId == user.Object.Id)
                 .FirstOrDefault();
 
@@ -198,17 +198,21 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
 
             SeedData_ItemLibrary();
-            var dupData = new ItemLibrariesEntity()
-            {
-                ItemId = "item_id_duplicate",
-                Title = "exist_title",
-            };
-            ApplicationDbContext.ItemLibraries.Add(dupData);
-            ApplicationDbContext.SaveChanges();
 
             var platform = LibraryItemPlatform.Youtube;
             var itemId = "item_id_duplicate";
             var title = "insertasync_duplicate";
+
+
+            var dupData = new ItemLibrariesEntity()
+            {
+                ItemId = itemId,
+                Title = title,
+                Platform = platform,
+                AspNetUserdId = user.Object.Id,
+            };
+            ApplicationDbContext.ItemLibraries.Add(dupData);
+            ApplicationDbContext.SaveChanges();
 
             //Act
             var actResult = await _repo.InsertAsync(platform, itemId, title, user.Object);
@@ -216,7 +220,7 @@ namespace saikyo_playListTest.Repository
             //Assert
             //上記インサートされていないはず(元々存在するデータを取得するはず)
             var insertData = ApplicationDbContext.ItemLibraries
-                .Where(item => item.ItemLibrariesEntityId == itemId)
+                .Where(item => item.ItemId == itemId)
                 .Where(item => item.AspNetUserdId == user.Object.Id)
                 .FirstOrDefault();
 
