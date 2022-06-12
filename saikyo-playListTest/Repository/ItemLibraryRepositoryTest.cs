@@ -90,6 +90,10 @@ namespace saikyo_playListTest.Repository
         [Fact]
         public async Task GetAllAsync()
         {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedData_ItemLibrary();
+
             //Act
             var actResult = await _repo.GetAllAsync();
 
@@ -106,6 +110,7 @@ namespace saikyo_playListTest.Repository
         public async Task GetAllAsync_NoResult()
         {
             //Arrange
+            ApplicationDbContext.Database.EnsureClean();
             user.Setup(user => user.Id).Returns("test_user_id_hogehoge");
 
             //Act
@@ -124,11 +129,10 @@ namespace saikyo_playListTest.Repository
         public async Task InsertAsync_Success()
         {
             //Arrange
+            ApplicationDbContext.Database.EnsureClean();
             var platform = LibraryItemPlatform.Youtube;
             var itemId = "insertasync_success_id";
             var title = "insertasync_testTitle";
-
-            ApplicationDbContext.Database.EnsureClean();
 
             //Act
             var actResult = await _repo.InsertAsync(platform, itemId, title);
@@ -158,6 +162,8 @@ namespace saikyo_playListTest.Repository
         public async Task InsertAsync_Success_Duplicate_OtherUser()
         {
             //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedData_ItemLibrary();
             var platform = LibraryItemPlatform.Youtube;
             var itemId = "item_id_xxx_3";
             var title = "insertasync_Duplicate_OtherUser";
@@ -189,8 +195,19 @@ namespace saikyo_playListTest.Repository
         public async Task InsertAsync_Duplicate_Mine()
         {
             //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+
+            SeedData_ItemLibrary();
+            var dupData = new ItemLibrariesEntity()
+            {
+                ItemId = "item_id_duplicate",
+                Title = "exist_title",
+            };
+            ApplicationDbContext.ItemLibraries.Add(dupData);
+            ApplicationDbContext.SaveChanges();
+
             var platform = LibraryItemPlatform.Youtube;
-            var itemId = "item_id_xxx_1";
+            var itemId = "item_id_duplicate";
             var title = "insertasync_duplicate";
 
             //Act
@@ -210,13 +227,17 @@ namespace saikyo_playListTest.Repository
 
             //データ
             Assert.NotNull(insertData);
-            Assert.NotEqual(title, insertData!.Title);
+            Assert.Equal(dupData.ItemId, insertData!.ItemId);
+            Assert.Equal(dupData.Title, insertData.Title);
         }
 
         [Fact]
         public async Task DeleteAsync_Success()
         {
             //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedData_ItemLibrary();
+
             var entityid = "entity_id_1";
 
             //Act
@@ -239,6 +260,9 @@ namespace saikyo_playListTest.Repository
         public async Task DeleteAsync_NotFound()
         {
             //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedData_ItemLibrary();
+
             var entityid = "entity_id_not_exist";
 
             //Act
@@ -254,6 +278,9 @@ namespace saikyo_playListTest.Repository
         public async Task DeleteAsync_TryToDeleteOtherUserItem()
         {
             //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedData_ItemLibrary();
+
             var entityid = "entity_id_3";
 
             //Act
