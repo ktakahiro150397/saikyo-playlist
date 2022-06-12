@@ -116,6 +116,28 @@ namespace saikyo_playListTest.Repository
             Assert.Equal(3, actResult.Count());
         }
 
+        /// <summary>
+        /// 成功・データ0件
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetAllAsync_NoResult()
+        {
+            //Arrange
+            user.Setup(user => user.Id).Returns("test_user_id_hogehoge");
+
+            //Act
+            var actResult = await _repo.GetAllAsync();
+
+            //Moq戻す
+            user.Setup(user => user.Id).Returns("test_user_id");
+
+            //Assert
+            Assert.NotNull(actResult);
+            Assert.Empty(actResult);
+
+        }
+
 
         public async Task InsertAsync_Success()
         {
@@ -204,6 +226,58 @@ namespace saikyo_playListTest.Repository
             //データ
             Assert.NotNull(insertData);
             Assert.NotEqual(title, insertData!.Title);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_Success()
+        {
+            //Arrange
+            var entityid = "entity_id_1";
+
+            //Act
+            var actResult = await _repo.DeleteAsync(entityid);
+
+            //Assert
+            //結果
+            Assert.Equal(ItemLibraryOperationResultType.Success, actResult.OperationResult);
+            Assert.Null(actResult?.Exception);
+
+            //データが存在しないことを確認する
+            var deletedData = ApplicationDbContext.ItemLibraries
+                .Where(item => item.ItemLibrariesEntityId == entityid)
+                .FirstOrDefault();
+            Assert.Null(deletedData);
+
+        }
+
+        [Fact]
+        public async Task DeleteAsync_NotFound()
+        {
+            //Arrange
+            var entityid = "entity_id_not_exist";
+
+            //Act
+            var actResult = await _repo.DeleteAsync(entityid);
+
+            //Assert
+            //結果
+            Assert.Equal(ItemLibraryOperationResultType.NotFound, actResult.OperationResult);
+            Assert.Null(actResult?.Exception);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_TryToDeleteOtherUserItem()
+        {
+            //Arrange
+            var entityid = "entity_id_3";
+
+            //Act
+            var actResult = await _repo.DeleteAsync(entityid);
+
+            //Assert
+            //結果
+            Assert.Equal(ItemLibraryOperationResultType.NotFound, actResult.OperationResult);
+            Assert.Null(actResult?.Exception);
         }
 
     }

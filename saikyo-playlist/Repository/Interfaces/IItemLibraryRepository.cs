@@ -25,7 +25,6 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="platform">アイテムのプラットフォーム。</param>
         /// <param name="itemId">アイテムのID。</param>
         /// <param name="title">アイテムのタイトル。</param>
-        /// <param name="user">データを登録するユーザー。</param>
         /// <returns></returns>
         public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title);
 
