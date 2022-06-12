@@ -9,12 +9,12 @@ namespace saikyo_playlist.Repository.Implements
     {
 
         private ApplicationDbContext dbContext;
-        private IdentityUser user;
+        //private IdentityUser user;
 
-        public ItemLibraryRepository(ApplicationDbContext dbContext, IdentityUser user)
+        public ItemLibraryRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-            this.user = user;
+            //this.user = user;
         }
 
         public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId)
@@ -25,7 +25,7 @@ namespace saikyo_playlist.Repository.Implements
         public async Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync()
         {
             var ret = await dbContext.ItemLibraries
-                .Where(item => item.AspNetUserdId == user.Id)
+                .Where(item => item.AspNetUserdId == "test_user_id")
                 .ToListAsync();
 
             return ret;
@@ -42,7 +42,7 @@ namespace saikyo_playlist.Repository.Implements
                     ItemLibrariesEntityId = GetUniqueId(),
                     ItemId = itemId,
                     Title = title,
-                    AspNetUserdId = user.Id,
+                    //AspNetUserdId = user.Id,
                     Platform = platform,
                     PlayCount = 0,
                 };
