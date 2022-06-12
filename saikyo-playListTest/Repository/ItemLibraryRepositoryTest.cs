@@ -18,7 +18,7 @@ namespace saikyo_playListTest.Repository
 
         public Mock<IConfiguration> configMoq;
 
-        public ItemLibraryRepository _repo;
+        public IItemLibraryRepository _repo;
 
         public ItemLibraryRepositoryTest()
         {
@@ -111,19 +111,28 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task GetAllAsync_Success()
+        public async Task GetAllAsync()
         {
-
-            //Arrange
-            var data = GetTestData();
-
             //Act
             var actResult = await _repo.GetAllAsync();
 
             //Assert
             Assert.NotNull(actResult);
             Assert.Equal(3, actResult.Count());
-            
+
+        }
+        
+        public async Task aa()
+        {
+
+            //Act
+            var actResult = await _repo.InsertAsync(LibraryItemPlatform.Youtube, "add_item_id", "add_item_title");
+
+            //Assert
+            //Assert.Equal(ApplicationDbContextMoq.Object.ItemLibraries.)
+
+
+
         }
 
 
