@@ -93,12 +93,29 @@ namespace saikyo_playlist.Repository.Implements
             return url;
         }
 
-        private void GetYoutubePlayListRecurrsive(ref YoutubePlayListAPIResponseModel result, string playListId, string nextPageToken)
+        private void GetYoutubePlayListRecurrsive(ref YoutubePlayListAPIResponseModel? result, string playListId, string nextPageToken)
         {
             var requestUrl = GetYoutubePlayListInfoUrl(playListId, nextPageToken);
 
-            var msg = _httpClient.GetStringAsync(requestUrl).Result;
-            if (msg == null)
+            string msg = null;
+            HttpResponseMessage response = _httpClient.GetAsync(requestUrl).Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                //プレイリストが存在しない
+                result = null;
+                return;
+            }else if(response.StatusCode != System.Net.HttpStatusCode.OK) {
+                //その他のエラー
+                return;
+            }
+            else
+            {
+                //取得できた場合、結果を読み取る
+                msg = response.Content.ReadAsStringAsync().Result;
+            }
+            
+            if (String.IsNullOrEmpty(msg))
             {
                 //応答なし、アクセス終了
                 return;
@@ -205,7 +222,7 @@ namespace saikyo_playlist.Repository.Implements
                 if(playListInfo == null)
                 {
                     ret.OperationResult = YoutubeAPIRetrieveOperationResultType.NotFound;
-                    throw new ApplicationException("プレイリストに動画が含まれていません。");
+                    throw new ApplicationException("指定されたURLの再生リストは存在しません。");
                 }
                 else
                 {
@@ -239,7 +256,7 @@ namespace saikyo_playlist.Repository.Implements
                     {
                         //すべて削除済みか非公開
                         ret.OperationResult = YoutubeAPIRetrieveOperationResultType.NotFound;
-                        throw new ApplicationException("プレイリストに動画が含まれていません。");
+                        throw new ApplicationException("再生リストに動画が含まれていません。");
                     }
                     
 

@@ -205,7 +205,7 @@ namespace saikyo_playListTest.Repository
             //Assert
             Assert.Equal(YoutubeAPIRetrieveOperationResultType.NotFound, result.OperationResult);
             var appEx = Assert.IsType<ApplicationException>(result.Exception);
-            Assert.Equal("プレイリストに動画が含まれていません。。", appEx.Message);
+            Assert.Equal("再生リストに動画が含まれていません。", appEx.Message);
             Assert.Null(result.RetrieveResult);
 
         }
