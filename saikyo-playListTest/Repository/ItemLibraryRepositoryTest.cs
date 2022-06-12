@@ -7,53 +7,44 @@ namespace saikyo_playListTest.Repository
 {
     public class ItemLibraryRepositoryTest
     {
-
-        public Mock<DbSet<ItemLibrariesEntity>> ItemLibraryDbSetMoq;
-
-        public Mock<ApplicationDbContext> ApplicationDbContextMoq;
-
-        //public Mock<UserManager<IdentityUser>> userManagerMoq;
-
+        public IItemLibraryRepository _repo;
         public Mock<IdentityUser> user;
 
-        public Mock<IConfiguration> configMoq;
+        public ApplicationDbContext ApplicationDbContext;
 
-        public IItemLibraryRepository _repo;
+        private static readonly object LockObject = new object();
+        private static bool isDatabaseInitialized = false;
 
         public ItemLibraryRepositoryTest()
         {
+            var Configuration = new ConfigurationBuilder().AddUserSecrets<ItemLibraryRepositoryTest>().Build();
 
-            var store = new Mock<IUserStore<IdentityUser>>();
-            //userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
-            //var loginUserInfo = await UserManager.GetUserAsync(User);
-            //userManagerMoq.Setup(userManager => userManager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            //    .ReturnsAsync(new IdentityUser { Id = "test_user_id" });
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseSqlServer(Configuration.GetConnectionString("ApplicationDbContextConnection_Test"));
+            var options = builder.Options;
+            ApplicationDbContext = new ApplicationDbContext(options);
+
             user = new Mock<IdentityUser>();
             user.Setup(user => user.Id).Returns("test_user_id");
 
-            configMoq = new Mock<IConfiguration>();
+            _repo = new ItemLibraryRepository(ApplicationDbContext, user.Object);
 
-
-            var testData = GetTestData();
-            ItemLibraryDbSetMoq = new Mock<DbSet<ItemLibrariesEntity>>();
-            ItemLibraryDbSetMoq.As<IDbAsyncEnumerable<ItemLibrariesEntity>>()
-                .Setup(m => m.GetAsyncEnumerator())
-                .Returns(new TestDbAsyncEnumerator<ItemLibrariesEntity>(testData.GetEnumerator()));
-            ItemLibraryDbSetMoq.As<IQueryable<ItemLibrariesEntity>>().Setup(m => m.Provider).Returns(testData.Provider);
-            ItemLibraryDbSetMoq.As<IQueryable<ItemLibrariesEntity>>().Setup(m => m.Expression).Returns(testData.Expression);
-            ItemLibraryDbSetMoq.As<IQueryable<ItemLibrariesEntity>>().Setup(m => m.ElementType).Returns(testData.ElementType);
-            ItemLibraryDbSetMoq.As<IQueryable<ItemLibrariesEntity>>().Setup(m => m.GetEnumerator()).Returns(testData.GetEnumerator());
-
-            ApplicationDbContextMoq = new Mock<ApplicationDbContext>();
-            ApplicationDbContextMoq.Setup(context => context.ItemLibraries).Returns(ItemLibraryDbSetMoq.Object);
-
-            _repo = new ItemLibraryRepository(ApplicationDbContextMoq.Object, user.Object);
-
+            //テスト用インメモリDBの構成
+            SeedTestData();
         }
 
-        private IQueryable<ItemLibrariesEntity> GetTestData()
+        internal void SeedTestData()
         {
-            var data = new List<ItemLibrariesEntity>
+
+            lock (LockObject)
+            {
+                if (isDatabaseInitialized) return;
+
+                ApplicationDbContext.Database.EnsureDeleted();
+                ApplicationDbContext.Database.Migrate();
+
+                //テスト用データの追加
+                var data = new List<ItemLibrariesEntity>
             {
                 new ItemLibrariesEntity()
                 {
@@ -101,9 +92,13 @@ namespace saikyo_playListTest.Repository
                     AspNetUserdId = "test_user_id_other_2"
                 },
 
-            }.AsQueryable();
+            };
 
-            return data;
+                ApplicationDbContext.ItemLibraries.AddRange(data);
+                ApplicationDbContext.SaveChanges();
+
+                isDatabaseInitialized = true;
+            }
         }
 
         /// <summary>
@@ -121,20 +116,6 @@ namespace saikyo_playListTest.Repository
             Assert.Equal(3, actResult.Count());
 
         }
-        
-        public async Task aa()
-        {
-
-            //Act
-            var actResult = await _repo.InsertAsync(LibraryItemPlatform.Youtube, "add_item_id", "add_item_title");
-
-            //Assert
-            //Assert.Equal(ApplicationDbContextMoq.Object.ItemLibraries.)
-
-
-
-        }
-
 
 
 
