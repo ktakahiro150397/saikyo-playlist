@@ -17,12 +17,12 @@ namespace saikyo_playlist.Repository.Implements
             //this.user = user;
         }
 
-        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId)
+        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync()
+        public async Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync(IdentityUser user)
         {
             var ret = await dbContext.ItemLibraries
                 .Where(item => item.AspNetUserdId == "test_user_id")
@@ -31,7 +31,7 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public async Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title)
+        public async Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title, IdentityUser user)
         {
             var ret = new ItemLibraryOperationResult();
 

@@ -207,8 +207,8 @@ namespace saikyo_playlist.Controllers
                 //入力されている場合、タイトルはそちらを使用
                 await ItemLibraryRepository.InsertAsync(model.Platform,
                     item.RetrieveResult[0].ItemId,
-                    model.TitleAlias != "" ? model.TitleAlias : item.RetrieveResult[0].Title
-                    );
+                    model.TitleAlias != "" ? model.TitleAlias : item.RetrieveResult[0].Title,
+                    loginUserInfo);
 
             }catch (Exception ex)
             {

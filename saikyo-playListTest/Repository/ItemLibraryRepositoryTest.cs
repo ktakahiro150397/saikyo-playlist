@@ -95,7 +95,7 @@ namespace saikyo_playListTest.Repository
             SeedData_ItemLibrary();
 
             //Act
-            var actResult = await _repo.GetAllAsync();
+            var actResult = await _repo.GetAllAsync(user.Object);
 
             //Assert
             Assert.NotNull(actResult);
@@ -114,7 +114,7 @@ namespace saikyo_playListTest.Repository
             user.Setup(user => user.Id).Returns("test_user_id_hogehoge");
 
             //Act
-            var actResult = await _repo.GetAllAsync();
+            var actResult = await _repo.GetAllAsync(user.Object);
 
             //Moq戻す
             user.Setup(user => user.Id).Returns("test_user_id");
@@ -135,7 +135,7 @@ namespace saikyo_playListTest.Repository
             var title = "insertasync_testTitle";
 
             //Act
-            var actResult = await _repo.InsertAsync(platform, itemId, title);
+            var actResult = await _repo.InsertAsync(platform, itemId, title, user.Object);
 
             //Assert
             //インサートされているはずのデータを取得する
@@ -169,7 +169,7 @@ namespace saikyo_playListTest.Repository
             var title = "insertasync_Duplicate_OtherUser";
 
             //Act
-            var actResult = await _repo.InsertAsync(platform, itemId, title);
+            var actResult = await _repo.InsertAsync(platform, itemId, title, user.Object);
 
             //Assert
             //インサートされているはずのデータを取得する
@@ -211,7 +211,7 @@ namespace saikyo_playListTest.Repository
             var title = "insertasync_duplicate";
 
             //Act
-            var actResult = await _repo.InsertAsync(platform, itemId, title);
+            var actResult = await _repo.InsertAsync(platform, itemId, title, user.Object);
 
             //Assert
             //上記インサートされていないはず(元々存在するデータを取得するはず)
@@ -241,7 +241,7 @@ namespace saikyo_playListTest.Repository
             var entityid = "entity_id_1";
 
             //Act
-            var actResult = await _repo.DeleteAsync(entityid);
+            var actResult = await _repo.DeleteAsync(entityid, user.Object);
 
             //Assert
             //結果
@@ -266,7 +266,7 @@ namespace saikyo_playListTest.Repository
             var entityid = "entity_id_not_exist";
 
             //Act
-            var actResult = await _repo.DeleteAsync(entityid);
+            var actResult = await _repo.DeleteAsync(entityid, user.Object);
 
             //Assert
             //結果
@@ -284,7 +284,7 @@ namespace saikyo_playListTest.Repository
             var entityid = "entity_id_3";
 
             //Act
-            var actResult = await _repo.DeleteAsync(entityid);
+            var actResult = await _repo.DeleteAsync(entityid, user.Object);
 
             //Assert
             //結果
