@@ -138,7 +138,7 @@ namespace saikyo_playListTest.Repository
 
         }
 
-
+        [Fact]
         public async Task InsertAsync_Success()
         {
             //Arrange
@@ -152,7 +152,7 @@ namespace saikyo_playListTest.Repository
             //Assert
             //インサートされているはずのデータを取得する
             var insertData = ApplicationDbContext.ItemLibraries
-                .Where(item => item.ItemLibrariesEntityId == itemId)
+                .Where(item => item.ItemId == itemId)
                 .Where(item => item.AspNetUserdId == user.Object.Id)
                 .FirstOrDefault();
 

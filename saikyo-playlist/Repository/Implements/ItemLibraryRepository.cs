@@ -5,7 +5,7 @@ using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Repository.Implements
 {
-    public class ItemLibraryRepository : IItemLibraryRepository
+    public class ItemLibraryRepository : RepositoryBase, IItemLibraryRepository
     {
 
         private ApplicationDbContext dbContext;
@@ -31,9 +31,34 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title)
+        public async Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title)
         {
-            throw new NotImplementedException();
+            var ret = new ItemLibraryOperationResult();
+
+            try
+            {
+                var addItem = new ItemLibrariesEntity()
+                {
+                    ItemLibrariesEntityId = GetUniqueId(),
+                    ItemId = itemId,
+                    Title = title,
+                    AspNetUserdId = user.Id,
+                    Platform = platform,
+                    PlayCount = 0,
+                };
+
+                dbContext.ItemLibraries.Add(addItem);
+                dbContext.SaveChanges();
+
+                ret.OperationResult = ItemLibraryOperationResultType.Success;
+            }
+            catch (Exception ex)
+            {
+                ret.OperationResult = ItemLibraryOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
         }
 
         [Obsolete("これ要る?")]
@@ -60,7 +85,7 @@ namespace saikyo_playlist.Repository.Implements
         /// </summary>
         public Exception? Exception { get; set; }
     }
-    
+
     /// <summary>
     /// アイテムライブラリエンティティへの操作結果を表します。
     /// </summary>
