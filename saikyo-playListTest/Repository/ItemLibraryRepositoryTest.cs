@@ -114,10 +114,97 @@ namespace saikyo_playListTest.Repository
             //Assert
             Assert.NotNull(actResult);
             Assert.Equal(3, actResult.Count());
-
         }
 
 
+        public async Task InsertAsync_Success()
+        {
+            //Arrange
+            var platform = LibraryItemPlatform.Youtube;
+            var itemId = "insertasync_success_id";
+            var title = "insertasync_testTitle";
+
+            //Act
+            var actResult = await _repo.InsertAsync(platform, itemId, title);
+
+            //Assert
+            //インサートされているはずのデータを取得する
+            var insertData = ApplicationDbContext.ItemLibraries
+                .Where(item => item.ItemLibrariesEntityId == itemId)
+                .Where(item => item.AspNetUserdId == user.Object.Id)
+                .FirstOrDefault();
+
+            //結果
+            Assert.NotNull(actResult);
+            Assert.Equal(ItemLibraryOperationResultType.Success, actResult.OperationResult);
+            Assert.Null(actResult.Exception);
+
+            //データ
+            Assert.NotNull(insertData);
+            Assert.Equal(title, insertData!.Title);
+            Assert.Equal(platform, insertData.Platform);
+            Assert.Equal(itemId, insertData.ItemId);
+
+        }
+
+        [Fact]
+        public async Task InsertAsync_Success_Duplicate_OtherUser()
+        {
+            //Arrange
+            var platform = LibraryItemPlatform.Youtube;
+            var itemId = "item_id_xxx_3";
+            var title = "insertasync_Duplicate_OtherUser";
+
+            //Act
+            var actResult = await _repo.InsertAsync(platform, itemId, title);
+
+            //Assert
+            //インサートされているはずのデータを取得する
+            var insertData = ApplicationDbContext.ItemLibraries
+                .Where(item => item.ItemLibrariesEntityId == itemId)
+                .Where(item => item.AspNetUserdId == user.Object.Id)
+                .FirstOrDefault();
+
+            //結果
+            Assert.NotNull(actResult);
+            Assert.Equal(ItemLibraryOperationResultType.Success, actResult.OperationResult);
+            Assert.Null(actResult.Exception);
+
+            //データ
+            Assert.NotNull(insertData);
+            Assert.Equal(title, insertData!.Title);
+            Assert.Equal(platform, insertData.Platform);
+            Assert.Equal(itemId, insertData.ItemId);
+
+        }
+
+        [Fact]
+        public async Task InsertAsync_Duplicate_Mine()
+        {
+            //Arrange
+            var platform = LibraryItemPlatform.Youtube;
+            var itemId = "item_id_xxx_1";
+            var title = "insertasync_duplicate";
+
+            //Act
+            var actResult = await _repo.InsertAsync(platform, itemId, title);
+
+            //Assert
+            //上記インサートされていないはず(元々存在するデータを取得するはず)
+            var insertData = ApplicationDbContext.ItemLibraries
+                .Where(item => item.ItemLibrariesEntityId == itemId)
+                .Where(item => item.AspNetUserdId == user.Object.Id)
+                .FirstOrDefault();
+
+            //結果
+            Assert.NotNull(actResult);
+            Assert.Equal(ItemLibraryOperationResultType.Duplicate, actResult.OperationResult);
+            Assert.Null(actResult.Exception);
+
+            //データ
+            Assert.NotNull(insertData);
+            Assert.NotEqual(title, insertData!.Title);
+        }
 
     }
 }

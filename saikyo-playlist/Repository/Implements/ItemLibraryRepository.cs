@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using saikyo_playlist.Data;
 using saikyo_playlist.Repository.Interfaces;
-using System.Web;
 
 namespace saikyo_playlist.Repository.Implements
 {
@@ -24,9 +24,9 @@ namespace saikyo_playlist.Repository.Implements
 
         public async Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync()
         {
-            var ret = dbContext.ItemLibraries
+            var ret = await dbContext.ItemLibraries
                 .Where(item => item.AspNetUserdId == user.Id)
-                .ToArray();
+                .ToListAsync();
 
             return ret;
         }
