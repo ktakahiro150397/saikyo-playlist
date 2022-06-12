@@ -49,13 +49,9 @@ namespace saikyo_playListTest.Repository
             var videoId = "";
 
             //Act
-            var result = await _repo.GetYoutubeVideoInfoAsync(videoId);
-
-            //Assert
-            Assert.Equal(YoutubeAPIRetrieveOperationResultType.InvalidUrl, result.OperationResult);
-            var appEx = Assert.IsType<ApplicationException>(result.Exception);
-            Assert.Equal("URLを指定してください。", appEx.Message);
-            Assert.Null(result.RetrieveResult);
+            var argEx = await Assert.ThrowsAsync<ArgumentException>(async () =>await _repo.GetYoutubeVideoInfoAsync(videoId));
+                
+            Assert.Equal("URLを指定してください。", argEx.Message);
             
         }
 
@@ -114,7 +110,7 @@ namespace saikyo_playListTest.Repository
             //Assert
             Assert.Equal(YoutubeAPIRetrieveOperationResultType.Success, result.OperationResult);
             Assert.Null(result.Exception);
-            Assert.Equal(21,result.RetrieveResult.Count);
+            Assert.Equal(16,result.RetrieveResult.Count);
 
             //中身を確認
 
@@ -132,7 +128,7 @@ namespace saikyo_playListTest.Repository
             Assert.Equal("kLLKnUP9gN4", data11.ItemId);
             Assert.Equal("カスタムメイド3D - Entrance to You", data11.Title);
             Assert.Equal("https://www.youtube.com/watch?v=kLLKnUP9gN4", data11.Url);
-            Assert.Equal(10, data0.ItemSeq);
+            Assert.Equal(11, data11.ItemSeq);
 
         }
 
@@ -146,13 +142,10 @@ namespace saikyo_playListTest.Repository
             var playListId = "";
 
             //Act
-            var result = await _repo.GetYoutubePlayListInfoAsync(playListId);
-
+            var argEx = await Assert.ThrowsAsync<ArgumentException>(async () => await _repo.GetYoutubePlayListInfoAsync(playListId));
+            
             //Assert
-            Assert.Equal(YoutubeAPIRetrieveOperationResultType.InvalidUrl, result.OperationResult);
-            var appEx = Assert.IsType<ApplicationException>(result.Exception);
-            Assert.Equal("URLを指定してください。", appEx.Message);
-            Assert.Null(result.RetrieveResult);
+            Assert.Equal("URLを指定してください。", argEx.Message);
 
         }
 
@@ -163,7 +156,7 @@ namespace saikyo_playListTest.Repository
         public async void GetYoutubePlayListInfoAsync_Fail_NotYoutubeURL()
         {
             //Arrange
-            var playListId = "https://www.youtube.com/watch?v=kLLKnUP9gN4&list=hogehogehoge&index=12";
+            var playListId = "https://www.hogehogehoge.com/watch?v=kLLKnUP9gN4&list=hogehogehoge&index=12";
 
             //Act
             var result = await _repo.GetYoutubePlayListInfoAsync(playListId);
@@ -180,7 +173,7 @@ namespace saikyo_playListTest.Repository
         /// <summary>
         /// GetYoutubePlayListInfoAsync 失敗・存在しないURL
         /// </summary>
-        public async void GetYoutubePlayListInfoAsync_Fail__Fail_URLNotFound()
+        public async void GetYoutubePlayListInfoAsync_Fail_URLNotFound()
         {
             //Arrange
             var playListId = "https://www.youtube.com/watch?v=kLLKnUP9gN4&list=hogehogehoge&index=12";
@@ -191,13 +184,31 @@ namespace saikyo_playListTest.Repository
             //Assert
             Assert.Equal(YoutubeAPIRetrieveOperationResultType.NotFound, result.OperationResult);
             var appEx = Assert.IsType<ApplicationException>(result.Exception);
-            Assert.Equal("指定されたURLの動画は存在しません。", appEx.Message);
+            Assert.Equal("指定されたURLの再生リストは存在しません。", appEx.Message);
             Assert.Null(result.RetrieveResult);
 
         }
 
-        
 
+        [Fact]
+        /// <summary>
+        /// GetYoutubePlayListInfoAsync 失敗・プレイリストが空
+        /// </summary>
+        public async void GetYoutubePlayListInfoAsync_Fail_PlayList_Is_Blank()
+        {
+            //Arrange
+            var playListId = "https://www.youtube.com/playlist?list=PLEi4OmzKDGqFB8w0C011dMcHAAnhRCwlz";
+
+            //Act
+            var result = await _repo.GetYoutubePlayListInfoAsync(playListId);
+
+            //Assert
+            Assert.Equal(YoutubeAPIRetrieveOperationResultType.NotFound, result.OperationResult);
+            var appEx = Assert.IsType<ApplicationException>(result.Exception);
+            Assert.Equal("プレイリストに動画が含まれていません。。", appEx.Message);
+            Assert.Null(result.RetrieveResult);
+
+        }
 
     }
 }

@@ -3,6 +3,7 @@ using System.Text.Json;
 using saikyo_playlist.Data.Video;
 using saikyo_playlist.Data.PlayList;
 using saikyo_playlist.Repository.Interfaces;
+using saikyo_playlist.Helpers;
 
 namespace saikyo_playlist.Repository.Implements
 {
@@ -22,7 +23,7 @@ namespace saikyo_playlist.Repository.Implements
             _httpClient = new HttpClient();
         }
 
-        public async Task<YoutubeVideoRetrieveResult?> GetYoutubeVideoInfo(string videoId)
+        private async Task<YoutubeVideoRetrieveResult?> GetYoutubeVideoInfo(string videoId)
         {
 
             var requestUrl = GetYoutubeVideoInfoUrl(videoId);
@@ -44,12 +45,20 @@ namespace saikyo_playlist.Repository.Implements
                 }
                 else
                 {
-                    var ret = new YoutubeVideoRetrieveResult();
-                    ret.Url = videoId;
-                    ret.Title = myDeserializedClass.items[0].snippet.title;
-                    ret.ItemId = myDeserializedClass.items[0].id;
 
-                    return ret;
+                    if(myDeserializedClass.items.Count != 0)
+                    {
+                        var ret = new YoutubeVideoRetrieveResult();
+                        ret.Url = $"https://www.youtube.com/watch?v={videoId}";
+                        ret.Title = myDeserializedClass.items[0].snippet.title;
+                        ret.ItemId = myDeserializedClass.items[0].id;
+                        return ret;
+                    }
+                    else
+                    {
+                        //結果なし
+                        return null;
+                    }
                 }
 
             }
@@ -118,14 +127,139 @@ namespace saikyo_playlist.Repository.Implements
 
         }
 
-        Task<YoutubeVideoRetrieveOperationResult?> IYoutubeDataRepository.GetYoutubeVideoInfoAsync(string url)
+        public async Task<YoutubeVideoRetrieveOperationResult?> GetYoutubeVideoInfoAsync(string url)
         {
-            throw new NotImplementedException();
+
+            if (String.IsNullOrEmpty(url))
+            {
+                throw new ArgumentException("URLを指定してください。");
+            }
+            
+            var ret = new YoutubeVideoRetrieveOperationResult();
+            try
+            {
+                var videoIdFromUrl = YoutubeHelpers.GetVideoIdFromUrl(url);
+                if (videoIdFromUrl == null)
+                {
+                    ret.OperationResult = YoutubeAPIRetrieveOperationResultType.InvalidUrl;
+                    throw new ApplicationException("URLが正しくありません。Youtubeの動画URLを指定してください。");
+                }
+                else
+                {
+                    var videoInfo = await GetYoutubeVideoInfo(videoIdFromUrl);
+
+                    if (videoInfo == null)
+                    {
+                        ret.OperationResult = YoutubeAPIRetrieveOperationResultType.NotFound;
+                        throw new ApplicationException("指定されたURLの動画は存在しません。");
+                    }
+                    else
+                    {
+
+                        ret.OperationResult = YoutubeAPIRetrieveOperationResultType.Success;
+
+                        var retrieveResult = new YoutubeVideoRetrieveResult()
+                        {
+                            ItemId = videoInfo.ItemId,
+                            ItemSeq = videoInfo.ItemSeq,
+                            Title = videoInfo.Title,
+                            Url = videoInfo.Url,
+                        };
+                        ret.RetrieveResult = new List<YoutubeVideoRetrieveResult>();
+                        ret.RetrieveResult.Add(retrieveResult);
+                    }
+                }
+            }catch(ApplicationException appEx)
+            {
+                ret.Exception = appEx;
+            }
+            catch (Exception ex)
+            {
+                ret.OperationResult = YoutubeAPIRetrieveOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
         }
 
-        Task<YoutubeVideoRetrieveOperationResult?> IYoutubeDataRepository.GetYoutubePlayListInfoAsync(string url)
+        async Task<YoutubeVideoRetrieveOperationResult?> IYoutubeDataRepository.GetYoutubePlayListInfoAsync(string url)
         {
-            throw new NotImplementedException();
+
+            if (String.IsNullOrEmpty(url))
+            {
+                throw new ArgumentException("URLを指定してください。");
+            }
+
+            var ret = new YoutubeVideoRetrieveOperationResult();
+            try
+            {
+                var listIdFromUrl = YoutubeHelpers.GetListIdFromUrl(url);
+                if(listIdFromUrl == null)
+                {
+                    ret.OperationResult = YoutubeAPIRetrieveOperationResultType.InvalidUrl;
+                    throw new ApplicationException("URLが正しくありません。Youtubeの再生リストURLを指定してください。");
+                }
+
+
+                var playListInfo = GetYoutubePlayListInfo(listIdFromUrl);
+                if(playListInfo == null)
+                {
+                    ret.OperationResult = YoutubeAPIRetrieveOperationResultType.NotFound;
+                    throw new ApplicationException("プレイリストに動画が含まれていません。");
+                }
+                else
+                {
+
+                    //削除済み動画を除く
+                    playListInfo.items = playListInfo.items.Where(item => item.snippet.title != "Deleted video" && item.snippet.description != "This video is unavailable.").ToList();
+                    //非公開動画を除く
+                    playListInfo.items = playListInfo.items.Where(item => item.snippet.title != "Private video" && item.snippet.description != "This video is private.").ToList();
+
+                    if(playListInfo.items.Count > 0)
+                    {
+                        //プレイリストが存在
+                        ret.RetrieveResult = new List<YoutubeVideoRetrieveResult>();
+                        foreach (var item in playListInfo.items.Select((elem,index) => new {Value = elem,Index = index}))
+                        {
+
+
+
+                            ret.RetrieveResult.Add(
+                                new YoutubeVideoRetrieveResult()
+                                {
+                                    ItemId = item.Value.snippet.resourceId.videoId,
+                                    ItemSeq = item.Index,
+                                    Title = item.Value.snippet.title,
+                                    Url = $"https://www.youtube.com/watch?v={item.Value.snippet.resourceId.videoId}",
+                                }
+                            );
+                        }
+                    }
+                    else
+                    {
+                        //すべて削除済みか非公開
+                        ret.OperationResult = YoutubeAPIRetrieveOperationResultType.NotFound;
+                        throw new ApplicationException("プレイリストに動画が含まれていません。");
+                    }
+                    
+
+                }
+                ret.OperationResult = YoutubeAPIRetrieveOperationResultType.Success;
+
+            }
+            catch(ApplicationException appEx)
+            {
+                ret.Exception = appEx;
+
+            }
+            catch(Exception ex)
+            {
+                ret.OperationResult = YoutubeAPIRetrieveOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
+
         }
     }
 
