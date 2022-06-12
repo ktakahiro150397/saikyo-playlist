@@ -12,14 +12,14 @@ namespace saikyo_playlist.Repository.Implements
     {
 
         private ApplicationDbContext dbContext;
-        private IdentityUser user;
-        private string _youtubeApiKey;
+        private UserManager<IdentityUser> user;
+        private IConfiguration Config;
 
-        public PlayListRepository(ApplicationDbContext applicationDbContext, IdentityUser identityUser, string youtubeApiKey)
+        public PlayListRepository(ApplicationDbContext applicationDbContext, UserManager<IdentityUser> identityUser, IConfiguration config)
         {
             dbContext = applicationDbContext;
             user = identityUser;
-            _youtubeApiKey = youtubeApiKey;
+            Config = config;
         }
 
         /// <summary>
@@ -32,13 +32,14 @@ namespace saikyo_playlist.Repository.Implements
         {
             var ret = false;
 
+
             //ヘッダー・詳細を同一トランザクションでインサートする
             using (var tran = dbContext.Database.BeginTransaction())
             {
                 try
                 {
                     //プレイリストの登録
-                    await InsertPlayListAsync(playListName, user.Id, registerDataStr);
+                    //await InsertPlayListAsync(playListName, user.Id, registerDataStr);
 
                     tran.Commit();
                     ret = true;
@@ -75,7 +76,7 @@ namespace saikyo_playlist.Repository.Implements
                     //ヘッダーの割当
                     header.PlayListHeadersEntityId = headerId;
                     header.Name = playListName;
-                    header.AspNetUserdId = user.Id;
+                    //header.AspNetUserdId = user.Id;
                     header.Details = await CreateDetailDataFromPlayListUrl(header, playListUrl);
 
                     //プレイリストの登録
@@ -107,7 +108,7 @@ namespace saikyo_playlist.Repository.Implements
                 try
                 {
                     //プレイリストの登録
-                    await UpdatePlayListAsync(playListId, playListName, user.Id, registerDataStr);
+                    //await UpdatePlayListAsync(playListId, playListName, user.Id, registerDataStr);
 
                     tran.Commit();
                     ret = true;
@@ -318,7 +319,7 @@ namespace saikyo_playlist.Repository.Implements
                 }
 
                 //プレイリストのデータをすべて取得する
-                var youtubeRepo = new YoutubeDataRepository(_youtubeApiKey);
+                var youtubeRepo = new YoutubeDataRepository(Config);
                 var playListData = youtubeRepo.GetYoutubePlayListInfo(playListId);
 
                 if (playListData == null)

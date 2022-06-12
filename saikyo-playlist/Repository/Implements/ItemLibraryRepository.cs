@@ -9,10 +9,10 @@ namespace saikyo_playlist.Repository.Implements
     {
 
         private ApplicationDbContext dbContext;
-        private IdentityUser user;
+        private UserManager<IdentityUser> user;
         private IConfiguration configuration;
 
-        public ItemLibraryRepository(ApplicationDbContext dbContext, IdentityUser user, IConfiguration configuration)
+        public ItemLibraryRepository(ApplicationDbContext dbContext, UserManager<IdentityUser> user, IConfiguration configuration)
         {
             this.dbContext = dbContext;
             this.user = user;

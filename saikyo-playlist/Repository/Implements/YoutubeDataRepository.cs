@@ -16,9 +16,9 @@ namespace saikyo_playlist.Repository.Implements
 
         private const string playListInfoEndPointUrl = "https://www.googleapis.com/youtube/v3/playlistItems";
 
-        public YoutubeDataRepository(string apiKey)
+        public YoutubeDataRepository(IConfiguration config)
         {
-            ApiKey = apiKey;
+            ApiKey = config["YoutubeAPIKey"];
             _httpClient = new HttpClient();
         }
 
