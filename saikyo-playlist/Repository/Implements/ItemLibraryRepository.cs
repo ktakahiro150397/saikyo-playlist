@@ -10,16 +10,14 @@ namespace saikyo_playlist.Repository.Implements
 
         private ApplicationDbContext dbContext;
         private UserManager<IdentityUser> user;
-        private IConfiguration configuration;
 
-        public ItemLibraryRepository(ApplicationDbContext dbContext, UserManager<IdentityUser> user, IConfiguration configuration)
+        public ItemLibraryRepository(ApplicationDbContext dbContext, UserManager<IdentityUser> user)
         {
             this.dbContext = dbContext;
             this.user = user;
-            this.configuration = configuration;
         }
 
-        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user)
+        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId)
         {
             throw new NotImplementedException();
         }
@@ -29,7 +27,7 @@ namespace saikyo_playlist.Repository.Implements
             throw new NotImplementedException();
         }
 
-        public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title, IdentityUser user)
+        public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title)
         {
             throw new NotImplementedException();
         }

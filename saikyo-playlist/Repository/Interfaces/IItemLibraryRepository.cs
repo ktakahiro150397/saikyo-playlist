@@ -27,7 +27,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="title">アイテムのタイトル。</param>
         /// <param name="user">データを登録するユーザー。</param>
         /// <returns></returns>
-        public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title,IdentityUser user);
+        public Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title);
 
         /// <summary>
         /// ログインユーザーのライブラリをすべて取得します。
@@ -41,7 +41,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="libraryEntityId">削除するライブラリID。</param>
         /// <param name="user">データを削除するユーザー。</param>
         /// <returns></returns>
-        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId,IdentityUser user);
+        public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId);
 
 
     }

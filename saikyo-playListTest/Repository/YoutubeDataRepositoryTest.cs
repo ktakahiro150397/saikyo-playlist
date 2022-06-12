@@ -13,7 +13,7 @@ namespace saikyo_playListTest.Repository
 		public YoutubeDataRepositoryTest()
 		{
             Configuration = new ConfigurationBuilder().AddUserSecrets<YoutubeDataRepositoryTest>().Build();
-            _repo = new YoutubeDataRepository(Configuration["YoutubeAPIKey"]);
+            _repo = new YoutubeDataRepository(Configuration);
 		}
 
         /// <summary>
