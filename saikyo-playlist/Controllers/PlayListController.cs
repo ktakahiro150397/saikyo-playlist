@@ -185,20 +185,24 @@ namespace saikyo_playlist.Controllers
         {
             try
             {
-                var videoId = YoutubeHelpers.GetVideoIdFromUrl(model.Url);
-                YoutubeVideoRetrieveOperationResult? item;
-                if (videoId != null)
+                if (String.IsNullOrEmpty(model.Url))
                 {
-                    item = await YoutubeDataRepository.GetYoutubeVideoInfoAsync(videoId);
-
-                    if(item == null)
-                    {
-                        throw new ApplicationException($"URL:「{model.Url}」から動画情報が取得できませんでした。");
-                    }
+                    model.ErrorMessage = "URLを入力してください。";
+                    return View(model);
                 }
-                else
+
+                YoutubeVideoRetrieveOperationResult? item;
+                item = await YoutubeDataRepository.GetYoutubeVideoInfoAsync(model.Url);
+
+                if(item.OperationResult == YoutubeAPIRetrieveOperationResultType.UnExpectedError)
                 {
-                    throw new ApplicationException($"URL:「{model.Url}」から動画IDが取得できませんでした。");
+                    throw new ApplicationException("予期せぬエラーが発生しました。", item.Exception);
+                }
+
+                if (item.OperationResult != YoutubeAPIRetrieveOperationResultType.Success)
+                {
+                    model.ErrorMessage = item.Exception.Message;
+                    return View(model);
                 }
 
                 //取得したデータをライブラリに追加

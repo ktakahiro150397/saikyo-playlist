@@ -175,6 +175,11 @@ namespace saikyo_playListTest.Controllers
         {
             //Arrange
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
+                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult()
+                {
+                    OperationResult = YoutubeAPIRetrieveOperationResultType.InvalidUrl,
+                    Exception = new ApplicationException("指定されたURLの動画は存在しません。"),
+                })
                 .Verifiable();
 
             var model = new AddItemViewModel()
@@ -191,7 +196,7 @@ namespace saikyo_playListTest.Controllers
             //Assert
             var viewResult = Assert.IsType<ViewResult>(actResult);
             var modelResult = Assert.IsAssignableFrom<AddItemViewModel>(viewResult.Model);
-            Assert.Equal($"URL:「{model.Url}」から動画情報が取得できませんでした。", modelResult.ErrorMessage);
+            Assert.Equal($"指定されたURLの動画は存在しません。", modelResult.ErrorMessage);
 
         }
 
@@ -204,6 +209,11 @@ namespace saikyo_playListTest.Controllers
         {
             //Arrange
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
+                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult()
+                {
+                    OperationResult = YoutubeAPIRetrieveOperationResultType.InvalidUrl,
+                    Exception = new ApplicationException("URLが正しくありません。Youtubeの動画URLを指定してください。"),
+                })
                 .Verifiable();
 
             var model = new AddItemViewModel()
@@ -220,7 +230,7 @@ namespace saikyo_playListTest.Controllers
             //Assert
             var viewResult = Assert.IsType<ViewResult>(actResult);
             var modelResult = Assert.IsAssignableFrom<AddItemViewModel>(viewResult.Model);
-            Assert.Equal($"URL:「{model.Url}」から動画IDが取得できませんでした。", modelResult.ErrorMessage);
+            Assert.Equal($"URLが正しくありません。Youtubeの動画URLを指定してください。", modelResult.ErrorMessage);
 
         }
 
