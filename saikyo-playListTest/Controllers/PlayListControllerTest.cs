@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace saikyo_playListTest.Controllers
 {
 
-    
+
     public class PlayListControllerTest
     {
 
@@ -122,6 +122,59 @@ namespace saikyo_playListTest.Controllers
             return itemLibRepoRetValue;
         }
 
+        /// <summary>
+        /// テスト用のプレイリスト情報
+        /// </summary>
+        /// <returns></returns>
+        internal PlayList PlayListRepo_GetResult()
+        {
+            var playList = new PlayList()
+            {
+
+                Header = new PlayListHeadersEntity()
+                {
+                    PlayListHeadersEntityId = "header_id",
+                    Name = "playlist_name",
+                    Details = new List<PlayListDetailsEntity>()
+                    {
+                        new PlayListDetailsEntity()
+                        {
+                            PlayListDetailsEntityId = "detail_id_1",
+                            ItemSeq = 0,
+                        },
+                        new PlayListDetailsEntity()
+                        {
+                            PlayListDetailsEntityId = "detail_id_2",
+                            ItemSeq = 1,
+                        },
+                        new PlayListDetailsEntity()
+                        {
+                            PlayListDetailsEntityId = "detail_id_3",
+                            ItemSeq = 2,
+                        },
+                        new PlayListDetailsEntity()
+                        {
+                            PlayListDetailsEntityId = "detail_id_4",
+                            ItemSeq = 3,
+                        },
+                        new PlayListDetailsEntity()
+                        {
+                            PlayListDetailsEntityId = "detail_id_5",
+                            ItemSeq = 4,
+                        },
+                        new PlayListDetailsEntity()
+                        {
+                            PlayListDetailsEntityId = "detail_id_6",
+                            ItemSeq = 5,
+                        },
+                    }
+
+                }
+            };
+
+            return playList;
+        }
+
         #endregion
 
         #region "Index Action"
@@ -157,7 +210,7 @@ namespace saikyo_playListTest.Controllers
             var viewResult = Assert.IsType<ViewResult>(actResult);
             var model = Assert.IsAssignableFrom<ManagePlayListViewModel>(viewResult.Model);
             Assert.Equal(2, model.managePlayListItems.Count);
-            playlistRepo.Verify();
+            playlistRepo.Verify(repo => repo.GetPlayListHeaderAll(), Times.Once());
         }
 
         #endregion
@@ -189,10 +242,11 @@ namespace saikyo_playListTest.Controllers
         {
 
             //Arrange
-            itemLibRepo.Setup(repo => repo.InsertAsync(It.IsAny<LibraryItemPlatform>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<IdentityUser>()))
+            itemLibRepo.Setup(repo => repo.InsertAsync(It.IsAny<LibraryItemPlatform>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
-                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult() { 
+                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult()
+                {
                     OperationResult = YoutubeAPIRetrieveOperationResultType.Success,
                     RetrieveResult = new List<YoutubeVideoRetrieveResult>()
                     {
@@ -256,7 +310,7 @@ namespace saikyo_playListTest.Controllers
             var viewResult = Assert.IsType<ViewResult>(actResult);
             var modelResult = Assert.IsAssignableFrom<AddItemViewModel>(viewResult.Model);
             Assert.Equal("URLを入力してください。", modelResult.ErrorMessage);
-           
+
         }
 
         /// <summary>
@@ -348,10 +402,10 @@ namespace saikyo_playListTest.Controllers
 
             //Assert
             var view = Assert.IsType<ViewResult>(actResult);
-            var model = Assert.IsType<CreatePlayListViewModel>(view.Model);
+            var model = Assert.IsType<CreateEditDeletePlayListViewModel>(view.Model);
             Assert.NotNull(model);
             Assert.NotNull(model.Libraries);
-            Assert.Equal(3,model.Libraries.Count);
+            Assert.Equal(3, model.Libraries.Count);
 
         }
 
@@ -364,7 +418,7 @@ namespace saikyo_playListTest.Controllers
 
             //Arrange
             var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
-            var vm = new CreatePlayListViewModel()
+            var vm = new CreateEditDeletePlayListViewModel()
             {
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
@@ -401,7 +455,7 @@ namespace saikyo_playListTest.Controllers
 
             //Arrange
             var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
-            var vm = new CreatePlayListViewModel()
+            var vm = new CreateEditDeletePlayListViewModel()
             {
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
@@ -419,7 +473,7 @@ namespace saikyo_playListTest.Controllers
 
             //Assert
             var view = Assert.IsType<ViewResult>(actResult);
-            var model = Assert.IsAssignableFrom<CreatePlayListViewModel>(view.Model);
+            var model = Assert.IsAssignableFrom<CreateEditDeletePlayListViewModel>(view.Model);
 
             Assert.Equal(vm.Title, model.Title);
             Assert.Equal(vm.Libraries.Count, model.Libraries.Count);
@@ -439,7 +493,7 @@ namespace saikyo_playListTest.Controllers
 
             //Arrange
             var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
-            var vm = new CreatePlayListViewModel()
+            var vm = new CreateEditDeletePlayListViewModel()
             {
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
@@ -461,7 +515,7 @@ namespace saikyo_playListTest.Controllers
             var actResult = await controller.CreatePlayList(vm);
 
             var view = Assert.IsType<ViewResult>(actResult);
-            var model = Assert.IsAssignableFrom<CreatePlayListViewModel>(view.Model);
+            var model = Assert.IsAssignableFrom<CreateEditDeletePlayListViewModel>(view.Model);
 
             Assert.Equal(vm.Title, model.Title);
             Assert.Equal(vm.Libraries.Count, model.Libraries.Count);
@@ -471,6 +525,39 @@ namespace saikyo_playListTest.Controllers
             playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()), Times.Never);
 
         }
+
+        #endregion
+
+        #region EditPlayList Action
+
+        /// <summary>
+        /// プレイリスト編集　GET 成功
+        /// </summary>
+        [Fact]
+        public void EditPlayList_ReturnAViewWithResult()
+        {
+            //Arrange
+            var playList = PlayListRepo_GetResult();
+            playlistRepo.Setup(repo => repo.GetPlayListAsync(It.IsAny<string>()))
+                .ReturnsAsync(new GetPlayListOperationResult()
+                {
+                    OperationResult = PlayListOperationResultType.Success,
+                    PlayList = playList,
+                })
+                .Verifiable();
+
+            ////Act
+            //var actResult = controller.CreatePlayList();
+
+            ////Assert
+            //var view = Assert.IsType<ViewResult>(actResult);
+            //var model = Assert.IsType<CreateEditDeletePlayListViewModel>(view.Model);
+            //Assert.NotNull(model);
+            //Assert.NotNull(model.Libraries);
+            //Assert.Equal(3, model.Libraries.Count);
+
+        }
+
 
         #endregion
 

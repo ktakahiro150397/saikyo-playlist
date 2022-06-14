@@ -109,12 +109,13 @@ namespace saikyo_playlist.Controllers
         [HttpGet]
         public IActionResult CreatePlayList()
         {
-            var model = new CreatePlayListViewModel();
+            var model = new CreateEditDeletePlayListViewModel();
             return View(model);
 
         }
 
-        public async Task<IActionResult> CreatePlayList(CreatePlayListViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> CreatePlayList(CreateEditDeletePlayListViewModel model)
         {
 
 
@@ -125,16 +126,37 @@ namespace saikyo_playlist.Controllers
 
         #endregion
 
+        #region EditPlayList
+
+        [HttpGet]
+        public IActionResult EditPlayList()
+        {
+            var model = new CreateEditDeletePlayListViewModel();
+            return View(model);
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPlayList(CreateEditDeletePlayListViewModel model)
+        {
+
+
+
+            return Redirect("./PlayList");
+        }
+
+
+        #endregion
 
         [HttpGet]
         public IActionResult Create()
         {
-            var model = new CreatePlayListViewModel();
+            var model = new CreateEditDeletePlayListViewModel();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreatePlayListViewModel model)
+        public async Task<IActionResult> Create(CreateEditDeletePlayListViewModel model)
         {
 
             //var loginUserInfo = await UserManager.GetUserAsync(User);
@@ -202,7 +224,7 @@ namespace saikyo_playlist.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(CreatePlayListViewModel model)
+        public async Task<IActionResult> Edit(CreateEditDeletePlayListViewModel model)
         {
             //var loginUserInfo = await UserManager.GetUserAsync(User);
 
@@ -227,12 +249,12 @@ namespace saikyo_playlist.Controllers
         [HttpGet]
         public IActionResult AddFromPlayList()
         {
-            var model = new CreatePlayListViewModel();
+            var model = new CreateEditDeletePlayListViewModel();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddFromPlayList(CreatePlayListViewModel model)
+        public async Task<IActionResult> AddFromPlayList(CreateEditDeletePlayListViewModel model)
         {
             //var loginUserInfo = await UserManager.GetUserAsync(User);
 

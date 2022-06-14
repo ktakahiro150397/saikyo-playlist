@@ -396,7 +396,34 @@ namespace saikyo_playlist.Repository.Implements
         }
     }
 
+    public class GetPlayListOperationResult
+    {
+        public PlayListOperationResultType OperationResult { get; set; }
 
+        public PlayList PlayList { get; set; }
+
+        public GetPlayListOperationResult()
+        {
+            PlayList = new PlayList();
+        }
+    }
+
+
+    /// <summary>
+    /// 単一のプレイリストを表します。
+    /// </summary>
+    public class PlayList
+    {
+        public PlayListHeadersEntity Header { get; set; }
+
+        public IList<PlayListDetailsEntity> Details { get; set; }
+
+        public PlayList()
+        {
+            Header = new PlayListHeadersEntity();
+            Details = new List<PlayListDetailsEntity>();
+        }
+    }
 
     public class PlayListOperationResult
     {
@@ -422,7 +449,7 @@ namespace saikyo_playlist.Repository.Implements
         Success,
 
         /// <summary>
-        /// (更新・削除時)対象のデータが存在しなかった
+        /// (取得・更新・削除時)対象のデータが存在しなかった
         /// </summary>
         NotFound,
 

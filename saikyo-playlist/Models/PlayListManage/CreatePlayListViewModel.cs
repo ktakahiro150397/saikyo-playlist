@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace saikyo_playlist.Models.PlayListManage
 {
-    public class CreatePlayListViewModel
+    public class CreateEditDeletePlayListViewModel
     {
 
         public string PlayListHeaderId { get; set; }
@@ -25,7 +25,7 @@ namespace saikyo_playlist.Models.PlayListManage
 
         public string ErrorMessage { get; set; }
 
-        public CreatePlayListViewModel()
+        public CreateEditDeletePlayListViewModel()
         {
             PlayListHeaderId = "";
             Title = "";

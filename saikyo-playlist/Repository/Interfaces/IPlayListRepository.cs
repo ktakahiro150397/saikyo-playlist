@@ -54,6 +54,13 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <returns></returns>
         public Task<PlayListOperationResult> UpdatePlayListItemAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail);
 
+        /// <summary>
+        /// 対象のプレイリスト情報を取得します。
+        /// </summary>
+        /// <param name="headerEntityId"></param>
+        /// <returns></returns>
+        public Task<GetPlayListOperationResult> GetPlayListAsync(string headerEntityId);
+
 
     }
 }
