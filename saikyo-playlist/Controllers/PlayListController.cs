@@ -42,7 +42,8 @@ namespace saikyo_playlist.Controllers
         public async Task<IActionResult> Index()
         {
 
-            var model = new ManagePlayListViewModel(PlayListRepository);
+            var user = await UserManager.GetUserAsync(User);
+            var model = new ManagePlayListViewModel(PlayListRepository,user);
             await model.Initialize();
 
             return View(model);
@@ -107,20 +108,83 @@ namespace saikyo_playlist.Controllers
         #region CreatePlayList
 
         [HttpGet]
-        public IActionResult CreatePlayList()
+        public async Task<IActionResult> CreatePlayList()
         {
             var model = new CreateEditDeletePlayListViewModel();
-            return View(model);
 
+            //プレイリスト一覧を取得
+            var user = await UserManager.GetUserAsync(User);
+            var playList = await ItemLibraryRepository.GetAllAsync(user);
+            model.Libraries = playList.ToList();
+
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreatePlayList(CreateEditDeletePlayListViewModel model)
         {
+            if (ModelState.IsValid)
+            {
+                //URLが選択されているかどうかを確認
+                if(model.SelectedLibraryHeaderIdList.Count == 0)
+                {
+                    model.ErrorMessage = "プレイリストに追加するアイテムを選択してください。";
+                    return View(model);
+                }
 
+                //プレイリストを作成
+                var user = await UserManager.GetUserAsync(User);
+                var resultHeader = await PlayListRepository.CreateNewPlayListAsync(model.Title, user);
 
+                if(resultHeader.OperationResult != PlayListOperationResultType.Success)
+                {
+                    //失敗
+                }
+                else
+                {
+                    //選択されているヘッダーIDから追加するライブラリを取得
+                    var details = new List<ItemLibrariesEntity>();
+                    foreach(var selected in model.SelectedLibraryHeaderIdList)
+                    {
+                        var libItem = model.Libraries.Where(lib => lib.ItemLibrariesEntityId == selected).First();
+                        details.Add(libItem);
+                    }
 
-            return Redirect("./PlayList");
+                    //プレイリストを作成
+                    if(resultHeader.OperationResult != PlayListOperationResultType.Success)
+                    {
+                        //失敗
+                    }
+                    else
+                    {
+                        foreach (var detail in details)
+                        {
+                            var detailItem = new PlayListDetailsEntity()
+                            {
+                                PlayListHeadersEntityId = resultHeader.HeaderEntity!.PlayListHeadersEntityId,
+                                ItemLibrariesEntityId = detail.ItemLibrariesEntityId,
+                                ItemSeq = 0,
+                            };
+                            await PlayListRepository.AddItemToPlayListAsync(resultHeader.HeaderEntity, detailItem, user);
+                        }
+                    }
+
+                    return Redirect("./PlayList");
+
+                }
+
+            }
+            else
+            {
+                //入力不備あり
+                if (String.IsNullOrEmpty(model.Title))
+                {
+                    model.ErrorMessage = "プレイリストのタイトルを入力してください。";
+                    return View(model);
+                }
+            }
+
+            return View(model);
         }
 
 

@@ -365,32 +365,37 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName)
+        public Task<IEnumerable<PlayListHeadersEntity>> GetPlayListHeaderAll(IdentityUser user)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail)
+        public Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName, IdentityUser user)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, IEnumerable<PlayListDetailsEntity> detailList)
+        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail, IdentityUser user)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(PlayListHeadersEntity header, string playListDetailId)
+        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PlayListOperationResult> UpdatePlayListItemAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail)
+        public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(PlayListHeadersEntity header, string playListDetailId, IdentityUser user)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<PlayListHeadersEntity>> GetPlayListHeaderAll()
+        public Task<PlayListOperationResult> UpdatePlayListItemAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail, IdentityUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<GetPlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user)
         {
             throw new NotImplementedException();
         }
@@ -433,9 +438,15 @@ namespace saikyo_playlist.Repository.Implements
         public PlayListOperationResultType OperationResult { get; set; }
 
         /// <summary>
+        /// 操作対象のエンティティ。新規作成時にもセットされます。
+        /// </summary>
+        public PlayListHeadersEntity? HeaderEntity { get; set; }
+
+        /// <summary>
         /// エラーが発生している場合、その例外オブジェクト。
         /// </summary>
         public Exception? Exception { get; set; }
+
     }
 
     /// <summary>

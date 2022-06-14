@@ -15,6 +15,8 @@ namespace saikyo_playListTest.Controllers
 
         public Mock<UserManager<IdentityUser>> userManagerMoq;
 
+        public Mock<IdentityUser> userMoq;
+
         public Mock<IConfiguration> configMoq;
 
         public Mock<IItemLibraryRepository> itemLibRepo;
@@ -33,6 +35,8 @@ namespace saikyo_playListTest.Controllers
             userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
             userManagerMoq.Setup(manager => manager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(new IdentityUser() { Id = "test_user_id" });
+            userMoq = new Mock<IdentityUser>();
+            userMoq.Setup(moq => moq.Id).Returns("test_user_id");
             configMoq = new Mock<IConfiguration>();
             itemLibRepo = new Mock<IItemLibraryRepository>();
             youtubeRepo = new Mock<IYoutubeDataRepository>();
@@ -59,7 +63,7 @@ namespace saikyo_playListTest.Controllers
                 new ItemLibrariesEntity()
                 {
                     ItemLibrariesEntityId = "ItemLibrariesEntityId_1",
-                    AspNetUserdId = "AspNetUserId_1",
+                    AspNetUserdId = "test_user_id",
                     ItemId = "itemid_1",
                     PlayCount = 0,
                     Platform = LibraryItemPlatform.Youtube,
@@ -69,7 +73,7 @@ namespace saikyo_playListTest.Controllers
                 new ItemLibrariesEntity()
                 {
                     ItemLibrariesEntityId = "ItemLibrariesEntityId_2",
-                    AspNetUserdId = "AspNetUserId_2",
+                    AspNetUserdId = "test_user_id",
                     ItemId = "itemid_2",
                     PlayCount = 0,
                     Platform = LibraryItemPlatform.Youtube,
@@ -79,7 +83,7 @@ namespace saikyo_playListTest.Controllers
                 new ItemLibrariesEntity()
                 {
                     ItemLibrariesEntityId = "ItemLibrariesEntityId_3",
-                    AspNetUserdId = "AspNetUserId_3",
+                    AspNetUserdId = "test_user_id",
                     ItemId = "itemid_3",
                     PlayCount = 0,
                     Platform = LibraryItemPlatform.Youtube,
@@ -89,7 +93,7 @@ namespace saikyo_playListTest.Controllers
                 new ItemLibrariesEntity()
                 {
                     ItemLibrariesEntityId = "ItemLibrariesEntityId_4",
-                    AspNetUserdId = "AspNetUserId_4",
+                    AspNetUserdId = "test_user_id",
                     ItemId = "itemid_4",
                     PlayCount = 0,
                     Platform = LibraryItemPlatform.Youtube,
@@ -186,7 +190,7 @@ namespace saikyo_playListTest.Controllers
         public async Task Index_ReturnAViewWithModel()
         {
             //Arrange
-            playlistRepo.Setup(repo => repo.GetPlayListHeaderAll())
+            playlistRepo.Setup(repo => repo.GetPlayListHeaderAll(It.IsAny<IdentityUser>()))
                 .ReturnsAsync(new List<PlayListHeadersEntity>()
                 {
                     new PlayListHeadersEntity()
@@ -210,7 +214,7 @@ namespace saikyo_playListTest.Controllers
             var viewResult = Assert.IsType<ViewResult>(actResult);
             var model = Assert.IsAssignableFrom<ManagePlayListViewModel>(viewResult.Model);
             Assert.Equal(2, model.managePlayListItems.Count);
-            playlistRepo.Verify(repo => repo.GetPlayListHeaderAll(), Times.Once());
+            playlistRepo.Verify(repo => repo.GetPlayListHeaderAll(It.IsAny<IdentityUser>()), Times.Once());
         }
 
         #endregion
@@ -389,23 +393,24 @@ namespace saikyo_playListTest.Controllers
         /// プレイリスト作成　GET 成功
         /// </summary>
         [Fact]
-        public void CreatePlayList_ReturnAViewWithResult()
+        public async Task CreatePlayList_ReturnAViewWithResult()
         {
             //Arrange
             var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
             itemLibRepo.Setup(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()))
-                .ReturnsAsync(itemLibRepoRetValue)
+                .ReturnsAsync(itemLibRepoRetValue.Where(item => item.AspNetUserdId == userMoq.Object.Id))
                 .Verifiable();
 
             //Act
-            var actResult = controller.CreatePlayList();
+            var actResult = await controller.CreatePlayList();
 
             //Assert
             var view = Assert.IsType<ViewResult>(actResult);
             var model = Assert.IsType<CreateEditDeletePlayListViewModel>(view.Model);
             Assert.NotNull(model);
             Assert.NotNull(model.Libraries);
-            Assert.Equal(3, model.Libraries.Count);
+            Assert.Equal(4, model.Libraries.Count);
+            itemLibRepo.Verify(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()), Times.Once);
 
         }
 
@@ -413,7 +418,7 @@ namespace saikyo_playListTest.Controllers
         /// プレイリスト作成　POST 成功
         /// </summary>
         [Fact]
-        public async Task CreatePlayList_RedirectToIndexWithSucces()
+        public async Task CreatePlayList_RedirectToIndexWithSuccess()
         {
 
             //Arrange
@@ -430,9 +435,18 @@ namespace saikyo_playListTest.Controllers
                     "ItemLibrariesEntityId_5",
                 }
             };
-            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()))
+            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
+                .ReturnsAsync(new PlayListOperationResult()
+                {
+                     OperationResult = PlayListOperationResultType.Success,
+                     HeaderEntity = new PlayListHeadersEntity()
+                     {
+                         PlayListHeadersEntityId = "playlistheaderentityId",
+                         Name = "test_header_name"
+                     }
+                })
                 .Verifiable();
-            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()))
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
 
             //Act
@@ -441,8 +455,8 @@ namespace saikyo_playListTest.Controllers
             //Assert
             var view = Assert.IsType<RedirectResult>(actResult);
             Assert.Equal("./PlayList", view.Url);
-            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()), Times.Once);
-            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()), Times.Exactly(3));
+            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Exactly(3));
 
         }
 
@@ -463,9 +477,9 @@ namespace saikyo_playListTest.Controllers
                 SelectedLibraryHeaderIdList = new List<string>(),
                 ErrorMessage = ""
             };
-            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()))
+            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
-            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()))
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
 
             //Act
@@ -479,8 +493,8 @@ namespace saikyo_playListTest.Controllers
             Assert.Equal(vm.Libraries.Count, model.Libraries.Count);
             Assert.Equal("プレイリストに追加するアイテムを選択してください。", model.ErrorMessage);
 
-            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()), Times.Never);
-            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()), Times.Never);
+            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Never);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
 
         }
 
@@ -506,9 +520,9 @@ namespace saikyo_playListTest.Controllers
                 }
             };
             controller.ModelState.AddModelError("Title", "Title is required");
-            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()))
+            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
-            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()))
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
 
             //Act
@@ -521,8 +535,8 @@ namespace saikyo_playListTest.Controllers
             Assert.Equal(vm.Libraries.Count, model.Libraries.Count);
             Assert.Equal("プレイリストのタイトルを入力してください。", model.ErrorMessage);
 
-            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()), Times.Never);
-            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()), Times.Never);
+            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Never);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
 
         }
 
@@ -538,7 +552,7 @@ namespace saikyo_playListTest.Controllers
         {
             //Arrange
             var playList = PlayListRepo_GetResult();
-            playlistRepo.Setup(repo => repo.GetPlayListAsync(It.IsAny<string>()))
+            playlistRepo.Setup(repo => repo.GetPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
                 .ReturnsAsync(new GetPlayListOperationResult()
                 {
                     OperationResult = PlayListOperationResultType.Success,

@@ -1,4 +1,5 @@
-﻿using saikyo_playlist.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using saikyo_playlist.Data;
 using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Models.PlayListManage
@@ -10,6 +11,7 @@ namespace saikyo_playlist.Models.PlayListManage
 
         private IPlayListRepository PlayListRepository { get; set; }
 
+        private IdentityUser User { get; set; }
 
         public ManagePlayListViewModel()
         {
@@ -39,9 +41,10 @@ namespace saikyo_playlist.Models.PlayListManage
             }
         }
 
-        public ManagePlayListViewModel(IPlayListRepository playListRepos)
+        public ManagePlayListViewModel(IPlayListRepository playListRepos,IdentityUser user)
         {
             PlayListRepository = playListRepos;
+            User = user;
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace saikyo_playlist.Models.PlayListManage
         /// <returns></returns>
         public async Task Initialize() {
 
-            var playList = await PlayListRepository.GetPlayListHeaderAll();
+            var playList = await PlayListRepository.GetPlayListHeaderAll(User);
 
             if(playList == null)
             {
