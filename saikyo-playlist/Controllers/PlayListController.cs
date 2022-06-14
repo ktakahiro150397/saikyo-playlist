@@ -36,6 +36,8 @@ namespace saikyo_playlist.Controllers
             PlayListRepository = playListRepository;
         }
 
+        #region Index Action
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -45,6 +47,84 @@ namespace saikyo_playlist.Controllers
 
             return View(model);
         }
+
+        #endregion
+
+        #region AddItem Action
+
+        [HttpGet]
+        public IActionResult AddItem()
+        {
+            return View(new AddItemViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddItem(AddItemViewModel model)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(model.Url))
+                {
+                    model.ErrorMessage = "URLを入力してください。";
+                    return View(model);
+                }
+
+                YoutubeVideoRetrieveOperationResult? item;
+                item = await YoutubeDataRepository.GetYoutubeVideoInfoAsync(model.Url);
+
+                if (item.OperationResult == YoutubeAPIRetrieveOperationResultType.UnExpectedError)
+                {
+                    throw new ApplicationException("予期せぬエラーが発生しました。", item.Exception);
+                }
+
+                if (item.OperationResult != YoutubeAPIRetrieveOperationResultType.Success)
+                {
+                    model.ErrorMessage = item.Exception.Message;
+                    return View(model);
+                }
+
+                //取得したデータをライブラリに追加
+                var loginUserInfo = await UserManager.GetUserAsync(User);
+
+                //入力されている場合、タイトルはそちらを使用
+                await ItemLibraryRepository.InsertAsync(model.Platform,
+                    item.RetrieveResult[0].ItemId,
+                    model.TitleAlias != "" ? model.TitleAlias : item.RetrieveResult[0].Title,
+                    loginUserInfo);
+
+            }
+            catch (Exception ex)
+            {
+                model.ErrorMessage = "追加に失敗しました。";
+                return View(model);
+            }
+
+            return Redirect("./PlayList");
+        }
+
+        #endregion
+
+        #region CreatePlayList
+
+        [HttpGet]
+        public IActionResult CreatePlayList()
+        {
+            var model = new CreatePlayListViewModel();
+            return View(model);
+
+        }
+
+        public async Task<IActionResult> CreatePlayList(CreatePlayListViewModel model)
+        {
+
+
+
+            return Redirect("./PlayList");
+        }
+
+
+        #endregion
+
 
         [HttpGet]
         public IActionResult Create()
@@ -174,54 +254,7 @@ namespace saikyo_playlist.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult AddItem()
-        {
-            return View(new AddItemViewModel());
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddItem(AddItemViewModel model)
-        {
-            try
-            {
-                if (String.IsNullOrEmpty(model.Url))
-                {
-                    model.ErrorMessage = "URLを入力してください。";
-                    return View(model);
-                }
-
-                YoutubeVideoRetrieveOperationResult? item;
-                item = await YoutubeDataRepository.GetYoutubeVideoInfoAsync(model.Url);
-
-                if(item.OperationResult == YoutubeAPIRetrieveOperationResultType.UnExpectedError)
-                {
-                    throw new ApplicationException("予期せぬエラーが発生しました。", item.Exception);
-                }
-
-                if (item.OperationResult != YoutubeAPIRetrieveOperationResultType.Success)
-                {
-                    model.ErrorMessage = item.Exception.Message;
-                    return View(model);
-                }
-
-                //取得したデータをライブラリに追加
-                var loginUserInfo = await UserManager.GetUserAsync(User);
-
-                //入力されている場合、タイトルはそちらを使用
-                await ItemLibraryRepository.InsertAsync(model.Platform,
-                    item.RetrieveResult[0].ItemId,
-                    model.TitleAlias != "" ? model.TitleAlias : item.RetrieveResult[0].Title,
-                    loginUserInfo);
-
-            }catch (Exception ex)
-            {
-                model.ErrorMessage = "追加に失敗しました。";
-                return View(model);
-            }
-
-            return Redirect("./PlayList");
-        }
+       
 
 
     }

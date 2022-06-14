@@ -46,13 +46,91 @@ namespace saikyo_playListTest.Controllers
                 configMoq.Object);
         }
 
+        #region Helper method
+
+        /// <summary>
+        /// GetAllAsync()から返却されるアイテムライブラリ一覧
+        /// </summary>
+        /// <returns></returns>
+        internal IEnumerable<ItemLibrariesEntity> ItemLibraryRepo_GetAllResult()
+        {
+            var itemLibRepoRetValue = new List<ItemLibrariesEntity>()
+            {
+                new ItemLibrariesEntity()
+                {
+                    ItemLibrariesEntityId = "ItemLibrariesEntityId_1",
+                    AspNetUserdId = "AspNetUserId_1",
+                    ItemId = "itemid_1",
+                    PlayCount = 0,
+                    Platform = LibraryItemPlatform.Youtube,
+                    Title = "title_1",
+                    TitleAlias = "titleAlias_1",
+                },
+                new ItemLibrariesEntity()
+                {
+                    ItemLibrariesEntityId = "ItemLibrariesEntityId_2",
+                    AspNetUserdId = "AspNetUserId_2",
+                    ItemId = "itemid_2",
+                    PlayCount = 0,
+                    Platform = LibraryItemPlatform.Youtube,
+                    Title = "title_2",
+                    TitleAlias = "titleAlias_2",
+                },
+                new ItemLibrariesEntity()
+                {
+                    ItemLibrariesEntityId = "ItemLibrariesEntityId_3",
+                    AspNetUserdId = "AspNetUserId_3",
+                    ItemId = "itemid_3",
+                    PlayCount = 0,
+                    Platform = LibraryItemPlatform.Youtube,
+                    Title = "title_3",
+                    TitleAlias = "titleAlias_3",
+                },
+                new ItemLibrariesEntity()
+                {
+                    ItemLibrariesEntityId = "ItemLibrariesEntityId_4",
+                    AspNetUserdId = "AspNetUserId_4",
+                    ItemId = "itemid_4",
+                    PlayCount = 0,
+                    Platform = LibraryItemPlatform.Youtube,
+                    Title = "title_3",
+                    TitleAlias = "titleAlias_4",
+                },
+                new ItemLibrariesEntity()
+                {
+                    ItemLibrariesEntityId = "ItemLibrariesEntityId_5",
+                    AspNetUserdId = "AspNetUserId_5",
+                    ItemId = "itemid_5",
+                    PlayCount = 0,
+                    Platform = LibraryItemPlatform.Youtube,
+                    Title = "title_3",
+                    TitleAlias = "titleAlias_5",
+                },
+                new ItemLibrariesEntity()
+                {
+                    ItemLibrariesEntityId = "ItemLibrariesEntityId_6",
+                    AspNetUserdId = "AspNetUserId_6",
+                    ItemId = "itemid_6",
+                    PlayCount = 0,
+                    Platform = LibraryItemPlatform.Youtube,
+                    Title = "title_6",
+                    TitleAlias = "titleAlias_6",
+                },
+
+            };
+
+            return itemLibRepoRetValue;
+        }
+
+        #endregion
+
         #region "Index Action"
 
         /// <summary>
         /// プレイリスト一覧　成功
         /// </summary>
         [Fact]
-        public void Index_ReturnAViewWithModel()
+        public async Task Index_ReturnAViewWithModel()
         {
             //Arrange
             playlistRepo.Setup(repo => repo.GetPlayListHeaderAll())
@@ -73,10 +151,10 @@ namespace saikyo_playListTest.Controllers
 
 
             //Act
-            var actResult = controller.Index();
+            var actResult = await controller.Index();
 
             //Assert
-            var viewResult = Assert.IsType<ViewResult>(actResult.Result);
+            var viewResult = Assert.IsType<ViewResult>(actResult);
             var model = Assert.IsAssignableFrom<ManagePlayListViewModel>(viewResult.Model);
             Assert.Equal(2, model.managePlayListItems.Count);
             playlistRepo.Verify();
@@ -246,6 +324,151 @@ namespace saikyo_playListTest.Controllers
             var viewResult = Assert.IsType<ViewResult>(actResult);
             var modelResult = Assert.IsAssignableFrom<AddItemViewModel>(viewResult.Model);
             Assert.Equal($"URLが正しくありません。Youtubeの動画URLを指定してください。", modelResult.ErrorMessage);
+
+        }
+
+        #endregion
+
+        #region "CreatePlayList Action"
+
+        /// <summary>
+        /// プレイリスト作成　GET 成功
+        /// </summary>
+        [Fact]
+        public void CreatePlayList_ReturnAViewWithResult()
+        {
+            //Arrange
+            var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+            itemLibRepo.Setup(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()))
+                .ReturnsAsync(itemLibRepoRetValue)
+                .Verifiable();
+
+            //Act
+            var actResult = controller.CreatePlayList();
+
+            //Assert
+            var view = Assert.IsType<ViewResult>(actResult);
+            var model = Assert.IsType<CreatePlayListViewModel>(view.Model);
+            Assert.NotNull(model);
+            Assert.NotNull(model.Libraries);
+            Assert.Equal(3,model.Libraries.Count);
+
+        }
+
+        /// <summary>
+        /// プレイリスト作成　POST 成功
+        /// </summary>
+        [Fact]
+        public async Task CreatePlayList_RedirectToIndexWithSucces()
+        {
+
+            //Arrange
+            var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+            var vm = new CreatePlayListViewModel()
+            {
+                Libraries = itemLibRepoRetValue.ToList(),
+                PlayListHeaderId = "",
+                Title = "CreatePlayList_RedirectToIndexWithSucces_Title",
+                SelectedLibraryHeaderIdList = new List<string>()
+                {
+                    "ItemLibrariesEntityId_1",
+                    "ItemLibrariesEntityId_3",
+                    "ItemLibrariesEntityId_5",
+                }
+            };
+            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()))
+                .Verifiable();
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()))
+                .Verifiable();
+
+            //Act
+            var actResult = await controller.CreatePlayList(vm);
+
+            //Assert
+            var view = Assert.IsType<RedirectResult>(actResult);
+            Assert.Equal("./PlayList", view.Url);
+            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()), Times.Once);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()), Times.Exactly(3));
+
+        }
+
+        /// <summary>
+        /// プレイリスト作成　POST 失敗・選択されたURLなし
+        /// </summary>
+        [Fact]
+        public async Task CreatePlayList_NoUrlSelected()
+        {
+
+            //Arrange
+            var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+            var vm = new CreatePlayListViewModel()
+            {
+                Libraries = itemLibRepoRetValue.ToList(),
+                PlayListHeaderId = "",
+                Title = "CreatePlayList_NoUrlSelected_Title",
+                SelectedLibraryHeaderIdList = new List<string>(),
+                ErrorMessage = ""
+            };
+            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()))
+                .Verifiable();
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()))
+                .Verifiable();
+
+            //Act
+            var actResult = await controller.CreatePlayList(vm);
+
+            //Assert
+            var view = Assert.IsType<ViewResult>(actResult);
+            var model = Assert.IsAssignableFrom<CreatePlayListViewModel>(view.Model);
+
+            Assert.Equal(vm.Title, model.Title);
+            Assert.Equal(vm.Libraries.Count, model.Libraries.Count);
+            Assert.Equal("プレイリストに追加するアイテムを選択してください。", model.ErrorMessage);
+
+            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()), Times.Never);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()), Times.Never);
+
+        }
+
+        /// <summary>
+        /// プレイリスト作成　POST 失敗・タイトル入力なし
+        /// </summary>
+        [Fact]
+        public async Task CreatePlayList_NoTitleInput()
+        {
+
+            //Arrange
+            var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+            var vm = new CreatePlayListViewModel()
+            {
+                Libraries = itemLibRepoRetValue.ToList(),
+                PlayListHeaderId = "",
+                Title = "",
+                SelectedLibraryHeaderIdList = new List<string>()
+                {
+                    "ItemLibrariesEntityId_1",
+                    "ItemLibrariesEntityId_3",
+                    "ItemLibrariesEntityId_5",
+                }
+            };
+            controller.ModelState.AddModelError("Title", "Title is required");
+            playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()))
+                .Verifiable();
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()))
+                .Verifiable();
+
+            //Act
+            var actResult = await controller.CreatePlayList(vm);
+
+            var view = Assert.IsType<ViewResult>(actResult);
+            var model = Assert.IsAssignableFrom<CreatePlayListViewModel>(view.Model);
+
+            Assert.Equal(vm.Title, model.Title);
+            Assert.Equal(vm.Libraries.Count, model.Libraries.Count);
+            Assert.Equal("プレイリストのタイトルを入力してください。", model.ErrorMessage);
+
+            playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>()), Times.Never);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>()), Times.Never);
 
         }
 

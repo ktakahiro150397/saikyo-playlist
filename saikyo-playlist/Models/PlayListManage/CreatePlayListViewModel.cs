@@ -12,20 +12,26 @@ namespace saikyo_playlist.Models.PlayListManage
         [Display(Name = "プレイリスト名")]
         public string Title { get; set; }
 
-        [Required]
-        [Display(Name = "追加URL")]
-        public string Urls { get; set; }
+        /// <summary>
+        /// アイテムライブラリの一覧
+        /// </summary>
+        public List<ItemLibrariesEntity> Libraries { get; set; }
 
-        [Required]
-        [Display(Name = "プレイリストURL")]
-        public string PlayListUrl { get; set; }
+        /// <summary>
+        /// アイテムライブラリのうち、プレイリストに追加するよう選択されたIDリスト。
+        /// 追加順に連番を振ります。
+        /// </summary>
+        public List<string> SelectedLibraryHeaderIdList { get; set; }
+
+        public string ErrorMessage { get; set; }
 
         public CreatePlayListViewModel()
         {
             PlayListHeaderId = "";
             Title = "";
-            Urls = "";
-            PlayListUrl = "";
+            Libraries = new List<ItemLibrariesEntity>();
+            SelectedLibraryHeaderIdList = new List<string>();
+            ErrorMessage = "";
         }
     }
 
