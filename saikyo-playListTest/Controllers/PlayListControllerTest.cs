@@ -4,6 +4,7 @@ using saikyo_playlist.Data.Video;
 using saikyo_playlist.Helpers;
 using saikyo_playlist.Models.PlayListManage;
 using saikyo_playlist.Repository.Implements;
+using System.Security.Claims;
 
 namespace saikyo_playListTest.Controllers
 {
@@ -30,6 +31,8 @@ namespace saikyo_playListTest.Controllers
             //Arrange
             var store = new Mock<IUserStore<IdentityUser>>();
             userManagerMoq = new Mock<UserManager<IdentityUser>>(store.Object, null, null, null, null, null, null, null, null);
+            userManagerMoq.Setup(manager => manager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new IdentityUser() { Id = "test_user_id" });
             configMoq = new Mock<IConfiguration>();
             itemLibRepo = new Mock<IItemLibraryRepository>();
             youtubeRepo = new Mock<IYoutubeDataRepository>();
@@ -111,7 +114,19 @@ namespace saikyo_playListTest.Controllers
             itemLibRepo.Setup(repo => repo.InsertAsync(It.IsAny<LibraryItemPlatform>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<IdentityUser>()))
                 .Verifiable();
             youtubeRepo.Setup(repo => repo.GetYoutubeVideoInfoAsync(It.IsAny<string>()))
-                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult() { OperationResult = YoutubeAPIRetrieveOperationResultType.Success })
+                .ReturnsAsync(new YoutubeVideoRetrieveOperationResult() { 
+                    OperationResult = YoutubeAPIRetrieveOperationResultType.Success,
+                    RetrieveResult = new List<YoutubeVideoRetrieveResult>()
+                    {
+                        new YoutubeVideoRetrieveResult()
+                        {
+                            ItemId = "moq_itemId",
+                            ItemSeq = 0,
+                            Title = "moq_Title",
+                            Url = "moq_url"
+                        }
+                    }
+                })
                 .Verifiable();
 
             var model = new AddItemViewModel()
@@ -127,7 +142,7 @@ namespace saikyo_playListTest.Controllers
 
             //Assert
             var viewResult = Assert.IsType<RedirectResult>(actResult);
-            Assert.Equal("/PlayList", viewResult.Url);
+            Assert.Equal("./PlayList", viewResult.Url);
             itemLibRepo.Verify();
             youtubeRepo.Verify();
 
