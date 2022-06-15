@@ -12,13 +12,11 @@ namespace saikyo_playlist.Repository.Implements
     {
 
         private ApplicationDbContext dbContext;
-        private UserManager<IdentityUser> user;
         private IConfiguration Config;
 
-        public PlayListRepository(ApplicationDbContext applicationDbContext, UserManager<IdentityUser> identityUser, IConfiguration config)
+        public PlayListRepository(ApplicationDbContext applicationDbContext, IConfiguration config)
         {
             dbContext = applicationDbContext;
-            user = identityUser;
             Config = config;
         }
 
@@ -458,6 +456,11 @@ namespace saikyo_playlist.Repository.Implements
         /// 操作に成功
         /// </summary>
         Success,
+
+        /// <summary>
+        /// (作成時)名前が入力されていない
+        /// </summary>
+        NoName,
 
         /// <summary>
         /// (取得・更新・削除時)対象のデータが存在しなかった
