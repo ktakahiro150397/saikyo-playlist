@@ -53,7 +53,7 @@ namespace saikyo_playlist.Models.PlayListManage
         /// <returns></returns>
         public async Task Initialize() {
 
-            var playList = await PlayListRepository.GetPlayListHeaderAll(User);
+            var playList = PlayListRepository.GetPlayListHeaderAll(User);
 
             if(playList == null)
             {

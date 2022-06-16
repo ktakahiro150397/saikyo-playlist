@@ -191,7 +191,7 @@ namespace saikyo_playListTest.Controllers
         {
             //Arrange
             playlistRepo.Setup(repo => repo.GetPlayListHeaderAll(It.IsAny<IdentityUser>()))
-                .ReturnsAsync(new List<PlayListHeadersEntity>()
+                .Returns(new List<PlayListHeadersEntity>()
                 {
                     new PlayListHeadersEntity()
                     {

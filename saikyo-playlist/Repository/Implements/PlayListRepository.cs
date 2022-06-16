@@ -363,9 +363,10 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public Task<IEnumerable<PlayListHeadersEntity>> GetPlayListHeaderAll(IdentityUser user)
+        public IEnumerable<PlayListHeadersEntity> GetPlayListHeaderAll(IdentityUser user)
         {
-            throw new NotImplementedException();
+            var result = dbContext.PlayListHeaders.Where(header => header.AspNetUserdId == user.Id).ToList();
+            return result;
         }
 
         public Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName, IdentityUser user)

@@ -15,7 +15,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// </summary>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
-        public Task<IEnumerable<PlayListHeadersEntity>> GetPlayListHeaderAll(IdentityUser user);
+        public IEnumerable<PlayListHeadersEntity> GetPlayListHeaderAll(IdentityUser user);
 
         /// <summary>
         /// プレイリストの新規作成を行います。

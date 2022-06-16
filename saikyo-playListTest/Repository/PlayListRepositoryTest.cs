@@ -241,14 +241,14 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task GetPlayListHeaderAll_Success()
+        public void GetPlayListHeaderAll_Success()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
             //Act
-            var result = await _repo.GetPlayListHeaderAll(userMoq.Object);
+            var result = _repo.GetPlayListHeaderAll(userMoq.Object);
 
             //Assert
             Assert.NotNull(result);
