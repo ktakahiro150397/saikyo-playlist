@@ -369,9 +369,38 @@ namespace saikyo_playlist.Repository.Implements
             return result;
         }
 
-        public Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName, IdentityUser user)
+        public async Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName, IdentityUser user)
         {
-            throw new NotImplementedException();
+            var ret = new PlayListOperationResult();
+
+            if (String.IsNullOrEmpty(playListName))
+            {
+                ret.OperationResult = PlayListOperationResultType.NoName;
+                ret.Exception = new ApplicationException("プレイリストの名前が入力されていません。");
+                return ret;
+            }
+
+            try
+            {
+                var header = new PlayListHeadersEntity()
+                {
+                    Name = playListName,
+                    AspNetUserdId = user.Id,
+                    PlayListHeadersEntityId = GetUniqueId(),
+                };
+                dbContext.PlayListHeaders.Add(header);
+
+                await dbContext.SaveChangesAsync();
+
+                ret.HeaderEntity = header;
+                ret.OperationResult = PlayListOperationResultType.Success;
+            }catch(Exception ex)
+            {
+                ret.OperationResult = PlayListOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
         }
 
         public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail, IdentityUser user)
