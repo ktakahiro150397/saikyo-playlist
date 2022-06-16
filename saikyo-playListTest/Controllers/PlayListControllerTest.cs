@@ -446,7 +446,7 @@ namespace saikyo_playListTest.Controllers
                      }
                 })
                 .Verifiable();
-            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
 
             //Act
@@ -456,7 +456,7 @@ namespace saikyo_playListTest.Controllers
             var view = Assert.IsType<RedirectResult>(actResult);
             Assert.Equal("./PlayList", view.Url);
             playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
-            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Exactly(3));
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Exactly(3));
 
         }
 
@@ -479,7 +479,7 @@ namespace saikyo_playListTest.Controllers
             };
             playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
-            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
 
             //Act
@@ -494,7 +494,7 @@ namespace saikyo_playListTest.Controllers
             Assert.Equal("プレイリストに追加するアイテムを選択してください。", model.ErrorMessage);
 
             playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Never);
-            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
 
         }
 
@@ -522,7 +522,7 @@ namespace saikyo_playListTest.Controllers
             controller.ModelState.AddModelError("Title", "Title is required");
             playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
-            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
+            playlistRepo.Setup(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()))
                 .Verifiable();
 
             //Act
@@ -536,7 +536,7 @@ namespace saikyo_playListTest.Controllers
             Assert.Equal("プレイリストのタイトルを入力してください。", model.ErrorMessage);
 
             playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Never);
-            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<PlayListHeadersEntity>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
+            playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
 
         }
 

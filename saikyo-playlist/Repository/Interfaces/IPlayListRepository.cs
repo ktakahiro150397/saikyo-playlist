@@ -32,7 +32,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="detail">新しく追加するプレイリスト詳細エンティティ。</param>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
-        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail, IdentityUser user);
+        public Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, PlayListDetailsEntity detail, IdentityUser user);
 
         /// <summary>
         /// プレイリストの末尾に新しくアイテムを追加します。
@@ -41,7 +41,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="detail">新しく追加するプレイリスト詳細エンティティのリスト。</param>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
-        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user);
+        public Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user);
 
         /// <summary>
         /// プレイリストから、対象のアイテムを削除します。
@@ -50,7 +50,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="playListDetailId">削除を行うプレイリスト詳細のID。</param>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
-        public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(PlayListHeadersEntity header, string playListDetailId, IdentityUser user);
+        public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(string headerEntityId, string playListDetailId, IdentityUser user);
 
         /// <summary>
         /// プレイリストの対象のアイテムを更新します。
@@ -59,7 +59,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="playListDetailId">更新するプレイリスト詳細のエンティティ。</param>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
-        public Task<PlayListOperationResult> UpdatePlayListItemAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail, IdentityUser user);
+        public Task<PlayListOperationResult> UpdatePlayListItemAsync(string headerEntityId, PlayListDetailsEntity detail, IdentityUser user);
 
         /// <summary>
         /// 対象のプレイリスト情報を取得します。

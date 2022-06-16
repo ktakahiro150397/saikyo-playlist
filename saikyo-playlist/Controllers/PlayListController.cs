@@ -165,7 +165,7 @@ namespace saikyo_playlist.Controllers
                                 ItemLibrariesEntityId = detail.ItemLibrariesEntityId,
                                 ItemSeq = 0,
                             };
-                            await PlayListRepository.AddItemToPlayListAsync(resultHeader.HeaderEntity, detailItem, user);
+                            await PlayListRepository.AddItemToPlayListAsync(resultHeader.HeaderEntity.PlayListHeadersEntityId, detailItem, user);
                         }
                     }
 

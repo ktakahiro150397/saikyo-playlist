@@ -320,9 +320,7 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var header = ApplicationDbContext.PlayListHeaders
-                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == userMoq.Object.Id)
-                .First();
+            var headerId = "playlistheadersentityid_1";
 
             var addDetail = new PlayListDetailsEntity()
             {
@@ -332,7 +330,7 @@ namespace saikyo_playListTest.Repository
             };
 
             //Act
-            var result = await _repo.AddItemToPlayListAsync(header, addDetail, userMoq.Object);
+            var result = await _repo.AddItemToPlayListAsync(headerId, addDetail, userMoq.Object);
 
             //Assert
             //インサートされているはずのデータを取得
@@ -359,7 +357,7 @@ namespace saikyo_playListTest.Repository
             //結果セットのAssert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
             Assert.Null(result.Exception);
-            Assert.Equal(header.PlayListHeadersEntityId, result.HeaderEntity!.PlayListHeadersEntityId);
+            Assert.Equal(headerId, result.HeaderEntity!.PlayListHeadersEntityId);
         }
 
         /// <summary>
@@ -374,10 +372,7 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var header = new PlayListHeadersEntity()
-            {
-                PlayListHeadersEntityId = "not_exist_id"
-            };
+            var headerId = "not_exist_id";
 
             var addDetail = new PlayListDetailsEntity()
             {
@@ -387,7 +382,7 @@ namespace saikyo_playListTest.Repository
             };
 
             //Act
-            var result = await _repo.AddItemToPlayListAsync(header, addDetail, userMoq.Object);
+            var result = await _repo.AddItemToPlayListAsync(headerId, addDetail, userMoq.Object);
 
             //Assert
             //結果セットのAssert
@@ -407,9 +402,7 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var header = ApplicationDbContext.PlayListHeaders
-                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == userMoq.Object.Id)
-                .First();
+            var headerId = "playlistheadersentityid_1";
 
             var addDetail = new List<PlayListDetailsEntity>()
             {
@@ -434,7 +427,7 @@ namespace saikyo_playListTest.Repository
             };
 
             //Act
-            var result = await _repo.AddItemToPlayListAsync(header, addDetail, userMoq.Object);
+            var result = await _repo.AddItemToPlayListAsync(headerId, addDetail, userMoq.Object);
 
             //Assert
             //インサートされているはずのデータを取得
@@ -461,7 +454,7 @@ namespace saikyo_playListTest.Repository
             //結果セットのAssert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
             Assert.Null(result.Exception);
-            Assert.Equal(header.PlayListHeadersEntityId, result.HeaderEntity!.PlayListHeadersEntityId);
+            Assert.Equal(headerId, result.HeaderEntity!.PlayListHeadersEntityId);
 
 
         }
@@ -479,10 +472,7 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var header = new PlayListHeadersEntity()
-            {
-                PlayListHeadersEntityId = "not_exist_id"
-            };
+            var headerId = "not_exist_id";
 
             var addDetail = new List<PlayListDetailsEntity>()
             {
@@ -507,7 +497,7 @@ namespace saikyo_playListTest.Repository
             };
 
             //Act
-            var result = await _repo.AddItemToPlayListAsync(header, addDetail, userMoq.Object);
+            var result = await _repo.AddItemToPlayListAsync(headerId, addDetail, userMoq.Object);
 
             //Assert
             //結果セットのAssert
@@ -528,14 +518,12 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var header = ApplicationDbContext.PlayListHeaders
-                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == userMoq.Object.Id)
-                .First();
+            var headerId = "playlistheadersentityid_1";
 
             var deleteId = "playlistdetailsentityid_2";
 
             //Act
-            var result = await _repo.RemoveItemFromPlayListAsync(header, deleteId, userMoq.Object);
+            var result = await _repo.RemoveItemFromPlayListAsync(headerId, deleteId, userMoq.Object);
 
             //Assert
             //インサートされているはずのデータを取得
@@ -563,7 +551,7 @@ namespace saikyo_playListTest.Repository
             //結果セットのAssert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
             Assert.Null(result.Exception);
-            Assert.Equal(header.PlayListHeadersEntityId, result.HeaderEntity!.PlayListHeadersEntityId);
+            Assert.Equal(headerId, result.HeaderEntity!.PlayListHeadersEntityId);
 
         }
 
@@ -579,14 +567,12 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var header = ApplicationDbContext.PlayListHeaders
-                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == userMoq.Object.Id)
-                .First();
+            var headerId = "playlistheadersentityid_1";
 
             var deleteId = "no_exist_playlistdetailid";
 
             //Act
-            var result = await _repo.RemoveItemFromPlayListAsync(header, deleteId, userMoq.Object);
+            var result = await _repo.RemoveItemFromPlayListAsync(headerId, deleteId, userMoq.Object);
 
             //Assert
             //インサートされているはずのデータを取得
@@ -629,14 +615,12 @@ namespace saikyo_playListTest.Repository
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var header = ApplicationDbContext.PlayListHeaders
-                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_3" && header.AspNetUserdId == "test_user_id_other")
-                .First();
+            var headerId = "playlistheadersentityid_3";
 
             var deleteId = "playlistdetailsentityid_13";
 
             //Act
-            var result = await _repo.RemoveItemFromPlayListAsync(header, deleteId, userMoq.Object);
+            var result = await _repo.RemoveItemFromPlayListAsync(headerId, deleteId, userMoq.Object);
 
             //Assert
             //削除されていないことを確認
