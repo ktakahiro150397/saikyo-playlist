@@ -403,9 +403,38 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail, IdentityUser user)
+        public async Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, PlayListDetailsEntity detail, IdentityUser user)
         {
-            throw new NotImplementedException();
+            var ret = new PlayListOperationResult();
+
+            var h = dbContext.PlayListHeaders.Where(header => header.PlayListHeadersEntityId == header.PlayListHeadersEntityId).FirstOrDefault();
+
+            if(h == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+                return ret;
+            }
+
+            try
+            {
+                //詳細の最大番号を取得
+                var detailMaxSeq = dbContext.PlayListDetails.Where(
+                    detail => detail.PlayListHeadersEntityId == header.PlayListHeadersEntityId)
+                    .Max(detail => detail.ItemSeq);
+                detail.ItemSeq = detailMaxSeq + 1;
+
+                h.Details.Add(detail);
+                await dbContext.SaveChangesAsync();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+                ret.HeaderEntity = header;
+            }catch(Exception ex)
+            {
+                ret.OperationResult = PlayListOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
         }
 
         public Task<PlayListOperationResult> AddItemToPlayListAsync(PlayListHeadersEntity header, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user)
