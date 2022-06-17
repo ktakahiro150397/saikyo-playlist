@@ -695,6 +695,84 @@ namespace saikyo_playListTest.Repository
             Assert.Equal("他ユーザーのプレイリストデータを削除しようとしました。", appEx.Message);
         }
 
+        /// <summary>
+        /// プレイリストアイテムの取得　成功
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetPlayListAsync_Success()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_2";
+
+            //Act
+            var result = await _repo.GetPlayListAsync(headerId, userMoq.Object);
+
+            //Assert
+            Assert.Null(result.Exception);
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+            Assert.Equal(headerId, result.HeaderEntity!.PlayListHeadersEntityId);
+            Assert.Equal(userMoq.Object.Id, result.HeaderEntity!.AspNetUserdId);
+            Assert.Equal("playlistTest_1", result.HeaderEntity!.Name);
+            Assert.Equal(3, result.HeaderEntity!.Details.Count);
+
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの取得　失敗・見つからない
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetPlayListAsync_NotFound()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "not_exist_headerid";
+
+            //Act
+            var result = await _repo.GetPlayListAsync(headerId, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
+            Assert.Null(result.HeaderEntity);
+            var appEx = Assert.IsAssignableFrom<ApplicationException>(result.Exception);
+            Assert.Equal("プレイリストが存在しませんでした。", appEx.Message);
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの取得　他ユーザーのデータ
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetPlayListAsync_TryToDeleteOtherUser()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_3";
+
+            //Act
+            var result = await _repo.GetPlayListAsync(headerId, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
+            Assert.Null(result.HeaderEntity);
+            var appEx = Assert.IsAssignableFrom<ApplicationException>(result.Exception);
+            Assert.Equal("他ユーザーのプレイリストデータを取得しようとしました。", appEx.Message);
+        }
+
+
+
+
+
+
+
 
     }
 

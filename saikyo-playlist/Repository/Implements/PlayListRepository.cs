@@ -504,12 +504,13 @@ namespace saikyo_playlist.Repository.Implements
             }
         }
 
-        public Task<PlayListOperationResult> UpdatePlayListItemAsync(string headerEntityId, PlayListDetailsEntity detail, IdentityUser user)
+
+        public Task<PlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user)
+        public Task<PlayListOperationResult> UpdatePlayListItemSeqAsync(string headerEntityId, string playListDetailId, int itemSeq, IdentityUser user)
         {
             throw new NotImplementedException();
         }
