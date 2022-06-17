@@ -325,9 +325,10 @@ namespace saikyo_playListTest.Repository
             var addDetail = new PlayListDetailsEntity()
             {
                 ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_Success_1",
-                PlayListHeadersEntityId = "playlistheadersentityid_1"
+                PlayListHeadersEntityId = "playlistheadersentityid_1",
             };
+            addDetail.ItemLibrariesEntity = ApplicationDbContext.ItemLibraries
+                .Where(item => item.ItemLibrariesEntityId == "itementity_13").First();
 
             //Act
             var result = await _repo.AddItemToPlayListAsync(headerId, addDetail, userMoq.Object);
@@ -350,7 +351,7 @@ namespace saikyo_playListTest.Repository
                 .OrderBy(elem => elem.ItemSeq)
                 .ToList();
             Assert.Equal(5, insertResult.Count);
-            Assert.Equal("itementity_add_AddItemToPlayListAsync_Success_1", insertResult.Last().ItemLibrariesEntityId);
+            Assert.Equal("itementity_13", insertResult.Last().ItemLibrariesEntityId);
             Assert.Equal("playlistheadersentityid_1", insertResult.Last().PlayListHeadersEntityId);
             Assert.Equal(4, insertResult.Last().ItemSeq);
 

@@ -403,45 +403,48 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, PlayListDetailsEntity detail, IdentityUser user)
+        public async Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, PlayListDetailsEntity detail, IdentityUser user)
         {
-            //var ret = new PlayListOperationResult();
+            var ret = new PlayListOperationResult();
 
-            //var h = dbContext.PlayListHeaders.Where(header => header.PlayListHeadersEntityId == header.PlayListHeadersEntityId).FirstOrDefault();
+            var header = dbContext.PlayListHeaders.Where(h => h.PlayListHeadersEntityId == h.PlayListHeadersEntityId).FirstOrDefault();
 
-            //if (h == null)
-            //{
-            //    ret.OperationResult = PlayListOperationResultType.NotFound;
-            //    return ret;
-            //}
+            if (header == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+                return ret;
+            }
 
-            //try
-            //{
-            //    //詳細の最大番号を取得
-            //    var detailMaxSeq = dbContext.PlayListDetails.Where(
-            //        detail => detail.PlayListHeadersEntityId == header.PlayListHeadersEntityId)
-            //        .Max(detail => detail.ItemSeq);
-            //    detail.ItemSeq = detailMaxSeq + 1;
+            try
+            {
+                //詳細の最大番号を取得
+                var detailMaxSeq = dbContext.PlayListDetails.Where(
+                    detail => detail.PlayListHeadersEntityId == header.PlayListHeadersEntityId)
+                    .Max(detail => detail.ItemSeq);
+                detail.ItemSeq = detailMaxSeq + 1;
 
-            //    h.Details.Add(detail);
-            //    await dbContext.SaveChangesAsync();
+                //データを設定
+                detail.PlayListDetailsEntityId = GetUniqueId();
 
-            //    ret.OperationResult = PlayListOperationResultType.Success;
-            //    ret.HeaderEntity = header;
-            //}
-            //catch (Exception ex)
-            //{
-            //    ret.OperationResult = PlayListOperationResultType.UnExpectedError;
-            //    ret.Exception = ex;
-            //}
+                header.Details.Add(detail);
+                await dbContext.SaveChangesAsync();
 
-            //return ret;
+                ret.OperationResult = PlayListOperationResultType.Success;
+                ret.HeaderEntity = header;
+            }
+            catch (Exception ex)
+            {
+                ret.OperationResult = PlayListOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
 
 
 
 
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user)
