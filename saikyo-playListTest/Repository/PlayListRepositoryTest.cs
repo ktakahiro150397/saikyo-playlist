@@ -447,7 +447,7 @@ namespace saikyo_playListTest.Repository
                 .OrderBy(elem => elem.ItemSeq)
                 .ToList();
             Assert.Equal(7, insertResult.Count);
-            Assert.Equal("itementity_add_AddItemToPlayListAsync_Enumerable_Success_3", insertResult.Last().ItemLibrariesEntityId);
+            Assert.Equal("itementity_2", insertResult.Last().ItemLibrariesEntityId);
             Assert.Equal("playlistheadersentityid_1", insertResult.Last().PlayListHeadersEntityId);
             Assert.Equal(6, insertResult.Last().ItemSeq);
 
@@ -479,20 +479,17 @@ namespace saikyo_playListTest.Repository
                 new PlayListDetailsEntity()
                 {
                     ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_Enumerable_NoHeader_1",
-                PlayListHeadersEntityId = "playlistheadersentityid_1"
+                    ItemLibrariesEntity = ApplicationDbContext.ItemLibraries.Where(item => item.ItemLibrariesEntityId == "itementity_0").First(),
                 },
                 new PlayListDetailsEntity()
                 {
                     ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_Enumerable_NoHeader_2",
-                PlayListHeadersEntityId = "playlistheadersentityid_1"
+                    ItemLibrariesEntity = ApplicationDbContext.ItemLibraries.Where(item => item.ItemLibrariesEntityId == "itementity_1").First(),
                 },
                 new PlayListDetailsEntity()
                 {
                     ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_Enumerable_NoHeader_3",
-                PlayListHeadersEntityId = "playlistheadersentityid_1"
+                    ItemLibrariesEntity = ApplicationDbContext.ItemLibraries.Where(item => item.ItemLibrariesEntityId == "itementity_2").First(),
                 },
             };
 
@@ -556,11 +553,59 @@ namespace saikyo_playListTest.Repository
         }
 
         /// <summary>
-        /// プレイリストアイテムの削除失敗　存在しない
+        /// プレイリストアイテムの削除失敗　ヘッダーが存在しない
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task RemoveItemFromPlayListAsync_NoExist()
+        public async Task RemoveItemFromPlayListAsync_NoExistHeaderId()
+        {
+
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "no_exist_headerid";
+
+            var deleteId = "playlistdetailsentityid_2";
+
+            //Act
+            var result = await _repo.RemoveItemFromPlayListAsync(headerId, deleteId, userMoq.Object);
+
+            //Assert
+            //インサートされているはずのデータを取得
+            var deleteResult = ApplicationDbContext.PlayListHeaders
+                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == userMoq.Object.Id)
+                .Join(
+                    ApplicationDbContext.PlayListDetails,
+                    header => header.PlayListHeadersEntityId,
+                    detail => detail.PlayListHeadersEntityId,
+                    (header, detail) => new
+                    {
+                        header.PlayListHeadersEntityId,
+                        detail.ItemLibrariesEntityId,
+                        detail.PlayListDetailsEntityId,
+                        detail.ItemSeq
+                    }
+                )
+                .OrderBy(elem => elem.ItemSeq)
+                .ToList();
+
+            //数が変わっていないことを確認
+            Assert.Equal(4, deleteResult.Count);
+
+            //結果セットのAssert
+            Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
+            var appEx = Assert.IsAssignableFrom<ApplicationException>(result.Exception);
+            Assert.Equal("削除対象のプレイリストが存在しませんでした。", appEx.Message);
+
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの削除失敗　詳細アイテムが存在しない
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task RemoveItemFromPlayListAsync_NoExistDetailId()
         {
 
             //Arrange
@@ -599,7 +644,7 @@ namespace saikyo_playListTest.Repository
             //結果セットのAssert
             Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
             var appEx = Assert.IsAssignableFrom<ApplicationException>(result.Exception);
-            Assert.Equal("削除対象のアイテムが存在しませんでした。", appEx.Message);
+            Assert.Equal("削除対象のプレイリストアイテムが存在しませんでした。", appEx.Message);
 
         }
 
@@ -625,7 +670,7 @@ namespace saikyo_playListTest.Repository
             //Assert
             //削除されていないことを確認
             var deleteResult = ApplicationDbContext.PlayListHeaders
-                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == "test_user_id_other")
+                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_3" && header.AspNetUserdId == "test_user_id_other")
                 .Join(
                     ApplicationDbContext.PlayListDetails,
                     header => header.PlayListHeadersEntityId,

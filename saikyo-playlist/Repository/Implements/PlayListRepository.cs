@@ -394,7 +394,8 @@ namespace saikyo_playlist.Repository.Implements
 
                 ret.HeaderEntity = header;
                 ret.OperationResult = PlayListOperationResultType.Success;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 ret.OperationResult = PlayListOperationResultType.UnExpectedError;
                 ret.Exception = ex;
@@ -442,14 +443,65 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user)
+        public async Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user)
         {
-            throw new NotImplementedException();
+            var ret = new PlayListOperationResult();
+
+            foreach (var detail in detailList)
+            {
+                ret = await AddItemToPlayListAsync(headerEntityId, detail, user);
+
+                if (ret.OperationResult != PlayListOperationResultType.Success)
+                {
+                    //成功以外の場合、終了
+                    return ret;
+                }
+            }
+
+            return ret;
         }
 
-        public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(string headerEntityId, string playListDetailId, IdentityUser user)
+        public async Task<PlayListOperationResult> RemoveItemFromPlayListAsync(string headerEntityId, string playListDetailId, IdentityUser user)
         {
-            throw new NotImplementedException();
+            var ret = new PlayListOperationResult();
+
+            var header = dbContext.PlayListHeaders.Where(item => item.PlayListHeadersEntityId == headerEntityId).FirstOrDefault();
+            ret.HeaderEntity = header;
+
+            if(header == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+                ret.Exception = new ApplicationException("削除対象のプレイリストが存在しませんでした。");
+                return ret;
+            }
+            else
+            {
+                if(header.AspNetUserdId != user.Id)
+                {
+                    ret.OperationResult = PlayListOperationResultType.NotFound;
+                    ret.Exception = new ApplicationException("他ユーザーのプレイリストデータを削除しようとしました。");
+                    return ret;
+                }
+
+
+                //削除対象のプレイリスト詳細を取得
+                var detail = dbContext.PlayListDetails.SingleOrDefault(detail => detail.PlayListDetailsEntityId == playListDetailId);
+                if(detail == null)
+                {
+                    ret.OperationResult = PlayListOperationResultType.NotFound;
+                    ret.Exception = new ApplicationException("削除対象のプレイリストアイテムが存在しませんでした。");
+                    return ret;
+                }
+                else
+                {
+                    dbContext.PlayListDetails.Remove(detail);
+                    await dbContext.SaveChangesAsync();
+
+                    ret.OperationResult = PlayListOperationResultType.Success;
+                    return ret;
+                }
+                         
+            }
         }
 
         public Task<PlayListOperationResult> UpdatePlayListItemAsync(string headerEntityId, PlayListDetailsEntity detail, IdentityUser user)
