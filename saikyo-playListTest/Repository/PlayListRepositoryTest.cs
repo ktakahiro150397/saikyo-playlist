@@ -46,7 +46,8 @@ namespace saikyo_playListTest.Repository
                 {
                     var item = new ItemLibrariesEntity()
                     {
-                        ItemLibrariesEntityId = $"itementity_{i}"
+                        ItemLibrariesEntityId = $"itementity_{i}",
+                        AspNetUserdId = userMoq.Object.Id
                     };
 
                     ApplicationDbContext.ItemLibraries.Add(item);
@@ -378,9 +379,10 @@ namespace saikyo_playListTest.Repository
             var addDetail = new PlayListDetailsEntity()
             {
                 ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_NoHeader_1",
                 PlayListHeadersEntityId = "playlistheadersentityid_1"
             };
+            addDetail.ItemLibrariesEntity = ApplicationDbContext.ItemLibraries
+               .Where(item => item.ItemLibrariesEntityId == "itementity_13").First();
 
             //Act
             var result = await _repo.AddItemToPlayListAsync(headerId, addDetail, userMoq.Object);
@@ -410,20 +412,17 @@ namespace saikyo_playListTest.Repository
                 new PlayListDetailsEntity()
                 {
                     ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_Enumerable_Success_1",
-                PlayListHeadersEntityId = "playlistheadersentityid_1"
+                    ItemLibrariesEntity = ApplicationDbContext.ItemLibraries.Where(item => item.ItemLibrariesEntityId == "itementity_0").First(),
                 },
                 new PlayListDetailsEntity()
                 {
                     ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_Enumerable_Success_2",
-                PlayListHeadersEntityId = "playlistheadersentityid_1"
+                    ItemLibrariesEntity = ApplicationDbContext.ItemLibraries.Where(item => item.ItemLibrariesEntityId == "itementity_1").First(),
                 },
                 new PlayListDetailsEntity()
                 {
                     ItemSeq = 0,
-                ItemLibrariesEntityId = "itementity_add_AddItemToPlayListAsync_Enumerable_Success_3",
-                PlayListHeadersEntityId = "playlistheadersentityid_1"
+                    ItemLibrariesEntity = ApplicationDbContext.ItemLibraries.Where(item => item.ItemLibrariesEntityId == "itementity_2").First(),
                 },
             };
 
@@ -433,7 +432,7 @@ namespace saikyo_playListTest.Repository
             //Assert
             //インサートされているはずのデータを取得
             var insertResult = ApplicationDbContext.PlayListHeaders
-                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == userMoq.Object.Id)
+                .Where(header => header.PlayListHeadersEntityId == headerId && header.AspNetUserdId == userMoq.Object.Id)
                 .Join(
                     ApplicationDbContext.PlayListDetails,
                     header => header.PlayListHeadersEntityId,

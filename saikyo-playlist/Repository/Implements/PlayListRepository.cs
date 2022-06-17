@@ -407,11 +407,12 @@ namespace saikyo_playlist.Repository.Implements
         {
             var ret = new PlayListOperationResult();
 
-            var header = dbContext.PlayListHeaders.Where(h => h.PlayListHeadersEntityId == h.PlayListHeadersEntityId).FirstOrDefault();
+            var header = dbContext.PlayListHeaders.Where(h => h.PlayListHeadersEntityId == headerEntityId).FirstOrDefault();
 
             if (header == null)
             {
                 ret.OperationResult = PlayListOperationResultType.NotFound;
+                ret.Exception = new ApplicationException("プレイリストが存在しませんでした。");
                 return ret;
             }
 
@@ -439,12 +440,6 @@ namespace saikyo_playlist.Repository.Implements
             }
 
             return ret;
-
-
-
-
-
-            //throw new NotImplementedException();
         }
 
         public Task<PlayListOperationResult> AddItemToPlayListAsync(string headerEntityId, IEnumerable<PlayListDetailsEntity> detailList, IdentityUser user)
