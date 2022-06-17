@@ -767,6 +767,399 @@ namespace saikyo_playListTest.Repository
             Assert.Equal("他ユーザーのプレイリストデータを取得しようとしました。", appEx.Message);
         }
 
+        /// <summary>
+        /// プレイリストアイテムの順序更新　ヘッダーが見つからない
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_HeaderNotFound()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "not_exist_header_id";
+            var detailId = "playlistdetailsentityid_2";
+            var itemSeq = 0;
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId,itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
+            Assert.Null(result.HeaderEntity);
+            var appEx = Assert.IsAssignableFrom<ApplicationException>(result.Exception);
+            Assert.Equal("プレイリストが存在しませんでした。",appEx.Message);
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　詳細アイテムが見つからない
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_DetailNotFound()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "not_exist_detailid";
+            var itemSeq = 0;
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
+            Assert.Null(result.HeaderEntity);
+            var appEx = Assert.IsAssignableFrom<ApplicationException>(result.Exception);
+            Assert.Equal("更新対象のプレイリストアイテムが存在しませんでした。", appEx.Message);
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　成功・隣同士
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_SideBySideItem()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "playlistdetailsentityid_2";
+            var itemSeq = 0;
+
+            //入れ替え対象となる詳細ID
+            var targetDetailId = "playlistdetailsentityid_1";
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+            Assert.Null(result.Exception);
+
+            //順序が入れ替わっていることを確認
+            Assert.NotNull(result.HeaderEntity);
+            Assert.Equal(0, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == detailId).ItemSeq);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == targetDetailId).ItemSeq);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3").ItemSeq);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4").ItemSeq);
+
+            //DBも入れ替わっているかどうかを確認
+            //更新対象
+            var updateDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == detailId);
+            //交換対象
+            var targetDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == targetDetailId);
+
+            //その他アイテム
+            var item_other_1 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3");
+            var item_other_2 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4");
+
+            Assert.Equal(0, updateDetail.ItemSeq);
+            Assert.Equal(1, targetDetail.ItemSeq);
+            Assert.Equal(2, item_other_1.ItemSeq);
+            Assert.Equal(3, item_other_2.ItemSeq);
+
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　成功・1つ飛ばし
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_OneItemInBetween()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "playlistdetailsentityid_3";
+            var itemSeq = 0;
+
+            //入れ替え対象となる詳細ID
+            var targetDetailId = "playlistdetailsentityid_1";
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+            Assert.Null(result.Exception);
+
+            //順序が入れ替わっていることを確認
+            Assert.NotNull(result.HeaderEntity);
+            Assert.Equal(0, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == detailId).ItemSeq);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == targetDetailId).ItemSeq);
+            Assert.Equal(2, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2").ItemSeq);
+            Assert.Equal(3, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4").ItemSeq);
+
+            //DBも入れ替わっているかどうかを確認
+            //更新対象
+            var updateDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == detailId);
+            //交換対象
+            var targetDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == targetDetailId);
+
+            //その他アイテム
+            var item_other_1 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2");
+            var item_other_2 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4");
+
+            Assert.Equal(0, updateDetail.ItemSeq);
+            Assert.Equal(1, targetDetail.ItemSeq);
+            Assert.Equal(2, item_other_1.ItemSeq);
+            Assert.Equal(3, item_other_2.ItemSeq);
+
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　先頭アイテムの更新
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_FirstItem()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "playlistdetailsentityid_1";
+            var itemSeq = 2;
+
+            //入れ替え対象となる詳細ID
+            var targetDetailId = "playlistdetailsentityid_3";
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+            Assert.Null(result.Exception);
+
+            //順序が入れ替わっていることを確認
+            Assert.NotNull(result.HeaderEntity);
+            Assert.Equal(2, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == detailId).ItemSeq);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == targetDetailId).ItemSeq);
+            Assert.Equal(0, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2").ItemSeq);
+            Assert.Equal(3, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4").ItemSeq);
+
+            //DBも入れ替わっているかどうかを確認
+            //更新対象
+            var updateDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == detailId);
+            //交換対象
+            var targetDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == targetDetailId);
+
+            //その他アイテム
+            var item_other_1 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2");
+            var item_other_2 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4");
+
+            Assert.Equal(2, updateDetail.ItemSeq);
+            Assert.Equal(1, targetDetail.ItemSeq);
+            Assert.Equal(0, item_other_1.ItemSeq);
+            Assert.Equal(3, item_other_2.ItemSeq);
+
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　最後アイテムの更新
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_LastItem()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "playlistdetailsentityid_4";
+            var itemSeq = 1;
+
+            //入れ替え対象となる詳細ID
+            var targetDetailId = "playlistdetailsentityid_2";
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+            Assert.Null(result.Exception);
+
+            //順序が入れ替わっていることを確認
+            Assert.NotNull(result.HeaderEntity);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == detailId).ItemSeq);
+            Assert.Equal(2, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == targetDetailId).ItemSeq);
+            Assert.Equal(0, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_1").ItemSeq);
+            Assert.Equal(3, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3").ItemSeq);
+
+            //DBも入れ替わっているかどうかを確認
+            //更新対象
+            var updateDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == detailId);
+            //交換対象
+            var targetDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == targetDetailId);
+
+            //その他アイテム
+            var item_other_1 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_1");
+            var item_other_2 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3");
+
+            Assert.Equal(1, updateDetail.ItemSeq);
+            Assert.Equal(2, targetDetail.ItemSeq);
+            Assert.Equal(0, item_other_1.ItemSeq);
+            Assert.Equal(3, item_other_2.ItemSeq);
+
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　最大連番以上の値で更新
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_ExceedMaxSeq()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "playlistdetailsentityid_1";
+            var itemSeq = 4;
+
+            //入れ替え対象となる詳細ID
+            var targetDetailId = "playlistdetailsentityid_4";
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+            Assert.Null(result.Exception);
+
+            //順序が入れ替わっていることを確認
+            Assert.NotNull(result.HeaderEntity);
+            Assert.Equal(3, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == detailId).ItemSeq);
+            Assert.Equal(2, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == targetDetailId).ItemSeq);
+            Assert.Equal(0, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2").ItemSeq);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3").ItemSeq);
+
+            //DBも入れ替わっているかどうかを確認
+            //更新対象
+            var updateDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == detailId);
+            //交換対象
+            var targetDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == targetDetailId);
+
+            //その他アイテム
+            var item_other_1 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2");
+            var item_other_2 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3");
+
+            Assert.Equal(3, updateDetail.ItemSeq);
+            Assert.Equal(2, targetDetail.ItemSeq);
+            Assert.Equal(0, item_other_1.ItemSeq);
+            Assert.Equal(1, item_other_2.ItemSeq);
+
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　負の値で更新
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_NegativeSeq()
+        {
+
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "playlistdetailsentityid_1";
+            var itemSeq = -1;
+
+            //入れ替え対象となる詳細ID
+            var targetDetailId = "playlistdetailsentityid_4";
+
+            //Act,Assert
+            var argEx = await Assert.ThrowsAsync<ArgumentException>(() => _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object));
+
+            //Assert
+            Assert.Equal("itemSeq", argEx.ParamName);
+            Assert.Equal("プレイリスト連番に負の値が指定されました。", argEx.Message);
+        }
+
+        /// <summary>
+        /// プレイリストアイテムの順序更新　同一の値で更新
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdatePlayListItemSeqAsync_SameSeq()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            var headerId = "playlistheadersentityid_1";
+            var detailId = "playlistdetailsentityid_4";
+            var itemSeq = 3;//同一seqを設定
+
+            //Act
+            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+
+            //Assert
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+            Assert.Null(result.Exception);
+
+            //順序が変わっていないことを確認
+            Assert.NotNull(result.HeaderEntity);
+            Assert.Equal(3, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == detailId).ItemSeq);
+            Assert.Equal(0, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_1").ItemSeq);
+            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2").ItemSeq);
+            Assert.Equal(2, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3").ItemSeq);
+
+            //DBも順序が変わっていないことを確認
+            //更新対象
+            var updateDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == detailId);
+            //交換対象
+            var targetDetail = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_1");
+
+            //その他アイテム
+            var item_other_1 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_2");
+            var item_other_2 = ApplicationDbContext.PlayListDetails
+                .Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3");
+
+            Assert.Equal(3, updateDetail.ItemSeq);
+            Assert.Equal(0, targetDetail.ItemSeq);
+            Assert.Equal(1, item_other_1.ItemSeq);
+            Assert.Equal(2, item_other_2.ItemSeq);
+
+        }
+
+
 
 
 

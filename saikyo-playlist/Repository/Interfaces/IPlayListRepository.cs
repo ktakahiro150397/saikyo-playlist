@@ -53,8 +53,8 @@ namespace saikyo_playlist.Repository.Interfaces
         public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(string headerEntityId, string playListDetailId, IdentityUser user);
 
         /// <summary>
-        /// 指定したプレイリスト詳細アイテムの順序を、プレイリスト間で更新します。
-        /// 同一順序のアイテムが存在する場合、入れ替えます。
+        /// プレイリスト詳細アイテムの順序を指定した値で更新します。
+        /// 更新時、同一順序のアイテムの手前に挿入され、他のアイテム順序も連番になるよう更新されます。
         /// 最大値以上が指定された場合、末尾に移動します。
         /// </summary>
         /// <param name="headerEntityId">更新対象のプレイリストヘッダーエンティティID。</param>
