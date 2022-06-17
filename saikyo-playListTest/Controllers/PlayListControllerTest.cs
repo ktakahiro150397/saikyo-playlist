@@ -548,8 +548,8 @@ namespace saikyo_playListTest.Controllers
             //Arrange
             var playListHeaderId = "header_id";
             var header = PlayListRepo_GetResult();
-            playlistRepo.Setup(repo => repo.GetPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
-                .ReturnsAsync(new PlayListOperationResult()
+            playlistRepo.Setup(repo => repo.GetPlayList(It.IsAny<string>(), It.IsAny<IdentityUser>()))
+                .Returns(new PlayListOperationResult()
                 {
                     OperationResult = PlayListOperationResultType.Success,
                     HeaderEntity = header
@@ -565,7 +565,7 @@ namespace saikyo_playListTest.Controllers
             Assert.NotNull(model);
             Assert.NotNull(model.Libraries);
             Assert.Equal(3, model.Libraries.Count);
-            playlistRepo.Verify(repo => repo.GetPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
+            playlistRepo.Verify(repo => repo.GetPlayList(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
         }
 
 

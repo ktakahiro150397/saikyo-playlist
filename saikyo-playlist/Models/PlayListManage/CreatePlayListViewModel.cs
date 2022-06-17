@@ -43,9 +43,9 @@ namespace saikyo_playlist.Models.PlayListManage
             ErrorMessage = "";
         }
 
-        public async Task SetPlayList(string playListHeaderId, IPlayListRepository playListRepository, IdentityUser user)
+        public void SetPlayList(string playListHeaderId, IPlayListRepository playListRepository, IdentityUser user)
         {
-            var getResult = await playListRepository.GetPlayListAsync(playListHeaderId, user);
+            var getResult = playListRepository.GetPlayList(playListHeaderId, user);
             if(getResult.OperationResult != PlayListOperationResultType.Success)
             {
                 //取得に失敗

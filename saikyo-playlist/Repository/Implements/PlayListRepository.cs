@@ -505,9 +505,25 @@ namespace saikyo_playlist.Repository.Implements
         }
 
 
-        public Task<PlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user)
+        public PlayListOperationResult GetPlayList(string headerEntityId, IdentityUser user)
         {
-            throw new NotImplementedException();
+            var ret = new PlayListOperationResult();
+
+            var playListInfo = dbContext.PlayListHeaders
+                .SingleOrDefault(header => header.PlayListHeadersEntityId == headerEntityId && header.AspNetUserdId == user.Id);
+
+            if(playListInfo == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+                ret.Exception = new ApplicationException("");
+            }
+            else
+            {
+                ret.OperationResult = PlayListOperationResultType.Success;
+                ret.HeaderEntity = playListInfo;
+            }
+
+            return ret;
         }
 
         public Task<PlayListOperationResult> UpdatePlayListItemSeqAsync(string headerEntityId, string playListDetailId, int itemSeq, IdentityUser user)

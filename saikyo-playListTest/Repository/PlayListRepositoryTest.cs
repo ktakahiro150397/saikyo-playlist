@@ -700,16 +700,16 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task GetPlayListAsync_Success()
+        public void GetPlayListAsync_Success()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
             SeedPlayListData();
 
-            var headerId = "playlistheadersentityid_2";
+            var headerId = "playlistheadersentityid_1";
 
             //Act
-            var result = await _repo.GetPlayListAsync(headerId, userMoq.Object);
+            var result = _repo.GetPlayList(headerId, userMoq.Object);
 
             //Assert
             Assert.Null(result.Exception);
@@ -717,7 +717,7 @@ namespace saikyo_playListTest.Repository
             Assert.Equal(headerId, result.HeaderEntity!.PlayListHeadersEntityId);
             Assert.Equal(userMoq.Object.Id, result.HeaderEntity!.AspNetUserdId);
             Assert.Equal("playlistTest_1", result.HeaderEntity!.Name);
-            Assert.Equal(3, result.HeaderEntity!.Details.Count);
+            Assert.Equal(4, result.HeaderEntity!.Details.Count);
 
         }
 
@@ -726,7 +726,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task GetPlayListAsync_NotFound()
+        public void GetPlayListAsync_NotFound()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -735,7 +735,7 @@ namespace saikyo_playListTest.Repository
             var headerId = "not_exist_headerid";
 
             //Act
-            var result = await _repo.GetPlayListAsync(headerId, userMoq.Object);
+            var result = _repo.GetPlayList(headerId, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
@@ -749,7 +749,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task GetPlayListAsync_TryToDeleteOtherUser()
+        public void GetPlayListAsync_TryToDeleteOtherUser()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -758,7 +758,7 @@ namespace saikyo_playListTest.Repository
             var headerId = "playlistheadersentityid_3";
 
             //Act
-            var result = await _repo.GetPlayListAsync(headerId, userMoq.Object);
+            var result = _repo.GetPlayList(headerId, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
