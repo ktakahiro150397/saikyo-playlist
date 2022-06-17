@@ -67,7 +67,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="headerEntityId"></param>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
-        public Task<GetPlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user);
+        public Task<PlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user);
 
 
     }

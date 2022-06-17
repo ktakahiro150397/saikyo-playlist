@@ -130,12 +130,9 @@ namespace saikyo_playListTest.Controllers
         /// テスト用のプレイリスト情報
         /// </summary>
         /// <returns></returns>
-        internal PlayList PlayListRepo_GetResult()
+        internal PlayListHeadersEntity PlayListRepo_GetResult()
         {
-            var playList = new PlayList()
-            {
-
-                Header = new PlayListHeadersEntity()
+            var header = new PlayListHeadersEntity()
                 {
                     PlayListHeadersEntityId = "header_id",
                     Name = "playlist_name",
@@ -172,11 +169,9 @@ namespace saikyo_playListTest.Controllers
                             ItemSeq = 5,
                         },
                     }
-
-                }
             };
 
-            return playList;
+            return header;
         }
 
         #endregion
@@ -548,28 +543,29 @@ namespace saikyo_playListTest.Controllers
         /// プレイリスト編集　GET 成功
         /// </summary>
         [Fact]
-        public void EditPlayList_ReturnAViewWithResult()
+        public async Task EditPlayList_ReturnAViewWithResult()
         {
             //Arrange
-            var playList = PlayListRepo_GetResult();
+            var playListHeaderId = "header_id";
+            var header = PlayListRepo_GetResult();
             playlistRepo.Setup(repo => repo.GetPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
-                .ReturnsAsync(new GetPlayListOperationResult()
+                .ReturnsAsync(new PlayListOperationResult()
                 {
                     OperationResult = PlayListOperationResultType.Success,
-                    PlayList = playList,
+                    HeaderEntity = header
                 })
                 .Verifiable();
 
-            ////Act
-            //var actResult = controller.CreatePlayList();
+            //Act
+            var actResult = await controller.EditPlayList(playListHeaderId);
 
-            ////Assert
-            //var view = Assert.IsType<ViewResult>(actResult);
-            //var model = Assert.IsType<CreateEditDeletePlayListViewModel>(view.Model);
-            //Assert.NotNull(model);
-            //Assert.NotNull(model.Libraries);
-            //Assert.Equal(3, model.Libraries.Count);
-
+            //Assert
+            var view = Assert.IsType<ViewResult>(actResult);
+            var model = Assert.IsType<CreateEditDeletePlayListViewModel>(view.Model);
+            Assert.NotNull(model);
+            Assert.NotNull(model.Libraries);
+            Assert.Equal(3, model.Libraries.Count);
+            playlistRepo.Verify(repo => repo.GetPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
         }
 
 

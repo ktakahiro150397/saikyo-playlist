@@ -193,9 +193,13 @@ namespace saikyo_playlist.Controllers
         #region EditPlayList
 
         [HttpGet]
-        public IActionResult EditPlayList()
+        public async Task<IActionResult> EditPlayList(string playListHeaderId)
         {
             var model = new CreateEditDeletePlayListViewModel();
+
+            var user = await UserManager.GetUserAsync(User);
+            await model.SetPlayList(playListHeaderId,PlayListRepository, user);
+
             return View(model);
 
         }
@@ -203,6 +207,7 @@ namespace saikyo_playlist.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPlayList(CreateEditDeletePlayListViewModel model)
         {
+
 
 
 

@@ -509,7 +509,7 @@ namespace saikyo_playlist.Repository.Implements
             throw new NotImplementedException();
         }
 
-        public Task<GetPlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user)
+        public Task<PlayListOperationResult> GetPlayListAsync(string headerEntityId, IdentityUser user)
         {
             throw new NotImplementedException();
         }
@@ -520,6 +520,8 @@ namespace saikyo_playlist.Repository.Implements
         public PlayListOperationResultType OperationResult { get; set; }
 
         public PlayList PlayList { get; set; }
+
+        public Exception? Exception { get; set; }
 
         public GetPlayListOperationResult()
         {
@@ -535,12 +537,9 @@ namespace saikyo_playlist.Repository.Implements
     {
         public PlayListHeadersEntity Header { get; set; }
 
-        public IList<PlayListDetailsEntity> Details { get; set; }
-
         public PlayList()
         {
             Header = new PlayListHeadersEntity();
-            Details = new List<PlayListDetailsEntity>();
         }
     }
 
