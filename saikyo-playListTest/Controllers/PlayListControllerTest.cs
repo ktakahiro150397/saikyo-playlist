@@ -432,16 +432,19 @@ namespace saikyo_playListTest.Controllers
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_1",
                         itemSeq =0,
+                        PlayListDetailsEntityId = "",
                     },
                     new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_3",
                         itemSeq =1,
+                        PlayListDetailsEntityId = "",
                     },
                     new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_5",
                         itemSeq =2,
+                        PlayListDetailsEntityId = "",
                     },
                 }
             };
@@ -529,16 +532,19 @@ namespace saikyo_playListTest.Controllers
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_1",
                         itemSeq = 0,
+                        PlayListDetailsEntityId = "",
                     },
                     new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_3",
                         itemSeq = 1,
+                        PlayListDetailsEntityId = "",
                     },
                     new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_5",
                         itemSeq = 2,
+                        PlayListDetailsEntityId = "",
                     },
                 }
             };
@@ -604,7 +610,7 @@ namespace saikyo_playListTest.Controllers
         }
 
         /// <summary>
-        /// プレイリスト編集　POST 成功
+        /// プレイリスト編集　POST 成功・追加
         /// </summary>
         /// <returns></returns>
         [Fact]
@@ -624,19 +630,30 @@ namespace saikyo_playListTest.Controllers
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_1",
                         itemSeq = 0,
+                        PlayListDetailsEntityId = "",
                     },
                     new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_3",
                         itemSeq = 1,
+                        PlayListDetailsEntityId = "",
                     },
                     new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_5",
                         itemSeq = 2,
+                        PlayListDetailsEntityId = "",
                     },
                 }
             };
+
+            //Act
+            var actResult = await controller.EditPlayList(vm);
+
+            //Assert
+            var viewResult = Assert.IsAssignableFrom<RedirectResult>(actResult);
+            Assert.Equal("./PlayList", viewResult.Url);
+            
 
 
             //TODO : 要書き直しのため必ず失敗させる
