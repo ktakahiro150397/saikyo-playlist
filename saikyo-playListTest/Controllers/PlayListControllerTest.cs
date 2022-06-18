@@ -468,8 +468,6 @@ namespace saikyo_playListTest.Controllers
             playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
             playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Exactly(3));
 
-            //TODO : 要書き直しのため必ず失敗させる
-            Assert.True(1 == 2);
         }
 
         /// <summary>
@@ -503,13 +501,12 @@ namespace saikyo_playListTest.Controllers
 
             Assert.Equal(vm.Title, model.Title);
             Assert.Equal(vm.Libraries.Count, model.Libraries.Count);
+            Assert.Empty(vm.SelectedLibraryInfo);
             Assert.Equal("プレイリストに追加するアイテムを選択してください。", model.ErrorMessage);
 
             playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Never);
             playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
 
-            //TODO : 要書き直しのため必ず失敗させる
-            Assert.True(1 == 2);
         }
 
         /// <summary>
@@ -563,9 +560,6 @@ namespace saikyo_playListTest.Controllers
 
             playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Never);
             playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Never);
-
-            //TODO : 要書き直しのため必ず失敗させる
-            Assert.True(1 == 2);
         }
 
         #endregion
@@ -607,8 +601,6 @@ namespace saikyo_playListTest.Controllers
             playlistRepo.Verify(repo => repo.GetPlayList(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
             itemLibRepo.Verify(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()), Times.Once);
 
-            //TODO : 要書き直しのため必ず失敗させる
-            Assert.True(1 == 2);
         }
 
         /// <summary>
