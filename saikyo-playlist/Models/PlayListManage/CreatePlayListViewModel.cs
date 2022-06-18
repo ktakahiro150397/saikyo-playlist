@@ -43,7 +43,7 @@ namespace saikyo_playlist.Models.PlayListManage
             ErrorMessage = "";
         }
 
-        public void SetPlayList(string playListHeaderId, IPlayListRepository playListRepository, IdentityUser user)
+        public async Task SetPlayList(string playListHeaderId,IItemLibraryRepository itemLibraryRepository, IPlayListRepository playListRepository, IdentityUser user)
         {
             var getResult = playListRepository.GetPlayList(playListHeaderId, user);
             if(getResult.OperationResult != PlayListOperationResultType.Success)
@@ -57,6 +57,8 @@ namespace saikyo_playlist.Models.PlayListManage
                 PlayListDetails = getResult.HeaderEntity!.Details.ToList();
             }
 
+            var libResult = await itemLibraryRepository.GetAllAsync(user);
+            Libraries = libResult.ToList();
         }
 
     }

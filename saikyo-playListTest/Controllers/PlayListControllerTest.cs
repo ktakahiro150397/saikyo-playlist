@@ -556,6 +556,11 @@ namespace saikyo_playListTest.Controllers
                 })
                 .Verifiable();
 
+            var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+            itemLibRepo.Setup(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()))
+                .ReturnsAsync(itemLibRepoRetValue.Where(item => item.AspNetUserdId == userMoq.Object.Id))
+                .Verifiable();
+
             //Act
             var actResult = await controller.EditPlayList(playListHeaderId);
 
@@ -564,8 +569,10 @@ namespace saikyo_playListTest.Controllers
             var model = Assert.IsType<CreateEditDeletePlayListViewModel>(view.Model);
             Assert.NotNull(model);
             Assert.NotNull(model.Libraries);
-            Assert.Equal(3, model.Libraries.Count);
+            Assert.Equal(4, model.Libraries.Count);
+            Assert.Equal(6, model.PlayListDetails.Count);
             playlistRepo.Verify(repo => repo.GetPlayList(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
+            itemLibRepo.Verify(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()), Times.Once);
         }
 
 

@@ -198,7 +198,7 @@ namespace saikyo_playlist.Controllers
             var model = new CreateEditDeletePlayListViewModel();
 
             var user = await UserManager.GetUserAsync(User);
-            model.SetPlayList(playListHeaderId,PlayListRepository, user);
+            await model.SetPlayList(playListHeaderId,ItemLibraryRepository, PlayListRepository, user);
 
             return View(model);
 
@@ -207,6 +207,7 @@ namespace saikyo_playlist.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPlayList(CreateEditDeletePlayListViewModel model)
         {
+
 
 
 
