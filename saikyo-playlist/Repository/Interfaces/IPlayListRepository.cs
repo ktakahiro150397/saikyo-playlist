@@ -62,7 +62,7 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <param name="user">ログインユーザー</param>
         /// <param name="itemSeq">更新後のアイテム順序。0から始まります。</param>
         /// <returns></returns>
-        public Task<PlayListOperationResult> UpdatePlayListItemSeqAsync(string headerEntityId, string playListDetailId, int itemSeq, IdentityUser user);
+        public PlayListOperationResult UpdatePlayListItemSeqAsync(string headerEntityId, string playListDetailId, int itemSeq, IdentityUser user);
 
         /// <summary>
         /// 対象のプレイリスト情報を取得します。

@@ -772,7 +772,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_HeaderNotFound()
+        public void UpdatePlayListItemSeqAsync_HeaderNotFound()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -783,7 +783,7 @@ namespace saikyo_playListTest.Repository
             var itemSeq = 0;
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId,itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId,itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
@@ -797,7 +797,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_DetailNotFound()
+        public void UpdatePlayListItemSeqAsync_DetailNotFound()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -808,7 +808,7 @@ namespace saikyo_playListTest.Repository
             var itemSeq = 0;
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
@@ -822,7 +822,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_SideBySideItem()
+        public void UpdatePlayListItemSeqAsync_SideBySideItem()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -836,7 +836,7 @@ namespace saikyo_playListTest.Repository
             var targetDetailId = "playlistdetailsentityid_1";
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
@@ -846,8 +846,8 @@ namespace saikyo_playListTest.Repository
             Assert.NotNull(result.HeaderEntity);
             Assert.Equal(0, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == detailId).ItemSeq);
             Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == targetDetailId).ItemSeq);
-            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3").ItemSeq);
-            Assert.Equal(1, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4").ItemSeq);
+            Assert.Equal(2, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_3").ItemSeq);
+            Assert.Equal(3, result.HeaderEntity!.Details.Single(detail => detail.PlayListDetailsEntityId == "playlistdetailsentityid_4").ItemSeq);
 
             //DBも入れ替わっているかどうかを確認
             //更新対象
@@ -875,7 +875,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_OneItemInBetween()
+        public void UpdatePlayListItemSeqAsync_OneItemInBetween()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -889,7 +889,7 @@ namespace saikyo_playListTest.Repository
             var targetDetailId = "playlistdetailsentityid_1";
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
@@ -928,7 +928,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_FirstItem()
+        public void UpdatePlayListItemSeqAsync_FirstItem()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -942,7 +942,7 @@ namespace saikyo_playListTest.Repository
             var targetDetailId = "playlistdetailsentityid_3";
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
@@ -981,7 +981,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_LastItem()
+        public void UpdatePlayListItemSeqAsync_LastItem()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -995,7 +995,7 @@ namespace saikyo_playListTest.Repository
             var targetDetailId = "playlistdetailsentityid_2";
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
@@ -1034,7 +1034,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_ExceedMaxSeq()
+        public void UpdatePlayListItemSeqAsync_ExceedMaxSeq()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -1048,7 +1048,7 @@ namespace saikyo_playListTest.Repository
             var targetDetailId = "playlistdetailsentityid_4";
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
@@ -1087,7 +1087,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_NegativeSeq()
+        public void UpdatePlayListItemSeqAsync_NegativeSeq()
         {
 
             //Arrange
@@ -1102,11 +1102,11 @@ namespace saikyo_playListTest.Repository
             var targetDetailId = "playlistdetailsentityid_4";
 
             //Act,Assert
-            var argEx = await Assert.ThrowsAsync<ArgumentException>(() => _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object));
+            var argEx = Assert.Throws<ArgumentException>(() => _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object));
 
             //Assert
             Assert.Equal("itemSeq", argEx.ParamName);
-            Assert.Equal("プレイリスト連番に負の値が指定されました。", argEx.Message);
+            Assert.Equal("プレイリスト連番に負の値が指定されました。 (Parameter 'itemSeq')", argEx.Message);
         }
 
         /// <summary>
@@ -1114,7 +1114,7 @@ namespace saikyo_playListTest.Repository
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task UpdatePlayListItemSeqAsync_SameSeq()
+        public void UpdatePlayListItemSeqAsync_SameSeq()
         {
             //Arrange
             ApplicationDbContext.Database.EnsureClean();
@@ -1125,7 +1125,7 @@ namespace saikyo_playListTest.Repository
             var itemSeq = 3;//同一seqを設定
 
             //Act
-            var result = await _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
+            var result = _repo.UpdatePlayListItemSeqAsync(headerId, detailId, itemSeq, userMoq.Object);
 
             //Assert
             Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);

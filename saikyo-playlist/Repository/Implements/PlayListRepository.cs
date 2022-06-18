@@ -468,7 +468,7 @@ namespace saikyo_playlist.Repository.Implements
             var header = dbContext.PlayListHeaders.Where(item => item.PlayListHeadersEntityId == headerEntityId).FirstOrDefault();
             ret.HeaderEntity = header;
 
-            if(header == null)
+            if (header == null)
             {
                 ret.OperationResult = PlayListOperationResultType.NotFound;
                 ret.Exception = new ApplicationException("削除対象のプレイリストが存在しませんでした。");
@@ -476,7 +476,7 @@ namespace saikyo_playlist.Repository.Implements
             }
             else
             {
-                if(header.AspNetUserdId != user.Id)
+                if (header.AspNetUserdId != user.Id)
                 {
                     ret.OperationResult = PlayListOperationResultType.NotFound;
                     ret.Exception = new ApplicationException("他ユーザーのプレイリストデータを削除しようとしました。");
@@ -486,7 +486,7 @@ namespace saikyo_playlist.Repository.Implements
 
                 //削除対象のプレイリスト詳細を取得
                 var detail = dbContext.PlayListDetails.SingleOrDefault(detail => detail.PlayListDetailsEntityId == playListDetailId);
-                if(detail == null)
+                if (detail == null)
                 {
                     ret.OperationResult = PlayListOperationResultType.NotFound;
                     ret.Exception = new ApplicationException("削除対象のプレイリストアイテムが存在しませんでした。");
@@ -500,7 +500,7 @@ namespace saikyo_playlist.Repository.Implements
                     ret.OperationResult = PlayListOperationResultType.Success;
                     return ret;
                 }
-                         
+
             }
         }
 
@@ -512,14 +512,14 @@ namespace saikyo_playlist.Repository.Implements
             var playListInfo = dbContext.PlayListHeaders
                 .SingleOrDefault(header => header.PlayListHeadersEntityId == headerEntityId);
 
-            if(playListInfo == null)
+            if (playListInfo == null)
             {
                 ret.OperationResult = PlayListOperationResultType.NotFound;
                 ret.Exception = new ApplicationException("プレイリストが存在しませんでした。");
             }
             else
             {
-                if(playListInfo.AspNetUserdId != user.Id)
+                if (playListInfo.AspNetUserdId != user.Id)
                 {
                     ret.OperationResult = PlayListOperationResultType.NotFound;
                     ret.Exception = new ApplicationException("他ユーザーのプレイリストデータを取得しようとしました。");
@@ -533,8 +533,105 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
-        public Task<PlayListOperationResult> UpdatePlayListItemSeqAsync(string headerEntityId, string playListDetailId, int itemSeq, IdentityUser user)
+        public PlayListOperationResult UpdatePlayListItemSeqAsync(string headerEntityId, string playListDetailId, int itemSeq, IdentityUser user)
         {
+
+            if (itemSeq < 0)
+            {
+                throw new ArgumentException("プレイリスト連番に負の値が指定されました。", nameof(itemSeq));
+            }
+
+            var ret = new PlayListOperationResult();
+
+            var header = dbContext.PlayListHeaders
+                .SingleOrDefault(header => header.PlayListHeadersEntityId == headerEntityId);
+
+            if (header == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+                ret.Exception = new ApplicationException("プレイリストが存在しませんでした。");
+                return ret;
+            }
+            else
+            {
+                if (header.AspNetUserdId != user.Id)
+                {
+                    ret.OperationResult = PlayListOperationResultType.NotFound;
+                    ret.Exception = new ApplicationException("他ユーザーのプレイリストデータを取得しようとしました。");
+                    return ret;
+                }
+
+                if (!header.Details.Any(detail => detail.PlayListDetailsEntityId == playListDetailId))
+                {
+                    //指定されたアイテムが存在しない
+                    ret.OperationResult = PlayListOperationResultType.NotFound;
+                    ret.Exception = new ApplicationException("更新対象のプレイリストアイテムが存在しませんでした。");
+                    return ret;
+                }
+
+                //入れ替え処理
+
+                //入れ替え対象オブジェクトを保持
+                var detailId = header.Details.Single(detail => detail.PlayListDetailsEntityId == playListDetailId);
+                var detailIdSeq = detailId.ItemSeq;
+
+                //入れ替えられるオブジェクトを保持
+                int targetDetailSeq;
+                if (!header.Details.Any(detail => detail.ItemSeq == itemSeq))
+                {
+                    //引数のitemSeqが最大値を超えている
+                    //最大値のitemSeqに置換して処理
+                    targetDetailSeq = header.Details.Max(detail => detail.ItemSeq);
+                    itemSeq = targetDetailSeq;
+                }
+                else
+                {
+                    targetDetailSeq = header.Details.Single(detail => detail.ItemSeq == itemSeq).ItemSeq;
+                }
+
+                //対象オブジェクトが元あったItemSeqまで加算する
+                //加算対象のオブジェクトを取得
+                IList<PlayListDetailsEntity> addTarget;
+
+                if (targetDetailSeq <= detailIdSeq)
+                {
+                    addTarget = header.Details
+                    .Where(detail => targetDetailSeq <= detail.ItemSeq && detail.ItemSeq < detailIdSeq)
+                    .ToList();
+
+                    //対象オブジェクトのItemSeqを加算
+                    foreach (var data in addTarget)
+                    {
+                        data.ItemSeq += 1;
+                    }
+                }
+                else
+                {
+                    addTarget = header.Details
+                   .Where(detail => detailIdSeq < detail.ItemSeq && detail.ItemSeq <= targetDetailSeq)
+                   .ToList();
+
+                    //対象オブジェクトのItemSeqを減算
+                    foreach (var data in addTarget)
+                    {
+                        data.ItemSeq -= 1;
+                    }
+                }
+
+                //対象オブジェクトの順序を変更
+                dbContext.PlayListDetails
+                    .Single(detail => detail.PlayListDetailsEntityId == detailId.PlayListDetailsEntityId)
+                    .ItemSeq = itemSeq;
+
+                //データを保存
+                dbContext.SaveChanges();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+                ret.HeaderEntity = header;
+                return ret;
+            }
+
+
             throw new NotImplementedException();
         }
     }
