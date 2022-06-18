@@ -510,15 +510,22 @@ namespace saikyo_playlist.Repository.Implements
             var ret = new PlayListOperationResult();
 
             var playListInfo = dbContext.PlayListHeaders
-                .SingleOrDefault(header => header.PlayListHeadersEntityId == headerEntityId && header.AspNetUserdId == user.Id);
+                .SingleOrDefault(header => header.PlayListHeadersEntityId == headerEntityId);
 
             if(playListInfo == null)
             {
                 ret.OperationResult = PlayListOperationResultType.NotFound;
-                ret.Exception = new ApplicationException("");
+                ret.Exception = new ApplicationException("プレイリストが存在しませんでした。");
             }
             else
             {
+                if(playListInfo.AspNetUserdId != user.Id)
+                {
+                    ret.OperationResult = PlayListOperationResultType.NotFound;
+                    ret.Exception = new ApplicationException("他ユーザーのプレイリストデータを取得しようとしました。");
+                    return ret;
+                }
+
                 ret.OperationResult = PlayListOperationResultType.Success;
                 ret.HeaderEntity = playListInfo;
             }
