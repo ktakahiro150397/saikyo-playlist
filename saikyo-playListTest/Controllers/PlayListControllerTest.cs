@@ -382,6 +382,8 @@ namespace saikyo_playListTest.Controllers
 
         #region "CreatePlayList Action"
 
+        //TODO : PlayListEditorDisplayDataクラスを使用するテストに書き直す
+
         /// <summary>
         /// プレイリスト作成　GET 成功
         /// </summary>
@@ -421,19 +423,19 @@ namespace saikyo_playListTest.Controllers
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
                 Title = "CreatePlayList_RedirectToIndexWithSucces_Title",
-                SelectedLibraryInfo = new List<SelectedItem>()
+                SelectedLibraryInfo = new List<PlayListEditorDisplayData>()
                 {
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_1",
                         itemSeq =0,
                     },
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_3",
                         itemSeq =1,
                     },
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_5",
                         itemSeq =2,
@@ -479,7 +481,7 @@ namespace saikyo_playListTest.Controllers
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
                 Title = "CreatePlayList_NoUrlSelected_Title",
-                SelectedLibraryInfo = new List<SelectedItem>(),
+                SelectedLibraryInfo = new List<PlayListEditorDisplayData>(),
                 ErrorMessage = ""
             };
             playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
@@ -517,19 +519,19 @@ namespace saikyo_playListTest.Controllers
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
                 Title = "",
-                SelectedLibraryInfo = new List<SelectedItem>()
+                SelectedLibraryInfo = new List<PlayListEditorDisplayData>()
                 {
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_1",
                         itemSeq = 0,
                     },
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_3",
                         itemSeq = 1,
                     },
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_5",
                         itemSeq = 2,
@@ -592,7 +594,7 @@ namespace saikyo_playListTest.Controllers
             Assert.NotNull(model);
             Assert.NotNull(model.Libraries);
             Assert.Equal(4, model.Libraries.Count);
-            Assert.Equal(6, model.PlayListDetails.Count);
+            Assert.Equal(6, model.SelectedLibraryInfo.Count);
             playlistRepo.Verify(repo => repo.GetPlayList(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
             itemLibRepo.Verify(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()), Times.Once);
         }
@@ -612,19 +614,19 @@ namespace saikyo_playListTest.Controllers
                 PlayListHeaderId = "",
                 Title = "CreatePlayList_RedirectToIndexWithSucces_Title",
 
-                SelectedLibraryInfo = new List<SelectedItem>()
+                SelectedLibraryInfo = new List<PlayListEditorDisplayData>()
                 {
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_1",
                         itemSeq = 0,
                     },
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_3",
                         itemSeq = 1,
                     },
-                    new SelectedItem()
+                    new PlayListEditorDisplayData()
                     {
                         ItemLibraryEntityId = "ItemLibrariesEntityId_5",
                         itemSeq = 2,

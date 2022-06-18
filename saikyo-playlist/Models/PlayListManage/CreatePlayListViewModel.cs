@@ -8,7 +8,10 @@ namespace saikyo_playlist.Models.PlayListManage
 {
     public class CreateEditDeletePlayListViewModel
     {
-
+        /// <summary>
+        /// プレイリストヘッダーのID。
+        /// 画面から新規作成されている場合は空白が設定されます。
+        /// </summary>
         public string PlayListHeaderId { get; set; }
 
         [Required]
@@ -23,12 +26,7 @@ namespace saikyo_playlist.Models.PlayListManage
         /// <summary>
         /// アイテムライブラリのうち、プレイリストに追加するよう選択されたアイテム情報リスト。
         /// </summary>
-        public List<SelectedItem> SelectedLibraryInfo { get; set; }
-
-        /// <summary>
-        /// 取得時点でこのプレイリストに登録されているアイテムの情報。
-        /// </summary>
-        public List<PlayListDetailsEntity> PlayListDetails { get; set; }
+        public List<PlayListEditorDisplayData> SelectedLibraryInfo { get; set; }
 
         public string ErrorMessage { get; set; }
 
@@ -37,8 +35,7 @@ namespace saikyo_playlist.Models.PlayListManage
             PlayListHeaderId = "";
             Title = "";
             Libraries = new List<ItemLibrariesEntity>();
-            PlayListDetails = new List<PlayListDetailsEntity>();
-            SelectedLibraryInfo = new List<SelectedItem>();
+            SelectedLibraryInfo = new List<PlayListEditorDisplayData>();
             ErrorMessage = "";
         }
 
@@ -53,7 +50,18 @@ namespace saikyo_playlist.Models.PlayListManage
             else
             {
                 PlayListHeaderId = playListHeaderId;
-                PlayListDetails = getResult.HeaderEntity!.Details.ToList();
+                var playListDetails = getResult.HeaderEntity!.Details.ToList();
+
+                foreach(var detail in playListDetails)
+                {
+                    SelectedLibraryInfo.Add(
+                        new PlayListEditorDisplayData()
+                        {
+                            ItemLibraryEntityId = detail.ItemLibrariesEntityId,
+                            itemSeq = detail.ItemSeq,
+                            PlayListDetailsEntityId = detail.PlayListDetailsEntityId,
+                        });
+                }
             }
 
             var libResult = await itemLibraryRepository.GetAllAsync(user);
@@ -62,8 +70,17 @@ namespace saikyo_playlist.Models.PlayListManage
 
     }
 
-    public class SelectedItem
+    /// <summary>
+    /// プレイリストの編集画面で表示している・されているデータを表します。
+    /// </summary>
+    public class PlayListEditorDisplayData
     {
+        /// <summary>
+        /// プレイリスト詳細ID。
+        /// 画面上から新規追加されている場合は空白が設定されます。
+        /// </summary>
+        public string PlayListDetailsEntityId { get; set; }
+
         /// <summary>
         /// 選択されたアイテムID。
         /// </summary>
@@ -73,9 +90,10 @@ namespace saikyo_playlist.Models.PlayListManage
         /// 選択されたアイテムIDの連番。
         /// </summary>
         public int itemSeq { get; set; }
-
-        public SelectedItem()
+       
+        public PlayListEditorDisplayData()
         {
+            PlayListDetailsEntityId = "";
             ItemLibraryEntityId = "";
         }
 
