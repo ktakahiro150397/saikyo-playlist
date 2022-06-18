@@ -421,11 +421,23 @@ namespace saikyo_playListTest.Controllers
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
                 Title = "CreatePlayList_RedirectToIndexWithSucces_Title",
-                SelectedLibraryHeaderIdList = new List<string>()
+                SelectedLibraryInfo = new List<SelectedItem>()
                 {
-                    "ItemLibrariesEntityId_1",
-                    "ItemLibrariesEntityId_3",
-                    "ItemLibrariesEntityId_5",
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_1",
+                        itemSeq =0,
+                    },
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_3",
+                        itemSeq =1,
+                    },
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_5",
+                        itemSeq =2,
+                    },
                 }
             };
             playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
@@ -467,7 +479,7 @@ namespace saikyo_playListTest.Controllers
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
                 Title = "CreatePlayList_NoUrlSelected_Title",
-                SelectedLibraryHeaderIdList = new List<string>(),
+                SelectedLibraryInfo = new List<SelectedItem>(),
                 ErrorMessage = ""
             };
             playlistRepo.Setup(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()))
@@ -505,11 +517,23 @@ namespace saikyo_playListTest.Controllers
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
                 Title = "",
-                SelectedLibraryHeaderIdList = new List<string>()
+                SelectedLibraryInfo = new List<SelectedItem>()
                 {
-                    "ItemLibrariesEntityId_1",
-                    "ItemLibrariesEntityId_3",
-                    "ItemLibrariesEntityId_5",
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_1",
+                        itemSeq = 0,
+                    },
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_3",
+                        itemSeq = 1,
+                    },
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_5",
+                        itemSeq = 2,
+                    },
                 }
             };
             controller.ModelState.AddModelError("Title", "Title is required");
@@ -580,6 +604,37 @@ namespace saikyo_playListTest.Controllers
         [Fact]
         public async Task EditPlayList_RedirectToIndexWithSuccess()
         {
+            //Arrange
+            var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+            var vm = new CreateEditDeletePlayListViewModel()
+            {
+                Libraries = itemLibRepoRetValue.ToList(),
+                PlayListHeaderId = "",
+                Title = "CreatePlayList_RedirectToIndexWithSucces_Title",
+
+                SelectedLibraryInfo = new List<SelectedItem>()
+                {
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_1",
+                        itemSeq = 0,
+                    },
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_3",
+                        itemSeq = 1,
+                    },
+                    new SelectedItem()
+                    {
+                        ItemLibraryEntityId = "ItemLibrariesEntityId_5",
+                        itemSeq = 2,
+                    },
+                }
+            };
+
+
+
+
 
         }
 

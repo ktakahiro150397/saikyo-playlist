@@ -21,13 +21,12 @@ namespace saikyo_playlist.Models.PlayListManage
         public List<ItemLibrariesEntity> Libraries { get; set; }
 
         /// <summary>
-        /// アイテムライブラリのうち、プレイリストに追加するよう選択されたIDリスト。
-        /// 追加順に連番を振ります。
+        /// アイテムライブラリのうち、プレイリストに追加するよう選択されたアイテム情報リスト。
         /// </summary>
-        public List<string> SelectedLibraryHeaderIdList { get; set; }
+        public List<SelectedItem> SelectedLibraryInfo { get; set; }
 
         /// <summary>
-        /// このプレイリストに登録されているアイテムの情報。
+        /// 取得時点でこのプレイリストに登録されているアイテムの情報。
         /// </summary>
         public List<PlayListDetailsEntity> PlayListDetails { get; set; }
 
@@ -39,7 +38,7 @@ namespace saikyo_playlist.Models.PlayListManage
             Title = "";
             Libraries = new List<ItemLibrariesEntity>();
             PlayListDetails = new List<PlayListDetailsEntity>();
-            SelectedLibraryHeaderIdList = new List<string>();
+            SelectedLibraryInfo = new List<SelectedItem>();
             ErrorMessage = "";
         }
 
@@ -59,6 +58,25 @@ namespace saikyo_playlist.Models.PlayListManage
 
             var libResult = await itemLibraryRepository.GetAllAsync(user);
             Libraries = libResult.ToList();
+        }
+
+    }
+
+    public class SelectedItem
+    {
+        /// <summary>
+        /// 選択されたアイテムID。
+        /// </summary>
+        public string ItemLibraryEntityId { get; set; }
+
+        /// <summary>
+        /// 選択されたアイテムIDの連番。
+        /// </summary>
+        public int itemSeq { get; set; }
+
+        public SelectedItem()
+        {
+            ItemLibraryEntityId = "";
         }
 
     }

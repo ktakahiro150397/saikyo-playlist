@@ -126,7 +126,7 @@ namespace saikyo_playlist.Controllers
             if (ModelState.IsValid)
             {
                 //URLが選択されているかどうかを確認
-                if(model.SelectedLibraryHeaderIdList.Count == 0)
+                if(model.SelectedLibraryInfo.Count == 0)
                 {
                     model.ErrorMessage = "プレイリストに追加するアイテムを選択してください。";
                     return View(model);
@@ -144,9 +144,9 @@ namespace saikyo_playlist.Controllers
                 {
                     //選択されているヘッダーIDから追加するライブラリを取得
                     var details = new List<ItemLibrariesEntity>();
-                    foreach(var selected in model.SelectedLibraryHeaderIdList)
+                    foreach(var selected in model.SelectedLibraryInfo)
                     {
-                        var libItem = model.Libraries.Where(lib => lib.ItemLibrariesEntityId == selected).First();
+                        var libItem = model.Libraries.Where(lib => lib.ItemLibrariesEntityId == selected.ItemLibraryEntityId).First();
                         details.Add(libItem);
                     }
 
