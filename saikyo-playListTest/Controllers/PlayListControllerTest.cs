@@ -1,6 +1,4 @@
-﻿
-
-using saikyo_playlist.Data.Video;
+﻿using saikyo_playlist.Data.Video;
 using saikyo_playlist.Helpers;
 using saikyo_playlist.Models.PlayListManage;
 using saikyo_playlist.Repository.Implements;
@@ -537,7 +535,7 @@ namespace saikyo_playListTest.Controllers
 
         #endregion
 
-        #region EditPlayList Action
+        #region "EditPlayList Action"
 
         /// <summary>
         /// プレイリスト編集　GET 成功
@@ -573,6 +571,36 @@ namespace saikyo_playListTest.Controllers
             Assert.Equal(6, model.PlayListDetails.Count);
             playlistRepo.Verify(repo => repo.GetPlayList(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
             itemLibRepo.Verify(repo => repo.GetAllAsync(It.IsAny<IdentityUser>()), Times.Once);
+        }
+
+        /// <summary>
+        /// プレイリスト編集　POST 成功
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task EditPlayList_RedirectToIndexWithSuccess()
+        {
+
+        }
+
+        /// <summary>
+        /// プレイリスト編集　POST 失敗・選択されたURLなし
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task EditPlayList_NoUrlSelected()
+        {
+
+        }
+
+        /// <summary>
+        /// プレイリスト編集　POST 失敗・タイトル入力なし
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task EditPlayList_NoTitleInput()
+        {
+
         }
 
 
