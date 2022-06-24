@@ -208,7 +208,27 @@ namespace saikyo_playlist.Controllers
         public async Task<IActionResult> EditPlayList(CreateEditDeletePlayListViewModel model)
         {
 
+            if (ModelState.IsValid)
+            {
+                if (model.SelectedLibraryInfo.Count() == 0)
+                {
+                    model.ErrorMessage = "プレイリストに追加するアイテムを選択してください。";
+                    return View(model);
+                }
 
+                //プレイリストに登録
+
+
+            }
+            else
+            {
+                //入力不備あり
+                if (String.IsNullOrEmpty(model.Title))
+                {
+                    model.ErrorMessage = "プレイリストのタイトルを入力してください。";
+                    return View(model);
+                }
+            }
 
 
 

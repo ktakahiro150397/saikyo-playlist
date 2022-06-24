@@ -1,4 +1,5 @@
-﻿using saikyo_playlist.Data.Video;
+﻿using Microsoft.EntityFrameworkCore;
+using saikyo_playlist.Data.Video;
 using saikyo_playlist.Helpers;
 using saikyo_playlist.Models.PlayListManage;
 using saikyo_playlist.Repository.Implements;
@@ -25,6 +26,9 @@ namespace saikyo_playListTest.Controllers
 
         public PlayListController controller;
 
+        private ApplicationDbContext ApplicationDbContext;
+        private IConfiguration Configuration { get; set; }
+
         public PlayListControllerTest()
         {
             //moqを利用してコントローラーのインスタンスを作成
@@ -39,6 +43,13 @@ namespace saikyo_playListTest.Controllers
             itemLibRepo = new Mock<IItemLibraryRepository>();
             youtubeRepo = new Mock<IYoutubeDataRepository>();
             playlistRepo = new Mock<IPlayListRepository>();
+
+            Configuration = new ConfigurationBuilder().AddUserSecrets<PlayListControllerTest>().Build();
+
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseSqlServer(Configuration.GetConnectionString("ApplicationDbContextConnection_Test_PlayListController"));
+            var options = builder.Options;
+            ApplicationDbContext = new ApplicationDbContext(options);
 
             controller = new PlayListController(
                 userManagerMoq.Object,
@@ -609,12 +620,62 @@ namespace saikyo_playListTest.Controllers
 
         }
 
+        ///// <summary>
+        ///// プレイリスト編集　POST 成功・追加
+        ///// </summary>
+        ///// <returns></returns>
+        //[Fact]
+        //public async Task EditPlayList_RedirectToIndexWithSuccess()
+        //{
+        //    //Arrange
+        //    var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+        //    var vm = new CreateEditDeletePlayListViewModel()
+        //    {
+        //        Libraries = itemLibRepoRetValue.ToList(),
+        //        PlayListHeaderId = "",
+        //        Title = "CreatePlayList_RedirectToIndexWithSucces_Title",
+
+        //        SelectedLibraryInfo = new List<PlayListEditorDisplayData>()
+        //        {
+        //            new PlayListEditorDisplayData()
+        //            {
+        //                ItemLibraryEntityId = "ItemLibrariesEntityId_1",
+        //                itemSeq = 0,
+        //                PlayListDetailsEntityId = "",
+        //            },
+        //            new PlayListEditorDisplayData()
+        //            {
+        //                ItemLibraryEntityId = "ItemLibrariesEntityId_3",
+        //                itemSeq = 1,
+        //                PlayListDetailsEntityId = "",
+        //            },
+        //            new PlayListEditorDisplayData()
+        //            {
+        //                ItemLibraryEntityId = "ItemLibrariesEntityId_5",
+        //                itemSeq = 2,
+        //                PlayListDetailsEntityId = "",
+        //            },
+        //        }
+        //    };
+
+        //    //Act
+        //    var actResult = await controller.EditPlayList(vm);
+
+        //    //Assert
+        //    var viewResult = Assert.IsAssignableFrom<RedirectResult>(actResult);
+        //    Assert.Equal("./PlayList", viewResult.Url);
+        //    playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(
+        //        It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Exactly(3));
+
+
+        //}
+
         /// <summary>
-        /// プレイリスト編集　POST 成功・追加
+        /// プレイリスト編集　POST 失敗・選択されたURLなし
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task EditPlayList_RedirectToIndexWithSuccess()
+        public async Task EditPlayList_NoUrlSelected()
         {
             //Arrange
             var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
@@ -623,6 +684,35 @@ namespace saikyo_playListTest.Controllers
                 Libraries = itemLibRepoRetValue.ToList(),
                 PlayListHeaderId = "",
                 Title = "CreatePlayList_RedirectToIndexWithSucces_Title",
+                SelectedLibraryInfo = new List<PlayListEditorDisplayData>()
+                
+            };
+
+            //Act
+            var actResult = await controller.EditPlayList(vm);
+
+            //Assert
+            var view = Assert.IsType<ViewResult>(actResult);
+            var model = Assert.IsAssignableFrom<CreateEditDeletePlayListViewModel>(view.Model);
+            Assert.Equal("プレイリストに追加するアイテムを選択してください。",model.ErrorMessage);
+            
+
+        }
+
+        /// <summary>
+        /// プレイリスト編集　POST 失敗・タイトル入力なし
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task EditPlayList_NoTitleInput()
+        {
+            //Arrange
+            var itemLibRepoRetValue = ItemLibraryRepo_GetAllResult();
+            var vm = new CreateEditDeletePlayListViewModel()
+            {
+                Libraries = itemLibRepoRetValue.ToList(),
+                PlayListHeaderId = "",
+                Title = "",
 
                 SelectedLibraryInfo = new List<PlayListEditorDisplayData>()
                 {
@@ -647,41 +737,15 @@ namespace saikyo_playListTest.Controllers
                 }
             };
 
+            controller.ModelState.AddModelError("Title", "Title is required.");
+
             //Act
             var actResult = await controller.EditPlayList(vm);
 
             //Assert
-            var viewResult = Assert.IsAssignableFrom<RedirectResult>(actResult);
-            Assert.Equal("./PlayList", viewResult.Url);
-            
-
-
-            //TODO : 要書き直しのため必ず失敗させる
-            Assert.True(1 == 2);
-
-
-        }
-
-        /// <summary>
-        /// プレイリスト編集　POST 失敗・選択されたURLなし
-        /// </summary>
-        /// <returns></returns>
-        [Fact]
-        public async Task EditPlayList_NoUrlSelected()
-        {
-            //TODO : 要書き直しのため必ず失敗させる
-            Assert.True(1 == 2);
-        }
-
-        /// <summary>
-        /// プレイリスト編集　POST 失敗・タイトル入力なし
-        /// </summary>
-        /// <returns></returns>
-        [Fact]
-        public async Task EditPlayList_NoTitleInput()
-        {
-            //TODO : 要書き直しのため必ず失敗させる
-            Assert.True(1 == 2);
+            var view = Assert.IsType<ViewResult>(actResult);
+            var model = Assert.IsAssignableFrom<CreateEditDeletePlayListViewModel>(view.Model);
+            Assert.Equal("プレイリストのタイトルを入力してください。", model.ErrorMessage);
         }
 
 
