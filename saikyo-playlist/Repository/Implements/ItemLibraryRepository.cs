@@ -53,7 +53,7 @@ namespace saikyo_playlist.Repository.Implements
         public async Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync(IdentityUser user)
         {
             var ret = await dbContext.ItemLibraries
-                .Where(item => item.AspNetUserdId == "test_user_id")
+                .Where(item => item.AspNetUserdId == user.Id)
                 .ToListAsync();
 
             return ret;

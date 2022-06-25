@@ -1,0 +1,82 @@
+﻿@model saikyo_playlist.Models.PlayListManage.CreateEditDeletePlayListViewModel
+
+
+<h1>
+    プレイリスト作成
+</h1>
+<hr />
+
+<div>
+    <div>
+        <form method="post">
+            <h2>
+                新しいプレイリストを作成します。
+            </h2>
+            <hr />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+                <input asp-for="Title" class="form-control" />
+                <label asp-for="Title"></label>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div style="display:flex;">
+
+                <div>
+                        @foreach(var item in Model.Libraries)
+            {
+
+                <a class="library-item-elem">
+                    
+
+                    <span class="library-item-elem-text">@item.Title</span>
+                    <br/>
+                    <span  class="library-item-elem-text">@item.PlayCount</span>
+                </a>
+            }
+                </div>
+
+                <div>
+                    aaabbb
+                </div>
+
+
+            </div>
+
+
+            <button id="createSubmit" type="submit">プレイリスト作成</button>
+        </form>
+    </div>
+</div>
+
+
+
+<style>
+    /* 要素ごとに適用 */
+    .library-item-elem{
+        display:block;
+        background-color:orange;
+        border:1px solid gray;
+        padding:1px;
+        margin-bottom:1px;
+    }
+
+    /* 要素のホバーCSS */
+    .library-item-elem:hover{
+        cursor:grab;
+        background-color:cyan;
+    }
+
+    /* 要素ごとのテキストに適用 */
+    .library-item-elem-text{
+        color:black;
+    }
+
+    /* 要素のドラッグ中に適用 */
+    .library-item-elem-dragging{
+        cursor:grabbing;
+    }
+
+</style>
+

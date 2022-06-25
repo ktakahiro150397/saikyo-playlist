@@ -48,7 +48,7 @@ namespace saikyo_playlist.Controllers
             var user = await UserManager.GetUserAsync(User);
             var model = new ManagePlayListViewModel(PlayListRepository,user);
             await model.Initialize();
-
+            
             return View(model);
         }
 
@@ -103,7 +103,7 @@ namespace saikyo_playlist.Controllers
                 return View(model);
             }
 
-            return Redirect("PlayList");
+            return Redirect("../PlayList");
         }
 
         #endregion
