@@ -9,20 +9,24 @@ namespace saikyo_playlist.Data
         /// <summary>
         /// アイテムライブラリ。
         /// </summary>
-        public DbSet<ItemLibrariesEntity> ItemLibraries => Set<ItemLibrariesEntity>();
+        public virtual DbSet<ItemLibrariesEntity> ItemLibraries => Set<ItemLibrariesEntity>();
         
         /// <summary>
         /// プレイリストヘッダー。
         /// </summary>
-        public DbSet<PlayListHeadersEntity> PlayListHeaders => Set<PlayListHeadersEntity>();
+        public virtual DbSet<PlayListHeadersEntity> PlayListHeaders => Set<PlayListHeadersEntity>();
         
         /// <summary>
         /// プレイリスト詳細。
         /// </summary>
-        public DbSet<PlayListDetailsEntity> PlayListDetails => Set<PlayListDetailsEntity>();
+        public virtual DbSet<PlayListDetailsEntity> PlayListDetails => Set<PlayListDetailsEntity>();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
+        {
+        }
+
+        public ApplicationDbContext():base()
         {
         }
 

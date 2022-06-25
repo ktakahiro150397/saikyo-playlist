@@ -1,4 +1,6 @@
-﻿using saikyo_playlist.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using saikyo_playlist.Data;
+using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Models.PlayListManage
 {
@@ -6,6 +8,10 @@ namespace saikyo_playlist.Models.PlayListManage
     {
 
         public IList<ManagePlayListItem> managePlayListItems { get; set; } = new List<ManagePlayListItem>();
+
+        private IPlayListRepository PlayListRepository { get; set; }
+
+        private IdentityUser User { get; set; }
 
         public ManagePlayListViewModel()
         {
@@ -35,18 +41,34 @@ namespace saikyo_playlist.Models.PlayListManage
             }
         }
 
-        public ManagePlayListViewModel(ApplicationDbContext dbContext)
+        public ManagePlayListViewModel(IPlayListRepository playListRepos,IdentityUser user)
         {
-            //一覧に表示するヘッダー情報を取得する
-            var headers = dbContext.PlayListHeaders
-                .Select(item => new ManagePlayListItem()
-                {
-                    PlayListHeaderId = item.PlayListHeadersEntityId,
-                    PlayListName = item.Name,
-                    UserId = item.AspNetUserdId
-                }).ToList();
+            PlayListRepository = playListRepos;
+            User = user;
+        }
 
-            managePlayListItems = headers;
+        /// <summary>
+        /// このViewModelを初期化します。
+        /// </summary>
+        /// <returns></returns>
+        public async Task Initialize() {
+
+            var playList = PlayListRepository.GetPlayListHeaderAll(User);
+
+            if(playList == null)
+            {
+                //データなし
+            }
+            else
+            {
+                managePlayListItems = playList.Select(
+                    elem => new ManagePlayListItem()
+                    {
+                        PlayListHeaderId = elem.PlayListHeadersEntityId,
+                        PlayListName = elem.Name,
+                        UserId = elem.AspNetUserdId
+                    }).ToList();
+            }
         }
 
     }
