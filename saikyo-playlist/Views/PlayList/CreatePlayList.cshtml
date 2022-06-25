@@ -133,8 +133,13 @@
         aElem.setAttribute("data-entityId", id);
         aElem.setAttribute("data-title", title);
         aElem.setAttribute("data-index", index);
-
         aElem.classList.add("library-item-elem");
+        aElem.id = "playlist-a-" + id + "-" + index;
+        aElem.onclick = function () {
+            var index = this.getAttribute("data-index");
+            deleteItemFromPlayList(index);
+        }
+
 
         //内部のdivタグ
         var flexDivTag = document.createElement("div");
@@ -146,8 +151,13 @@
         var indexSpanTag = document.createElement("span");
         indexSpanTag.classList.add("library-item-elem-text");
         indexSpanTag.innerText = index + 1;
+
+        var indexSpanId = getUniqueStr();
+        indexSpanTag.id = indexSpanId;
+        //a要素に保存
+        aElem.setAttribute("data-indexSpanId", indexSpanId);
+
         indexDivTag.appendChild(indexSpanTag);
-        console.log(indexSpanTag);
 
         //曲名を表すdivタグ
         var itemDivTag = document.createElement("div");
@@ -174,6 +184,47 @@
         let aElems = playListElem.getElementsByTagName("a");
         return aElems.length;
     }
+
+
+    /* 指定したdata-indexのライブラリアイテムをプレイリストから削除します。 */
+    function deleteItemFromPlayList(index) {
+
+        let playList = document.getElementById("playlist-div");
+        let playListaTags = playList.getElementsByTagName("a");
+
+        //削除対象の取得
+        let deleteTag = Array.from(playListaTags).filter(elem => elem.getAttribute("data-index") == index);
+
+        if (deleteTag.length == 1) {
+
+            //指定要素の削除
+            playList.removeChild(deleteTag[0]);
+
+            //seqの振り直し
+
+            //上から振り直していく
+            for (var i = 0; i < playListaTags.length; i++) {
+
+                var indexSpanId = playListaTags[i].getAttribute("data-indexSpanId");
+
+                playListaTags[i].setAttribute("data-index", i);
+                document.getElementById(indexSpanId).innerText = i + 1;
+            }
+        } else {
+            console.error("id: " + id + " の要素が見つかりませんでした。");
+        }
+        
+
+    }
+
+    /* 現在の日付・乱数からユニークっぽいIDを生成します。 */
+    function getUniqueStr(myStrong) {
+        var strong = 1000;
+        if (myStrong) strong = myStrong;
+        return new Date().getTime().toString(16) + Math.floor(strong * Math.random()).toString(16)
+    }
+
+
 
     /* プレイリスト作成ボタン押下時イベント */
     function onClickSubmit() {

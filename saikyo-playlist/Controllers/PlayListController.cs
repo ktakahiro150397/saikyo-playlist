@@ -156,9 +156,7 @@ namespace saikyo_playlist.Controllers
                         //プレイリスト詳細
                         var detailItem = new PlayListDetailsEntity()
                         {
-                            //PlayListHeadersEntityId = resultHeader.HeaderEntity!.PlayListHeadersEntityId,
-                            //ItemLibrariesEntityId = libItem.ItemLibrariesEntityId,
-                            PlayListHeadersEntity = resultHeader.HeaderEntity,
+                            PlayListHeadersEntity = resultHeader.HeaderEntity!,
                             ItemLibrariesEntity = libItem,
                             ItemSeq = selected.itemSeq,
                         };
@@ -166,7 +164,7 @@ namespace saikyo_playlist.Controllers
                         detailItems.Add(detailItem);
                     }
 
-                    var detailResult = await PlayListRepository.AddItemToPlayListAsync(resultHeader.HeaderEntity.PlayListHeadersEntityId, detailItems, user);
+                    var detailResult = await PlayListRepository.AddItemToPlayListAsync(resultHeader.HeaderEntity!.PlayListHeadersEntityId, detailItems, user);
 
                     if (detailResult.OperationResult != PlayListOperationResultType.Success)
                     {
