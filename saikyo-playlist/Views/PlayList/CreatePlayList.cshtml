@@ -21,29 +21,76 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            <div style="display:flex;">
+            <div style="margin-top:2em;">
+                <p>プレイリストに追加するアイテムをドラッグ・ドロップで移動してください。</p>
+            </div>
 
-                <div>
-                        @foreach(var item in Model.Libraries)
-            {
-
-                <a class="library-item-elem">
-                    
-
-                    <span class="library-item-elem-text">@item.Title</span>
-                    <br/>
-                    <span  class="library-item-elem-text">@item.PlayCount</span>
-                </a>
-            }
+            <div style="display:flex;justify-content:space-between;margin-top:2em;width:100%;">
+                <div style="width:50%;">
+                    <h3>ライブラリ</h3>
+                    <div class="library-item-list">
+                        @foreach (var item in Model.Libraries)
+                        {
+                            <a class="library-item-elem" title="@item.Title">
+                                <span class="library-item-elem-text">@item.Title</span>
+                                @*<span class="library-item-elem-text">再生回数：@item.PlayCount</span>*@
+                            </a>
+                        }
+                    </div>
                 </div>
 
-                <div>
-                    aaabbb
+                <div style="width:50%;">
+                    <div>
+                        <h3>プレイリスト</h3>
+                    </div>
+
+                    <div class="library-item-list">
+                        <a class="library-item-elem">
+                            <div style="display:flex;width:100%;">
+                                <div style="padding-right:1em;">
+                                    <span class="library-item-elem-text">1</span>
+                                </div>
+                                <div style="width:100%;">
+                                    <span class="library-item-elem-text">【字幕歌詞】 アレセイア／eufonius 【いろとりどりのセカイ Irotoridori no Sekai】</span>
+                                </div>
+                            </div>
+                        </a>
+                        <a class="library-item-elem">
+                            <div style="display:flex;width:100%;">
+                                <div style="padding-right:1em;">
+                                    <span class="library-item-elem-text">2</span>
+                                </div>
+                                <div style="width:100%;">
+                                    <span class="library-item-elem-text">【字幕歌詞】 アレセイア／eufonius 【いろとりどりのセカイ Irotoridori no Sekai】</span>
+                                </div>
+                            </div>
+                        </a>
+                        <a class="library-item-elem">
+                            <div style="display:flex;width:100%;">
+                                <div style="padding-right:1em;">
+                                    <span class="library-item-elem-text">3</span>
+                                </div>
+                                <div style="width:100%;">
+                                    <span class="library-item-elem-text">【字幕歌詞】 アレセイア／eufonius 【いろとりどりのセカイ Irotoridori no Sekai】</span>
+                                </div>
+                            </div>
+                        </a>
+                        <a class="library-item-elem">
+                            <div style="display:flex;width:100%;">
+                                <div style="padding-right:1em;">
+                                    <span class="library-item-elem-text">4</span>
+                                </div>
+                                <div style="width:100%;">
+                                    <span class="library-item-elem-text">【字幕歌詞】 アレセイア／eufonius 【いろとりどりのセカイ Irotoridori no Sekai】</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
+
 
 
             </div>
-
 
             <button id="createSubmit" type="submit">プレイリスト作成</button>
         </form>
@@ -53,30 +100,47 @@
 
 
 <style>
-    /* 要素ごとに適用 */
-    .library-item-elem{
-        display:block;
-        background-color:orange;
-        border:1px solid gray;
-        padding:1px;
-        margin-bottom:1px;
+
+    .library-item-list {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        height: 300px;
+        overflow-y: scroll;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        background-color: rgb(249,249,249);
+        width: 95%;
     }
 
-    /* 要素のホバーCSS */
-    .library-item-elem:hover{
-        cursor:grab;
-        background-color:cyan;
+    /* 要素ごとに適用 */
+    .library-item-elem {
+        display: block;
+        padding-top: .5em;
+        padding-bottom: .5em;
+        padding-left: 1em;
+        width: 100%;
+        text-decoration: none;
     }
+
+        /* 要素のホバーCSS */
+        .library-item-elem:hover {
+            cursor: grab;
+            background-color: rgb(200, 200, 200);
+        }
 
     /* 要素ごとのテキストに適用 */
-    .library-item-elem-text{
-        color:black;
+    .library-item-elem-text {
+        color: black;
+        display: block;
+        width: 95%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     /* 要素のドラッグ中に適用 */
-    .library-item-elem-dragging{
-        cursor:grabbing;
+    .library-item-elem-dragging {
+        cursor: grabbing;
     }
-
 </style>
 
