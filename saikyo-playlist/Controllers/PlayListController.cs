@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using saikyo_playlist.Data;
 using saikyo_playlist.Data.Video;
@@ -11,6 +12,8 @@ using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Controllers
 {
+
+    [Authorize]
     public class PlayListController : Controller
     {
         private UserManager<IdentityUser> UserManager { get; set; }
@@ -90,7 +93,7 @@ namespace saikyo_playlist.Controllers
                 //入力されている場合、タイトルはそちらを使用
                 await ItemLibraryRepository.InsertAsync(model.Platform,
                     item.RetrieveResult[0].ItemId,
-                    model.TitleAlias != "" ? model.TitleAlias : item.RetrieveResult[0].Title,
+                    !String.IsNullOrEmpty(model.TitleAlias) ? model.TitleAlias : item.RetrieveResult[0].Title,
                     loginUserInfo);
 
             }
@@ -100,7 +103,7 @@ namespace saikyo_playlist.Controllers
                 return View(model);
             }
 
-            return Redirect("./PlayList");
+            return Redirect("PlayList");
         }
 
         #endregion
@@ -169,7 +172,7 @@ namespace saikyo_playlist.Controllers
                         }
                     }
 
-                    return Redirect("./PlayList");
+                    return Redirect("PlayList");
 
                 }
 
@@ -232,7 +235,7 @@ namespace saikyo_playlist.Controllers
 
 
 
-            return Redirect("./PlayList");
+            return Redirect("PlayList");
         }
 
 

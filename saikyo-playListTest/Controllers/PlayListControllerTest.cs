@@ -282,7 +282,7 @@ namespace saikyo_playListTest.Controllers
 
             //Assert
             var viewResult = Assert.IsType<RedirectResult>(actResult);
-            Assert.Equal("./PlayList", viewResult.Url);
+            Assert.Equal("PlayList", viewResult.Url);
             itemLibRepo.Verify();
             youtubeRepo.Verify();
 
@@ -478,7 +478,7 @@ namespace saikyo_playListTest.Controllers
 
             //Assert
             var view = Assert.IsType<RedirectResult>(actResult);
-            Assert.Equal("./PlayList", view.Url);
+            Assert.Equal("PlayList", view.Url);
             playlistRepo.Verify(repo => repo.CreateNewPlayListAsync(It.IsAny<string>(), It.IsAny<IdentityUser>()), Times.Once);
             playlistRepo.Verify(repo => repo.AddItemToPlayListAsync(It.IsAny<string>(), It.IsAny<PlayListDetailsEntity>(), It.IsAny<IdentityUser>()), Times.Exactly(3));
 
