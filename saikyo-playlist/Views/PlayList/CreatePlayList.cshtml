@@ -8,7 +8,7 @@
 
 <div>
     <div>
-        <form method="post">
+        <form id="form-submit" method="post">
             <h2>
                 新しいプレイリストを作成します。
             </h2>
@@ -33,7 +33,7 @@
                     <div class="library-item-list">
                         @foreach (var item in Model.Libraries)
                         {
-                            <a class="library-item-elem" data-id="@item.ItemLibrariesEntityId" data-title="@item.Title" title="@item.Title" onclick="onLibraryItemClick(this);">
+                            <a class="library-item-elem" data-entityId="@item.ItemLibrariesEntityId" data-title="@item.Title" title="@item.Title" onclick="onLibraryItemClick(this);">
                                 <span class="library-item-elem-text">@item.Title</span>
                             </a>
                         }
@@ -50,20 +50,6 @@
                     </div>
                 </div>
             </div>
-
-            <input id="select_1"
-                   name="SelectedLibraryInfo[0].PlayListDetailsEntityId"
-                   type="hidden"
-                   value="detailId_1">
-            <input id="select_2"
-                   name="SelectedLibraryInfo[0].ItemLibraryEntityId"
-                   type="hidden"
-                   value="detailId_1">
-            <input id="select_1"
-                   name="SelectedLibraryInfo[0].itemSeq"
-                   type="hidden"
-                   value="0">
-
             <button id="createSubmit" type="submit" onclick="onClickSubmit();">プレイリスト作成</button>
         </form>
     </div>
@@ -122,7 +108,7 @@
     function onLibraryItemClick(sender) {
 
         //タイトル・IDを取得
-        let id = sender.getAttribute("data-id");
+        let id = sender.getAttribute("data-entityId");
         let title = sender.getAttribute("data-title");
 
         //プレイリスト一覧に要素を追加
@@ -144,7 +130,7 @@
 
         //親要素のaタグ
         var aElem = document.createElement("a");
-        aElem.setAttribute("data-id", id);
+        aElem.setAttribute("data-entityId", id);
         aElem.setAttribute("data-title", title);
         aElem.setAttribute("data-index", index);
 
@@ -191,25 +177,57 @@
 
     /* プレイリスト作成ボタン押下時イベント */
     function onClickSubmit() {
-        //選択されているプレイリスト内容をhiddenにセットする
-        console.log("onClickSubmit called");
+        //選択されているプレイリスト内容をinputに設定
 
-        let hidSelectedInfo = document.getElementById("playListSelected");
+        //プレイリスト要素を取得
+        let playListElem = document.getElementById("playlist-div");
+        let aTags = playListElem.getElementsByTagName("a");
 
-        hidSelectedInfo.innerText = [
-            {
-                PlayListDetailsEntityId: "aaa",
-                ItemLibraryEntityId: "bbbb",
-                itemSeq:0,
-            },
-            {
-                PlayListDetailsEntityId: "aaa",
-                ItemLibraryEntityId: "bbbb",
-                itemSeq: 1,
-            }
-        ]
+        for(let i=0;i<aTags.length;i++){
+            //プレイリスト要素内のa要素を取得
+            let aElem = aTags[i];
 
-        console.log(hidSelectedInfo.innerText);
+            //アイテムエンティティIDを取得
+            let entityId = aElem.getAttribute("data-entityId");
+            //indexを取得
+            let index = aElem.getAttribute("data-index");
+            
+            //formに設定するinput要素を作成
+            let inputElem_DetailId = document.createElement("input");
+            inputElem_DetailId.setAttribute("type", "hidden");
+            inputElem_DetailId.setAttribute("name", "SelectedLibraryInfo[" + i + "].ItemLibraryEntityId");
+            inputElem_DetailId.value = entityId;
+
+            let inputElem_ItemSeq = document.createElement("input");
+            inputElem_ItemSeq.setAttribute("type", "hidden");
+            inputElem_ItemSeq.setAttribute("name", "SelectedLibraryInfo[" + i + "].ItemSeq");
+            inputElem_ItemSeq.value = index;
+
+            //formに追加
+            document.getElementById("form-submit").appendChild(inputElem_DetailId);
+            document.getElementById("form-submit").appendChild(inputElem_ItemSeq);
+
+        }
+
+        
+        console.log("aaa");
+        
+
+        @* <input id="select_1"
+                   name="SelectedLibraryInfo[0].PlayListDetailsEntityId"
+                   type="hidden"
+                   value="detailId_1">
+            <input id="select_2"
+                   name="SelectedLibraryInfo[0].ItemLibraryEntityId"
+                   type="hidden"
+                   value="detailId_1">
+            <input id="select_1"
+                   name="SelectedLibraryInfo[0].itemSeq"
+                   type="hidden"
+                   value="0"> *@
+
+        
+
         
     }
 

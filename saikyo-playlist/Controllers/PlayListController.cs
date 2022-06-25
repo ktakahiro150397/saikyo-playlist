@@ -149,7 +149,8 @@ namespace saikyo_playlist.Controllers
                     var details = new List<ItemLibrariesEntity>();
                     foreach(var selected in model.SelectedLibraryInfo)
                     {
-                        var libItem = model.Libraries.Where(lib => lib.ItemLibrariesEntityId == selected.ItemLibraryEntityId).First();
+                        var libItem = await ItemLibraryRepository.GetAllAsync(user)
+                            .FirstOrDefaultAsync(x => x.Id == selected.Id);
                         details.Add(libItem);
                     }
 
@@ -368,9 +369,5 @@ namespace saikyo_playlist.Controllers
             //}
             return View();
         }
-
-       
-
-
     }
 }
