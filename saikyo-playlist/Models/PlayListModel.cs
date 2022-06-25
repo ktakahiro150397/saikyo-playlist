@@ -34,7 +34,7 @@ namespace saikyo_playlist.Models
             //テスト用データの追加
             {
                 var item1 = new PlayListItem();
-                item1.Type = PlayListItemPlatformType.Youtube;
+                item1.Type = LibraryItemPlatform.Youtube;
                 item1.ItemId = "kLLKnUP9gN4";
                 item1.ItemSeq = 0;
                 item1.Title = "カスタムメイド3D - Entrance to You";
@@ -45,7 +45,7 @@ namespace saikyo_playlist.Models
             }
             {
                 var item2 = new PlayListItem();
-                item2.Type = PlayListItemPlatformType.Youtube;
+                item2.Type = LibraryItemPlatform.Youtube;
                 item2.ItemId = "MgeIqstCGsw";
                 item2.ItemSeq = 1;
                 item2.Title = "少女マイノリティ OP 『Minority』 Full 夢乃ゆき";
@@ -56,7 +56,7 @@ namespace saikyo_playlist.Models
             }
             {
                 var item3 = new PlayListItem();
-                item3.Type = PlayListItemPlatformType.Youtube;
+                item3.Type = LibraryItemPlatform.Youtube;
                 item3.ItemId = "ogwfFWFGiRI";
                 item3.ItemSeq = 2;
                 item3.Title = "Ruri Yakushi / 神様いつかこの想い - 鯨神のティアスティラ ED1【Full】";
@@ -73,34 +73,40 @@ namespace saikyo_playlist.Models
 
             PlayListHeaderId = playListHeaderId;
 
+            var playLists = dbContext.PlayListHeaders
+                    .Where(item => item.PlayListHeadersEntityId == PlayListHeaderId)
+                    .Join(
+                        dbContext.PlayListDetails,
+                        header => header.PlayListHeadersEntityId,
+                        detail => detail.PlayListHeadersEntityId,
+                        (header, detail) =>
+                            new
+                            {
+                                ItemLibraryId = detail.ItemLibrariesEntityId,
+                                ItemSeq = detail.ItemSeq
+                            }
+                        )
+                    .Join(
+                        dbContext.ItemLibraries,
+                        joined => joined.ItemLibraryId,
+                        lib => lib.ItemLibrariesEntityId,
+                        (joined, lib) =>
+                        new PlayListItem()
+                        {
+                            Type = lib.Platform,
+                            ItemId = lib.ItemId,
+                            Title = lib.Title,
+                            TitleAlias = lib.TitleAlias,
+                            PlayCount = lib.PlayCount,
+                            ItemSeq = joined.ItemSeq
+                        }
+                    ).ToList();
+
             var header = dbContext.PlayListHeaders
                     .Where(item => item.PlayListHeadersEntityId == playListHeaderId)
                     .FirstOrDefault();
 
-            var details = dbContext.PlayListHeaders
-                .Where(item => item.PlayListHeadersEntityId == playListHeaderId)
-                .Join(
-                    dbContext.PlayListDetails,
-                    headerItem => headerItem.PlayListHeadersEntityId,
-                    detailItem => detailItem.PlayListHeadersEntityId,
-                    (header, detail) =>
-                       new PlayListItem()
-                       {
-                           Type = PlayListItemPlatformType.Youtube,
-                           ItemId = detail.ItemId,
-                           Title = detail.Title,
-                           TitleAlias = detail.TitleAlias,
-                           PlayCount = detail.PlayCount,
-                           ItemSeq = detail.ItemSeq
-                       }
-
-                )
-                .OrderBy(item => item.ItemSeq)
-                .ToList();
-
-
-
-            if (header == null || details == null || details.Count == 0)
+            if (header == null || playLists == null || playLists.Count == 0)
             {
                 //対象IDでデータが見つからなかった
                 throw new KeyNotFoundException($"プレイリスト情報を取得できませんでした。ID : {playListHeaderId}");
@@ -109,7 +115,7 @@ namespace saikyo_playlist.Models
             {
                 //取得したプレイリストを設定
                 PlayListName = header.Name;
-                PlayLists = details;
+                PlayLists = playLists;
             }
 
         }
@@ -126,7 +132,7 @@ namespace saikyo_playlist.Models
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("type")]
-        public PlayListItemPlatformType Type { get; set; }
+        public LibraryItemPlatform Type { get; set; }
 
         /// <summary>
         /// アイテムID
@@ -168,13 +174,4 @@ namespace saikyo_playlist.Models
         }
     }
 
-    /// <summary>
-    /// プレイリストアイテムのプラットフォームの種類を表します。
-    /// </summary>
-    public enum PlayListItemPlatformType
-    {
-        Youtube,
-        Spotify,
-        AppleMusic
-    }
 }

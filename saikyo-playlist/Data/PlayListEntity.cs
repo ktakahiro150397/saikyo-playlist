@@ -67,36 +67,6 @@ namespace saikyo_playlist.Data
         public int ItemSeq { get; set; }
 
         /// <summary>
-        /// プレイリストのプラットフォーム種別。
-        /// </summary>
-        [Comment("プレイリストのプラットフォーム種別。")]
-        public string Type { get; set; }
-
-        /// <summary>
-        /// アイテムを特定するためのプラットフォームごとのID。
-        /// </summary>
-        [Comment("アイテムを特定するためのプラットフォームごとのID。")]
-        public string ItemId { get; set; }
-
-        /// <summary>
-        /// アイテムの元々の名称。
-        /// </summary>
-        [Comment("アイテムの元々の名称。")]
-        public string Title { get; set; }
-
-        /// <summary>
-        /// ユーザーによって付けられたアイテムの別名。
-        /// </summary>
-        [Comment("ユーザーによって付けられたアイテムの別名。")]
-        public string TitleAlias { get; set; }
-
-        /// <summary>
-        /// アイテムがプレイリスト内で最後まで再生された数。
-        /// </summary>
-        [Comment("アイテムがプレイリスト内で最後まで再生された数。")]
-        public int PlayCount { get; set; }
-
-        /// <summary>
         /// タイムスタンプ。
         /// </summary>
         [Comment("タイムスタンプ。")]
@@ -109,23 +79,26 @@ namespace saikyo_playlist.Data
         public string PlayListHeadersEntityId { get; set; }
 
         /// <summary>
+        /// 外部キー
+        /// </summary>
+        public string ItemLibrariesEntityId { get; set; }
+
+        /// <summary>
         /// 逆ナビゲーションプロパティ
         /// </summary>
         public PlayListHeadersEntity PlayListHeadersEntity { get; set; }
+
+        public ItemLibrariesEntity ItemLibrariesEntity { get; set; }
 
         public PlayListDetailsEntity()
         {
             PlayListDetailsEntityId = "";
             ItemSeq = 0;
-            Type = "";
-            ItemId = "";
-            Title = "";
-            TitleAlias = "";
-            PlayCount = 0;
             TimeStamp = new byte[0];
             PlayListHeadersEntityId = "";
             PlayListHeadersEntity = new PlayListHeadersEntity();
-
+            ItemLibrariesEntityId = "";
+            ItemLibrariesEntity = new ItemLibrariesEntity();
         }
     }
 }

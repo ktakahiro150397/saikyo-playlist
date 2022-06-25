@@ -1,0 +1,61 @@
+﻿@using saikyo_playlist.Data
+@model saikyo_playlist.Models.AddItemViewModel
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+<h1>
+    ライブラリに追加
+</h1>
+
+<div>
+    <div>
+        <form method="post">
+            <h2>
+                対象のURLをライブラリに追加します。
+            </h2>
+
+            <hr />
+
+            @if(Model.ErrorMessage != null)
+            {
+                <div>
+                    <p>@Model.ErrorMessage</p>
+                </div>
+            }
+
+            <div>
+                <label asp-for="Platform"></label>
+                <select asp-for="Platform" class="form-control">
+                    @foreach (saikyo_playlist.Data.LibraryItemPlatform platform in Enum.GetValues(typeof(saikyo_playlist.Data.LibraryItemPlatform)))
+                    {
+                        if (platform != LibraryItemPlatform.NotSet)
+                        {
+                            //「なし」以外をバインド
+                            <option value="@platform">
+                                @platform.GetPlatformName()
+                            </option>
+                        }
+
+                    }
+                </select>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+                <input asp-for="TitleAlias" class="form-control" />
+                <label asp-for="TitleAlias"></label>
+                <span asp-validation-for="TitleAlias" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Url" class="form-control" />
+                <label asp-for="Url"></label>
+                <span asp-validation-for="Url" class="text-danger"></span>
+            </div>
+            <button id="createSubmit" type="submit">ライブラリに追加</button>
+        </form>
+    </div>
+</div>

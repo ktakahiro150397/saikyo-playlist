@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using saikyo_playlist.Data;
+using saikyo_playlist.Repository.Interfaces;
+using saikyo_playlist.Repository.Implements;
 using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+//DIサービスへの登録
+builder.Services.AddScoped<IYoutubeDataRepository, YoutubeDataRepository>();
+builder.Services.AddScoped<IItemLibraryRepository, ItemLibraryRepository>();
+builder.Services.AddScoped<IPlayListRepository, PlayListRepository>();
 
 //asp.net Identityの設定
 builder.Services.Configure<IdentityOptions>(options =>
