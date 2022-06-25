@@ -419,11 +419,11 @@ namespace saikyo_playlist.Repository.Implements
 
             try
             {
-                //詳細の最大番号を取得
-                var detailMaxSeq = dbContext.PlayListDetails.Where(
-                    detail => detail.PlayListHeadersEntityId == header.PlayListHeadersEntityId)
-                    .Max(detail => detail.ItemSeq);
-                detail.ItemSeq = detailMaxSeq + 1;
+                ////詳細の最大番号を取得
+                //var detailMaxSeq = dbContext.PlayListDetails.Where(
+                //    detail => detail.PlayListHeadersEntityId == header.PlayListHeadersEntityId)
+                //    .Max(detail => detail.ItemSeq);
+                //detail.ItemSeq = detailMaxSeq + 1;
 
                 //データを設定
                 detail.PlayListDetailsEntityId = GetUniqueId();
