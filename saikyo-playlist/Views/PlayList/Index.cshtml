@@ -1,25 +1,54 @@
 ﻿@model saikyo_playlist.Models.PlayListManage.ManagePlayListViewModel
 
-<h1>プレイリスト一覧</h1>
+<style>
+
+    .playlist-menu-elem {
+        width: 100%;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        margin-bottom: 1em;
+        padding: .5em 0 0em .5em;
+    }
+
+    .playlist-menu-button {
+        text-decoration: none;
+        color: black;
+        font-weight: 700;
+        font-size:1.2em;
+    }
+
+    .playlist-menu-desc{
+        /*font-size:.9em;*/
+    }
+
+</style>
 
 <div>
-    <h2>
-        <a href="@Url.Action("AddItem","PlayList")">
-            ライブラリにURLを追加
+
+    <div class="playlist-menu-elem">
+        <a class="playlist-menu-button" title="URLを入力して、ライブラリにアイテムを追加します。" href="@Url.Action("AddItem","PlayList")">
+            URLからライブラリに追加
         </a>
-    </h2>
-    <h2>
-        <a href="@Url.Action("AddFromPlayList","PlayList")">
-            プレイリストURLからライブラリに追加
+        <p class="playlist-menu-desc">URLを入力して、ライブラリにアイテムを追加します。</p>
+    </div>
+
+    <div class="playlist-menu-elem">
+        <a class="playlist-menu-button" title="Youtubeの再生リストに含まれる曲をすべてライブラリに追加します。" href="@Url.Action("AddFromPlayList","PlayList")">
+            再生リストのURLからライブラリに追加
         </a>
-    </h2>
-    <h2>
-        <a href="@Url.Action("CreatePlayList","PlayList")">
+        <p class="playlist-menu-desc">Youtubeの再生リストに含まれる曲をすべてライブラリに追加します。</p>
+    </div>
+
+    <div class="playlist-menu-elem">
+        <a class="playlist-menu-button" href="@Url.Action("CreatePlayList","PlayList")">
             プレイリストを作成
         </a>
-    </h2>
+        <p class="playlist-menu-desc">プレイリストを作成します。</p>
+    </div>
+
 </div>
 
+<h1>プレイリスト一覧</h1>
 
 @if (Model.managePlayListItems.Count == 0)
 {
@@ -33,16 +62,19 @@
 else
 {
 
+
+
+
     @foreach (var item in Model.managePlayListItems)
     {
         <div>
             <a href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
-                @item.PlayListHeaderId / @item.PlayListName
+                @item.PlayListName
             </a>
-            <span style="margin-left:20px;" ></span>
+            @*<span style="margin-left:20px;"></span>
             <a href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
                 編集
-            </a>
+            </a>*@
         </div>
 
     }

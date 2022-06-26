@@ -1,27 +1,98 @@
-﻿@model  PlayListModel
+﻿@model PlayListModel
 
-<h1>
-    @Model.PlayListName
-</h1>
+<p>@Model.PlayListName</p>
 
-<div id="player"></div>
+<div class="player-container">
 
-<div>
-    @foreach (var item in Model.PlayLists)
-    {
-        <div>
-
-            <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
-
-            <a onclick="javascript:onPlayListItemClick(this);" item-itemLibraryEntityId=@item.ItemLibraryEntityId item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
-                @(item.ItemSeq + " / " + item.Title + " / " + item.TitleAlias + " / ")
-                <span id="playCount_@item.ItemSeq">@item.PlayCount</span>
-            </a>
+    <div id="player"></div>
 
 
-        </div>
-    }
+    <div class="playlist-list-container">
+
+
+        @foreach (var item in Model.PlayLists)
+        {
+            <div class="playlist-item-elem">
+
+                <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
+
+                <a class="playlist-item-a" onclick="javascript:onPlayListItemClick(this);" item-itemLibraryEntityId=@item.ItemLibraryEntityId item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
+                    <div class="playlist-item-inner-container">
+                        <p>
+                            <span style="padding-right:.5em;width:8%;color:gray;">@(item.ItemSeq + 1)</span>
+                            <span style="width:92%;">@item.Title</span>
+                        </p>
+                        <span class="playlist-item-playCount">
+                            再生回数：<span id="playCount_@item.ItemSeq">@item.PlayCount</span>
+                        </span>
+                    </div>
+                </a>
+
+
+            </div>
+        }
+    </div>
+
 </div>
+
+
+<style>
+
+    .player-container {
+        display: flex;
+    }
+
+    .playlist-list-container {
+        margin-left: 1em;
+        height: 70vh;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+    }
+
+    .playlist-item-elem {
+        display: flex;
+        padding: .5em;
+        background-color: rgb(244,244,244);
+    }
+
+    .playlist-item-elem {
+        display: flex;
+        justify-content: left;
+        padding: .5em;
+        background-color: rgb(244,244,244);
+    }
+
+        .playlist-item-elem:hover {
+            cursor: pointer;
+            background-color: rgb(200, 200, 200);
+        }
+
+    .playlist-item-a {
+        margin-left: .5em;
+        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        color:black;
+        text-decoration:none;
+    }
+
+    .playlist-item-a:hover{
+        color:black;
+    }
+
+    .playlist-item-inner-container {
+    }
+
+    .playlist-item-playCount{
+        font-size:.9em;
+        padding:0 .5em 0 .5em;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+    }
+
+
+</style>
 
 <script>
 
@@ -102,25 +173,25 @@
         console.log("currentIndex : " + currentIndex);
         player.loadVideoById(playList[currentIndex].itemId);
 
-        
+
     }
 
-function onPlayListItemClick(sender) {
-    console.log("次に再生するID：" + sender.getAttribute("item-itemId"));
+    function onPlayListItemClick(sender) {
+        console.log("次に再生するID：" + sender.getAttribute("item-itemId"));
 
-    //インデックスを変更
-    currentIndex = parseInt(sender.getAttribute("item-itemSeq"));
-    player.loadVideoById(sender.getAttribute("item-itemId"));
+        //インデックスを変更
+        currentIndex = parseInt(sender.getAttribute("item-itemSeq"));
+        player.loadVideoById(sender.getAttribute("item-itemId"));
 
 
-}
+    }
 
     /* 指定したアイテムの再生回数を加算します。 */
     function addPlayCount(itemLibrariesEntityId, index) {
         //対象のパラメータで再生回数を増やすAPIを呼び出す
         var req = new XMLHttpRequest();
 
-        req.onreadystatechange = function () {
+        req.onreadystatechange = function() {
             if (req.readyState == 4) {
                 //通信完了
                 if (req.status == 200) {
