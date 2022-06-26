@@ -134,12 +134,19 @@
         aElem.setAttribute("data-title", title);
         aElem.setAttribute("data-index", index);
         aElem.classList.add("library-item-elem");
+        aElem.draggable = true;
         aElem.id = "playlist-a-" + id + "-" + index;
+
+        //クリック時イベント
         aElem.onclick = function () {
+            //クリック対象を削除
             var index = this.getAttribute("data-index");
             deleteItemFromPlayList(index);
         }
-
+        //ドラッグイベント
+        aElem.ondragstart = playListItemDragStart;
+        aElem.ondragend = playListItemDragEnd;
+        aElem.ondragover = playListItemDragOver;
 
         //内部のdivタグ
         var flexDivTag = document.createElement("div");
@@ -222,6 +229,26 @@
         var strong = 1000;
         if (myStrong) strong = myStrong;
         return new Date().getTime().toString(16) + Math.floor(strong * Math.random()).toString(16)
+    }
+
+
+    /* プレイリストアイテムのドラッグスタートイベントハンドラ。 */
+    function playListItemDragStart(event) {
+        console.log("dragStart");
+        console.log(event);
+
+    }
+
+    function playListItemDragEnd(event) {
+        console.log("dragend");
+        console.log(event);
+    }
+
+    function playListItemDragOver(event) {
+        console.log("dragover");
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        console.log(event);
     }
 
 
