@@ -350,24 +350,32 @@ namespace saikyo_playlist.Controllers
         [HttpPost]
         public async Task<IActionResult> AddFromPlayList(CreateEditDeletePlayListViewModel model)
         {
-            //var loginUserInfo = await UserManager.GetUserAsync(User);
+            var user = await UserManager.GetUserAsync(User);
 
-            //var playListRepo = new PlayListRepository(ApplicationDbContext, loginUserInfo, Configuration["YoutubeAPIKey"]);
-            //var createResult = await playListRepo.CreateNewPlayListFromPlayListUrlAsync(model.Title, model.PlayListUrl);
+            //再生リストの取得
+            var playListRetrieve = await YoutubeDataRepository.GetYoutubePlayListInfoAsync(model.Url);
+            if (playListRetrieve!.OperationResult == YoutubeAPIRetrieveOperationResultType.Success)
+            {
+                //再生リストの内容をアイテムライブラリに追加
+                foreach (var item in playListRetrieve.RetrieveResult!)
+                {
+                    var insertResult = await ItemLibraryRepository.InsertAsync(LibraryItemPlatform.Youtube, item.ItemId, item.Title, user);
+                    if(insertResult.OperationResult == ItemLibraryOperationResultType.UnExpectedError)
+                    {
+                        model.ErrorMessage = $"ライブラリへの登録時にエラーが発生しました。{insertResult.Exception!.Message}";
+                        return View(model);
+                    }
+                }
+            }
+            else
+            {
+                model.ErrorMessage = $"再生リスト取得時にエラーが発生しました。{playListRetrieve.Exception!.Message}";
+                return View(model);
+            }
 
-            //if (createResult)
-            //{
-            //    //登録成功
-            //    var indexModel = new ManagePlayListViewModel(ApplicationDbContext);
-            //    return View("Index", indexModel);
 
-            //}
-            //else
-            //{
-            //    //登録失敗
-            //    return View(model);
-            //}
-            return View();
+            //成功
+            return Redirect("../PlayList");
         }
     }
 }
