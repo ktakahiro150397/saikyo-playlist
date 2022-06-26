@@ -40,6 +40,12 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 });
 
+builder.Services.AddAuthentication()
+    .AddCookie(option =>
+    {
+        option.LoginPath = "/Auth/Login";
+    });
+
 
 var app = builder.Build();
 
