@@ -100,7 +100,9 @@ namespace saikyo_playlist.Models
                             PlayCount = lib.PlayCount,
                             ItemSeq = joined.ItemSeq
                         }
-                    ).ToList();
+                    )
+                    .OrderBy(item => item.ItemSeq)
+                    .ToList();
 
             var header = dbContext.PlayListHeaders
                     .Where(item => item.PlayListHeadersEntityId == playListHeaderId)
