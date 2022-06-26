@@ -173,7 +173,7 @@ namespace saikyo_playlist.Controllers
                     }
 
 
-                    return Redirect("PlayList");
+                    return Redirect("../PlayList");
 
                 }
 
