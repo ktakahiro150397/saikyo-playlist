@@ -44,6 +44,13 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <returns></returns>
         public Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user);
 
+        /// <summary>
+        /// 指定したIDのアイテムの再生回数を加算します。
+        /// </summary>
+        /// <param name="libraryEntityId"></param>
+        /// <param name="addCount"></param>
+        /// <returns></returns>
+        public Task<ItemLibraryOperationResult> AddPlayCount(string libraryEntityId, int addCount = 1);
 
     }
 }
