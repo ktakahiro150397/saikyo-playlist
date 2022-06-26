@@ -94,6 +94,7 @@ namespace saikyo_playlist.Models
                         new PlayListItem()
                         {
                             Type = lib.Platform,
+                            ItemLibraryEntityId = lib.ItemLibrariesEntityId,
                             ItemId = lib.ItemId,
                             Title = lib.Title,
                             TitleAlias = lib.TitleAlias,
@@ -135,6 +136,12 @@ namespace saikyo_playlist.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("type")]
         public LibraryItemPlatform Type { get; set; }
+
+        /// <summary>
+        /// アイテムライブラリID
+        /// </summary>
+        [JsonPropertyName("itemLibraryId")]
+        public string ItemLibraryEntityId { get; set; }
 
         /// <summary>
         /// アイテムID

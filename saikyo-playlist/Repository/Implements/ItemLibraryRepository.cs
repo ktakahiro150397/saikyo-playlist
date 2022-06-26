@@ -35,6 +35,7 @@ namespace saikyo_playlist.Repository.Implements
                     await dbContext.SaveChangesAsync();
 
                     ret.OperationResult = ItemLibraryOperationResultType.Success;
+                    ret.PlayCount = addTarget.PlayCount;
                 }
                 else
                 {

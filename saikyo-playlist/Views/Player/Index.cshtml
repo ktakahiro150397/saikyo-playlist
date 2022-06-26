@@ -13,7 +13,7 @@
 
             <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
 
-            <a onclick="javascript:onPlayListItemClick(this);" item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
+            <a onclick="javascript:onPlayListItemClick(this);" item-itemLibraryEntityId=@item.ItemLibraryEntityId item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
                 @(item.ItemSeq + " / " + item.Title + " / " + item.TitleAlias + " / ")
                 <span id="playCount_@item.ItemSeq">@item.PlayCount</span>
             </a>
@@ -86,6 +86,10 @@
     function playNextVideo() {
 
         var prevIndex = currentIndex;
+        var addCountEntityId = playList[prevIndex].itemLibraryId;
+
+        //再生回数を加算
+        addPlayCount(addCountEntityId, prevIndex);
 
         //インデックスを加算
         if (currentIndex === maxIndex) {
@@ -94,11 +98,11 @@
             currentIndex += 1;
         }
 
+
         console.log("currentIndex : " + currentIndex);
         player.loadVideoById(playList[currentIndex].itemId);
 
-        //再生回数を加算
-        addPlayCount(playListHeaderId, prevIndex);
+        
     }
 
 function onPlayListItemClick(sender) {
@@ -111,7 +115,8 @@ function onPlayListItemClick(sender) {
 
 }
 
-    function addPlayCount(playListId,seq) {
+    /* 指定したアイテムの再生回数を加算します。 */
+    function addPlayCount(itemLibrariesEntityId, index) {
         //対象のパラメータで再生回数を増やすAPIを呼び出す
         var req = new XMLHttpRequest();
 
@@ -122,7 +127,7 @@ function onPlayListItemClick(sender) {
                     console.log("addPlayCount 200OK");
                     console.log("responseText : " + req.responseText);
                     console.log("parsed : " + JSON.parse(req.responseText));
-                    document.getElementById("playCount_" + seq).innerText = JSON.parse(req.responseText)["playCount"];
+                    document.getElementById("playCount_" + index).innerText = JSON.parse(req.responseText)["playCount"];
 
                 }
             } else {
@@ -130,7 +135,7 @@ function onPlayListItemClick(sender) {
             }
         }
 
-        req.open("GET", "/Player/addPlayCount?playListHeaderId=" + playListId + "&itemSeq=" + seq);
+        req.open("GET", "/Player/addPlayCount?itemLibrariesEntityId=" + itemLibrariesEntityId);
         req.send(null);
 
     }
