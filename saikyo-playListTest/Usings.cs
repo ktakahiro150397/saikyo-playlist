@@ -1,2 +1,10 @@
-global using Microsoft.VisualStudio.TestTools.UnitTesting;
-global using saikyo_playlist.Repository;
+global using Microsoft.AspNetCore.Mvc;
+global using Moq;
+global using saikyo_playlist.Controllers;
+global using saikyo_playlist.Models;
+global using saikyo_playlist.Repository.Interfaces;
+global using Xunit;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.AspNetCore.Identity;
+global using saikyo_playlist.Data;
+global using saikyo_playlist.Repository.Implements;

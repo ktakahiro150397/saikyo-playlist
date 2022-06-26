@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using saikyo_playlist.Data;
 using saikyo_playlist.Models;
+using saikyo_playlist.Repository.Interfaces;
 
 namespace saikyo_playlist.Controllers
 {
@@ -12,9 +13,13 @@ namespace saikyo_playlist.Controllers
 
         private ApplicationDbContext ApplicationDbContext { get; set; }
 
-        public PlayerController(ApplicationDbContext dbContext)
+        private IItemLibraryRepository ItemLibraryRepository { get; set; }
+
+        public PlayerController(ApplicationDbContext dbContext,
+            IItemLibraryRepository itemLibraryRepository)
         {
             ApplicationDbContext = dbContext;
+            ItemLibraryRepository = itemLibraryRepository;
         }
 
 
@@ -32,32 +37,33 @@ namespace saikyo_playlist.Controllers
             return View("Index", playListModel);
         }
 
+        /// <summary>
+        /// 指定したIDの再生回数を加算します。
+        /// </summary>
+        /// <param name="itemLibrariesEntityId"></param>
+        /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddPlayCount(string playListHeaderId,int itemSeq)
+        public async Task<IActionResult> AddPlayCount(string itemLibrariesEntityId,int addCount = 1)
         {
-
             var ret = 0;
             try
             {
-                var detail = ApplicationDbContext.PlayListDetails
-                        .Where(item => item.PlayListHeadersEntityId == playListHeaderId && item.ItemSeq == itemSeq)
-                        .FirstOrDefault();
-
-                if(detail == null)
+                var result = await ItemLibraryRepository.AddPlayCount(itemLibrariesEntityId, addCount);
+            
+                if(result.OperationResult != Repository.Implements.ItemLibraryOperationResultType.Success)
                 {
-                    //データが見つからなかった
-                    return NotFound();
+                    return BadRequest();
                 }
-
-                //データの再生回数を1つ増やす
-                detail.PlayCount += 1;
-                ret = detail.PlayCount;
-                ApplicationDbContext.SaveChanges();
-
-            }catch(Exception ex)
+                else
+                {
+                    ret = result.PlayCount!.Value;
+                }
+                
+            }
+            catch (Exception ex)
             {
                 //内部エラー
                 return BadRequest();

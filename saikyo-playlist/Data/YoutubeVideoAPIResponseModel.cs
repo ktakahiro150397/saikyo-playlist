@@ -1,5 +1,93 @@
 ﻿namespace saikyo_playlist.Data.Video
 {
+
+    /// <summary>
+    /// YoutubeからAPI経由でデータを取得した結果を表します。
+    /// </summary>
+    public class YoutubeVideoRetrieveOperationResult
+    {
+
+        /// <summary>
+        /// 取得したオブジェクト。
+        /// </summary>
+        public IList<YoutubeVideoRetrieveResult>? RetrieveResult;
+
+        /// <summary>
+        /// APIから取得した結果。
+        /// </summary>
+        public YoutubeAPIRetrieveOperationResultType OperationResult;
+
+        /// <summary>
+        /// エラーが発生している場合、その例外オブジェクト。
+        /// </summary>
+        public Exception? Exception { get; set; }
+    }
+
+
+    /// <summary>
+    /// YoutubeからAPI経由で取得したデータ。
+    /// </summary>
+    public class YoutubeVideoRetrieveResult
+    {
+        /// <summary>
+        /// Youtube動画のID。
+        /// </summary>
+        public string ItemId { get; set; }
+
+        /// <summary>
+        /// タイトル。
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// 動画へのURL。
+        /// </summary>
+        public string Url { get; set; }
+
+        /// <summary>
+        /// 再生リスト内のインデックス。
+        /// </summary>
+        public int? ItemSeq { get; set; }
+
+        public YoutubeVideoRetrieveResult()
+        {
+            ItemId = "";
+            Title = "";
+            Url = "";
+        }
+
+    }
+
+    /// <summary>
+    /// YoutubeAPIへの操作結果を表します。
+    /// </summary>
+    public enum YoutubeAPIRetrieveOperationResultType
+    {
+        /// <summary>
+        /// 操作に成功
+        /// </summary>
+        Success,
+
+        /// <summary>
+        /// (取得時)対象アイテムが存在しない
+        /// </summary>
+        NotFound,
+
+        /// <summary>
+        /// 正しくないURLが入力されている
+        /// </summary>
+        InvalidUrl,
+
+        /// <summary>
+        /// 操作時に予期せぬエラー
+        /// </summary>
+        UnExpectedError,
+
+    }
+
+
+
+
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class YoutubeVideoAPIResponseModel
     {

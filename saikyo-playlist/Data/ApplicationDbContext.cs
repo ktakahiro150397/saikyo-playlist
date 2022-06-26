@@ -6,11 +6,27 @@ namespace saikyo_playlist.Data
     public class ApplicationDbContext : IdentityDbContext
     {
 
-        public DbSet<PlayListHeadersEntity> PlayListHeaders => Set<PlayListHeadersEntity>();
-        public DbSet<PlayListDetailsEntity> PlayListDetails => Set<PlayListDetailsEntity>();
+        /// <summary>
+        /// アイテムライブラリ。
+        /// </summary>
+        public virtual DbSet<ItemLibrariesEntity> ItemLibraries => Set<ItemLibrariesEntity>();
+        
+        /// <summary>
+        /// プレイリストヘッダー。
+        /// </summary>
+        public virtual DbSet<PlayListHeadersEntity> PlayListHeaders => Set<PlayListHeadersEntity>();
+        
+        /// <summary>
+        /// プレイリスト詳細。
+        /// </summary>
+        public virtual DbSet<PlayListDetailsEntity> PlayListDetails => Set<PlayListDetailsEntity>();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
+        {
+        }
+
+        public ApplicationDbContext():base()
         {
         }
 
