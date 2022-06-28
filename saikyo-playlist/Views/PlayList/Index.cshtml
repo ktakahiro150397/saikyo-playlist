@@ -21,6 +21,14 @@
         /*font-size:.9em;*/
     }
 
+    .playlist-item-elem {
+        width: max-content;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        margin-bottom: 1em;
+        padding: .5em .5em .5em .5em;
+    }
+
 </style>
 
 <div>
@@ -63,22 +71,17 @@ else
 {
 
 
-
-
     @foreach (var item in Model.managePlayListItems)
     {
-        <div>
-            <a href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
-                @item.PlayListName
-            </a>
-            @*<span style="margin-left:20px;"></span>
-            <a href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
-                編集
-            </a>*@
-        </div>
-
+           <div class="playlist-item-elem">
+               <a href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
+                   @item.PlayListName
+               </a>
+               <a href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
+                   編集
+               </a>
+           </div>
     }
-
 
 }
 
