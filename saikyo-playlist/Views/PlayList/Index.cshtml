@@ -14,12 +14,55 @@
         text-decoration: none;
         color: black;
         font-weight: 700;
-        font-size:1.2em;
+        font-size: 1.2em;
     }
 
-    .playlist-menu-desc{
+    .playlist-menu-desc {
         /*font-size:.9em;*/
     }
+
+    .playlist-item-elem {
+        width: max-content;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        margin-bottom: 1em;
+        padding: .5em .5em .5em .5em;
+    }
+
+    .playlist-table {
+        width: 100%;
+        border-collapse:separate;
+        border-spacing:0;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        overflow:hidden;
+    }
+
+    .playlist-table tr td{
+        padding:0;
+    }
+        .playlist-table tr:nth-child(even) td {
+            background-color: rgb(244,244,244);
+        }
+
+    .playlist-table-playerLink{
+        width:100%;
+        display:inline-block;
+        padding:.5em 0 .5em .5em;
+        color:black;
+        text-decoration:none;
+    }
+
+    .playlist-table-editLink {
+        width: 100%;
+        display: inline-block;
+        padding: .5em 0 .5em 0;
+        color: black;
+        text-decoration: none;
+    }
+        .playlist-table-playerLink:hover, .playlist-table-editLink:hover {
+            background-color: rgb(200,200,200);
+        }
 
 </style>
 
@@ -56,28 +99,38 @@
     <p>
         プレイリストが存在しません。
     </p>
-
-
 }
 else
 {
+    <table class="playlist-table">
+        <colgroup>
+            <col width="100" />
+            <col />
+        </colgroup>
+        <tr>
+            <th>
+            </th>
+            <th>
+                プレイリスト名
+                </th>
+        </tr>
+        @foreach (var item in Model.managePlayListItems)
+        {
+            <tr>
+                <td style="text-align:center;">
+                    <a class="playlist-table-editLink" href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
+                        編集
+                    </a>
+                </td>
+                <td>
+                    <a class="playlist-table-playerLink" href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
+                        @item.PlayListName
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
 
-
-
-
-    @foreach (var item in Model.managePlayListItems)
-    {
-        <div>
-            <a href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
-                @item.PlayListName
-            </a>
-            @*<span style="margin-left:20px;"></span>
-            <a href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
-                編集
-            </a>*@
-        </div>
-
-    }
 
 
 }
