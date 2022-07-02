@@ -285,6 +285,28 @@
         event.preventDefault();
     }
 
+    /* 対象の要素から、指定したクラス名を持つ親要素を取得します。 */
+    function getParentElementByClassNameRecursive(element, className) {
+
+        if ("classList" in element) {
+            if (element.classList.contains(className)) {
+                //要素がクラス名を含んでいる
+                return element;
+            } else {
+                //要素がクラス名を含まない
+                //親要素に対して再帰呼び出し
+                if (element.parentElement == null) {
+                    //親要素が存在しない
+                    return null;
+                } else {
+                    return getParentElementByClassNameRecursive(element.parentElement, className);
+                }
+            }
+        } else {
+            //classList定義なし
+            return null;
+        }
+
     /* プレイリスト作成ボタン押下時イベント */
     function onClickSubmit() {
         //選択されているプレイリスト内容をinputに設定
