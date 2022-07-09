@@ -634,6 +634,11 @@ namespace saikyo_playlist.Repository.Implements
 
             throw new NotImplementedException();
         }
+
+        public Task<PlayListOperationResult> DeletePlayListAsync(string headerEntityId, IdentityUser user)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class GetPlayListOperationResult

@@ -139,7 +139,7 @@ else
                     </a>
                 </td>
                 <td style="text-align:center;">
-                    <a class="playlist-table-link playlist-table-deleteLink" href="@Url.Action("Delete","PlayList",new { playListHeaderId = @item.PlayListHeaderId })"
+                    <a class="playlist-table-link playlist-table-deleteLink" href="@Url.Action("Delete","PlayList",new { playListHeaderId = @item.PlayListHeaderId , model = Model})"
                        onclick="return confirm('プレイリスト「@item.PlayListName」を削除します。よろしいですか？');">
                         削除
                     </a>
