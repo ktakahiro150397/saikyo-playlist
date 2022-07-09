@@ -212,11 +212,9 @@ namespace saikyo_playlist.Controllers
             {
                 //削除に成功
                 //再度モデルを初期化
-                await model.Initialize();
-                return View(model);
+                return RedirectToAction("Index");
             }
         }
-
 
         #endregion
 
