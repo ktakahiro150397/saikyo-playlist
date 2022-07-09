@@ -526,6 +526,24 @@ namespace saikyo_playlist.Repository.Implements
                     return ret;
                 }
 
+                playListInfo.Details = dbContext.PlayListDetails
+                    .Where(elem => elem.PlayListHeadersEntityId == headerEntityId)
+                    .Join(
+                        dbContext.ItemLibraries,
+                        detail => detail.ItemLibrariesEntityId,
+                        lib => lib.ItemLibrariesEntityId,
+                        (detail,lib) => new PlayListDetailsEntity()
+                        {
+                            ItemLibrariesEntity = lib,
+                            PlayListDetailsEntityId = detail.PlayListDetailsEntityId,
+                            ItemSeq = detail.ItemSeq,
+                            TimeStamp = detail.TimeStamp,
+                            ItemLibrariesEntityId = lib.ItemLibrariesEntityId,
+                        }
+                    )
+                    .OrderBy(elem => elem.ItemSeq)
+                    .ToList();
+
                 ret.OperationResult = PlayListOperationResultType.Success;
                 ret.HeaderEntity = playListInfo;
             }

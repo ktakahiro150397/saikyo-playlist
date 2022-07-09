@@ -53,7 +53,7 @@ namespace saikyo_playlist.Models.PlayListManage
             else
             {
                 PlayListHeaderId = playListHeaderId;
-                var playListDetails = getResult.HeaderEntity!.Details.ToList();
+                var playListDetails = getResult.HeaderEntity!.Details;
 
                 foreach(var detail in playListDetails)
                 {
@@ -63,6 +63,7 @@ namespace saikyo_playlist.Models.PlayListManage
                             ItemLibraryEntityId = detail.ItemLibrariesEntityId,
                             itemSeq = detail.ItemSeq,
                             PlayListDetailsEntityId = detail.PlayListDetailsEntityId,
+                            ItemLibraryName = detail.ItemLibrariesEntity.Title,
                         });
                 }
             }
@@ -88,6 +89,12 @@ namespace saikyo_playlist.Models.PlayListManage
         /// 選択されたアイテムID。
         /// </summary>
         public string ItemLibraryEntityId { get; set; }
+
+        /// <summary>
+        /// 画面上に表示するアイテムライブラリの名前。
+        /// 編集時のGET時に使用します。
+        /// </summary>
+        public string ItemLibraryName { get; set; }
 
         /// <summary>
         /// 選択されたアイテムIDの連番。

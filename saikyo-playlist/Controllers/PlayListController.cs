@@ -226,9 +226,11 @@ namespace saikyo_playlist.Controllers
             var model = new CreateEditDeletePlayListViewModel();
 
             var user = await UserManager.GetUserAsync(User);
+
+            //選択されたプレイリストの内容をセット
             await model.SetPlayList(playListHeaderId, ItemLibraryRepository, PlayListRepository, user);
 
-            return View(model);
+            return View("CreatePlayList",model);
 
         }
 
