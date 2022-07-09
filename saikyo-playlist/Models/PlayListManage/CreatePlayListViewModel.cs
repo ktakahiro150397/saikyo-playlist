@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using saikyo_playlist.Repository.Interfaces;
 using saikyo_playlist.Repository.Implements;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
 
 namespace saikyo_playlist.Models.PlayListManage
 {
@@ -28,6 +29,17 @@ namespace saikyo_playlist.Models.PlayListManage
         /// </summary>
         public List<PlayListEditorDisplayData> SelectedLibraryInfo { get; set; }
 
+        /// <summary>
+        /// 選択されたプレイリスト内容をJSON形式の文字列で返します。
+        /// </summary>
+        public string SelectedLibraryInfoJsonString
+        {
+            get
+            {
+                return JsonSerializer.Serialize(SelectedLibraryInfo);
+            }
+        }
+
         public string Url { get; set; }
 
         public string ErrorMessage { get; set; }
@@ -42,20 +54,21 @@ namespace saikyo_playlist.Models.PlayListManage
             ErrorMessage = "";
         }
 
-        public async Task SetPlayList(string playListHeaderId,IItemLibraryRepository itemLibraryRepository, IPlayListRepository playListRepository, IdentityUser user)
+        public async Task SetPlayList(string playListHeaderId, IItemLibraryRepository itemLibraryRepository, IPlayListRepository playListRepository, IdentityUser user)
         {
             var getResult = playListRepository.GetPlayList(playListHeaderId, user);
-            if(getResult.OperationResult != PlayListOperationResultType.Success)
+            if (getResult.OperationResult != PlayListOperationResultType.Success)
             {
                 //取得に失敗
                 throw new ApplicationException("プレイリストの取得に失敗しました。", getResult.Exception);
             }
             else
             {
+                Title = getResult.HeaderEntity!.Name;
                 PlayListHeaderId = playListHeaderId;
                 var playListDetails = getResult.HeaderEntity!.Details;
 
-                foreach(var detail in playListDetails)
+                foreach (var detail in playListDetails)
                 {
                     SelectedLibraryInfo.Add(
                         new PlayListEditorDisplayData()
@@ -100,7 +113,7 @@ namespace saikyo_playlist.Models.PlayListManage
         /// 選択されたアイテムIDの連番。
         /// </summary>
         public int itemSeq { get; set; }
-       
+
         public PlayListEditorDisplayData()
         {
             PlayListDetailsEntityId = "";

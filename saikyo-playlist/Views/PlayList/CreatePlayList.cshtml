@@ -109,6 +109,18 @@
 
 <script>
 
+    document.onreadystatechange = function () {
+        if (document.readyState === "complete") {
+            var selectedPlayListInfo = @Html.Raw(@Model.SelectedLibraryInfoJsonString);
+            console.log(selectedPlayListInfo);
+
+            for (var i = 0; i < selectedPlayListInfo.length; i++) {
+                additemToPlayList(selectedPlayListInfo[i].ItemLibraryEntityId, selectedPlayListInfo[i].ItemLibraryName);
+            }
+
+        }
+    }
+
     /* ライブラリアイテムクリック時イベント */
     function onLibraryItemClick(sender) {
 
@@ -228,7 +240,7 @@
         } else {
             console.error("id: " + id + " の要素が見つかりませんでした。");
         }
-        
+
 
     }
 
@@ -306,6 +318,7 @@
             //classList定義なし
             return null;
         }
+    }
 
     /* プレイリスト作成ボタン押下時イベント */
     function onClickSubmit() {
@@ -323,7 +336,7 @@
             let entityId = aElem.getAttribute("data-entityId");
             //indexを取得
             let index = aElem.getAttribute("data-index");
-            
+
             //formに設定するinput要素を作成
             let inputElem_DetailId = document.createElement("input");
             inputElem_DetailId.setAttribute("type", "hidden");
@@ -341,26 +354,6 @@
 
         }
 
-        
-        console.log("aaa");
-        
-
-        @* <input id="select_1"
-                   name="SelectedLibraryInfo[0].PlayListDetailsEntityId"
-                   type="hidden"
-                   value="detailId_1">
-            <input id="select_2"
-                   name="SelectedLibraryInfo[0].ItemLibraryEntityId"
-                   type="hidden"
-                   value="detailId_1">
-            <input id="select_1"
-                   name="SelectedLibraryInfo[0].itemSeq"
-                   type="hidden"
-                   value="0"> *@
-
-        
-
-        
     }
 
 </script>
