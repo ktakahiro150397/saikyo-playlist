@@ -485,7 +485,7 @@ namespace saikyo_playlist.Repository.Implements
 
 
                 //削除対象のプレイリスト詳細を取得
-                var detail = dbContext.PlayListDetails.SingleOrDefault(detail => detail.PlayListDetailsEntityId == playListDetailId);
+                var detail = header.Details.SingleOrDefault(detail => detail.PlayListDetailsEntityId == playListDetailId);
                 if (detail == null)
                 {
                     ret.OperationResult = PlayListOperationResultType.NotFound;

@@ -24,7 +24,7 @@ namespace saikyo_playlist.Models.PlayListManage
         /// プレイリストヘッダーのID。
         /// 画面から新規作成されている場合は空白が設定されます。
         /// </summary>
-        public string PlayListHeaderId { get; set; }
+        public string? PlayListHeaderId { get; set; }
 
         [Required]
         [Display(Name = "プレイリスト名")]
@@ -129,6 +129,7 @@ namespace saikyo_playlist.Models.PlayListManage
         {
             PlayListDetailsEntityId = "";
             ItemLibraryEntityId = "";
+            ItemLibraryName = "";
         }
 
     }

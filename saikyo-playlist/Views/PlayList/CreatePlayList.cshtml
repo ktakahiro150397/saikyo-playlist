@@ -30,6 +30,8 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
+            <input type="hidden" asp-for="PlayListHeaderId" />
+
             <div style="margin-top:2em;">
                 <p>プレイリストに追加するアイテムをクリックして追加してください。</p>
             </div>
@@ -57,7 +59,7 @@
                     </div>
                 </div>
             </div>
-            <button id="createSubmit" type="submit" onclick="onClickSubmit();">プレイリスト作成</button>
+            <button id="createSubmit" type="submit" onclick="onClickSubmit();" asp-action="CreatePlayList">プレイリスト作成</button>
         </form>
     </div>
 </div>
