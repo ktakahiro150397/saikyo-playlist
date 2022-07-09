@@ -194,6 +194,30 @@ namespace saikyo_playlist.Controllers
 
         #endregion
 
+        #region DeletePlayList
+
+        public async Task<IActionResult> Delete(string playListHeaderId, ManagePlayListViewModel model)
+        {
+
+            var user = await UserManager.GetUserAsync(User);
+
+            var deleteResult = await PlayListRepository.DeletePlayListAsync(playListHeaderId, user);
+
+            if(deleteResult.OperationResult != PlayListOperationResultType.Success)
+            {
+                //削除に失敗
+                return View(model);
+            }
+            else
+            {
+                //削除に成功
+                //再度モデルを初期化
+                return RedirectToAction("Index");
+            }
+        }
+
+        #endregion
+
         #region EditPlayList
 
         [HttpGet]
@@ -241,6 +265,8 @@ namespace saikyo_playlist.Controllers
 
 
         #endregion
+
+
 
         [HttpGet]
         public IActionResult Create()

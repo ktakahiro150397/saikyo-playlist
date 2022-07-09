@@ -634,6 +634,31 @@ namespace saikyo_playlist.Repository.Implements
 
             throw new NotImplementedException();
         }
+
+        public async Task<PlayListOperationResult> DeletePlayListAsync(string headerEntityId, IdentityUser user)
+        {
+            var ret = new PlayListOperationResult();
+
+            var deleteTargetElement = dbContext.PlayListHeaders
+                .FirstOrDefault(elem => elem.PlayListHeadersEntityId == headerEntityId && elem.AspNetUserdId == user.Id);
+
+            if(deleteTargetElement == null)
+            {
+                //削除対象の要素が存在しない
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+            }
+            else
+            {
+                //削除対象の要素が存在する
+                dbContext.Remove(deleteTargetElement);
+                await dbContext.SaveChangesAsync();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+            }
+
+            return ret;
+            throw new NotImplementedException();
+        }
     }
 
     public class GetPlayListOperationResult
