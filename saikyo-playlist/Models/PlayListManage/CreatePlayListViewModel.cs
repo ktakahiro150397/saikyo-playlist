@@ -10,6 +10,17 @@ namespace saikyo_playlist.Models.PlayListManage
     public class CreateEditDeletePlayListViewModel
     {
         /// <summary>
+        /// 新規作成の場合はtrue。
+        /// </summary>
+        public bool IsCreateNew
+        {
+            get
+            {
+                return String.IsNullOrEmpty(PlayListHeaderId);
+            }
+        }
+
+        /// <summary>
         /// プレイリストヘッダーのID。
         /// 画面から新規作成されている場合は空白が設定されます。
         /// </summary>

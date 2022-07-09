@@ -10,7 +10,14 @@
     <div>
         <form id="form-submit" method="post">
             <h2>
-                新しいプレイリストを作成します。
+                @if (Model.IsCreateNew)
+                {
+                    <span>新しいプレイリストを作成します。</span>
+                }
+                else
+                {
+                    <span>プレイリストを編集します。</span>
+                }
             </h2>
             <hr />
 
@@ -102,8 +109,8 @@
     }
 
     /* 要素がドラッグされ、要素上を通過中に適用されるCSS */
-    .library-item-elem-dragover{
-        background-color:red;
+    .library-item-elem-dragover {
+        background-color: red;
     }
 </style>
 
