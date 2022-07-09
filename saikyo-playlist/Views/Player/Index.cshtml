@@ -14,9 +14,9 @@
         {
             <div class="playlist-item-elem">
 
-                <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
-
                 <a class="playlist-item-a" onclick="javascript:onPlayListItemClick(this);" item-itemLibraryEntityId=@item.ItemLibraryEntityId item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
+
+                    <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
                     <div class="playlist-item-inner-container">
                         <p>
                             <span style="padding-right:.5em;width:8%;color:gray;">@(item.ItemSeq + 1)</span>
@@ -69,29 +69,33 @@
         }
 
     .playlist-item-a {
-        margin-left: .5em;
+        @*margin-left: .5em;*@
         vertical-align: middle;
         display: flex;
         align-items: center;
-        color:black;
-        text-decoration:none;
+        color: black;
+        text-decoration: none;
+        width:100%;
     }
 
-    .playlist-item-a:hover{
-        color:black;
-    }
+        .playlist-item-a:hover {
+            color: black;
+        }
 
     .playlist-item-inner-container {
+        margin-left:.5em;
     }
 
-    .playlist-item-playCount{
-        font-size:.9em;
-        padding:0 .5em 0 .5em;
+    .playlist-item-playCount {
+        font-size: .9em;
+        padding: 0 .5em 0 .5em;
         border: 1px solid #ced4da;
         border-radius: 5px;
     }
 
-
+    .playlist-item-playing {
+        background-color: rgb(150,150,150);
+    }
 </style>
 
 <script>
@@ -133,6 +137,7 @@
 
     function onPlayerReady(event) {
         console.log('onPlayerReady');
+        playItem(0);
     }
 
     function onPlayerStateChange(event) {
@@ -169,9 +174,9 @@
             currentIndex += 1;
         }
 
-
         console.log("currentIndex : " + currentIndex);
-        player.loadVideoById(playList[currentIndex].itemId);
+        playItem(currentIndex);
+        //player.loadVideoById(playList[currentIndex].itemId);
 
 
     }
@@ -179,9 +184,39 @@
     function onPlayListItemClick(sender) {
         console.log("次に再生するID：" + sender.getAttribute("item-itemId"));
 
+
         //インデックスを変更
-        currentIndex = parseInt(sender.getAttribute("item-itemSeq"));
-        player.loadVideoById(sender.getAttribute("item-itemId"));
+        //currentIndex = parseInt(sender.getAttribute("item-itemSeq"));
+        //player.loadVideoById(sender.getAttribute("item-itemId"));
+
+        playItem(parseInt(sender.getAttribute("item-itemSeq")));
+
+    }
+
+    /* 指定した連番のアイテムを再生します。 */
+    function playItem(seq) {
+
+        currentIndex = seq;
+        let itemId = playList[seq].itemId;
+
+        //指定したIDのYoutubeビデオを再生
+        player.loadVideoById(itemId);
+
+        //指定したitem-seqにCSSクラスを付与
+        //クラス名から取得
+        let aTags = document.getElementsByClassName("playlist-item-a");
+
+        for (var i = 0; i < aTags.length; i++) {
+
+            var itemSeq = aTags[i].getAttribute("item-itemSeq");
+            if (itemSeq == seq) {
+                //一致
+                aTags[i].parentNode.classList.add("playlist-item-playing");
+            } else {
+                aTags[i].parentNode.classList.remove("playlist-item-playing");
+            }
+
+        }
 
 
     }

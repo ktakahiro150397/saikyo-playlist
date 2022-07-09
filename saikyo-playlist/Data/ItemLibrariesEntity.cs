@@ -52,6 +52,12 @@ namespace saikyo_playlist.Data
         public int PlayCount { get; set; }
 
         /// <summary>
+        /// アイテムがライブラリに追加された日付。
+        /// </summary>
+        [Comment("アイテムがライブラリに追加された日付")]
+        public DateTime ItemAddDate { get; set; }
+
+        /// <summary>
         /// タイムスタンプ。
         /// </summary>
         [Comment("タイムスタンプ。")]

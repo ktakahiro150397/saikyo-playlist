@@ -31,39 +31,52 @@
 
     .playlist-table {
         width: 100%;
-        border-collapse:separate;
-        border-spacing:0;
+        border-collapse: separate;
+        border-spacing: 0;
         border: 1px solid #ced4da;
         border-radius: 5px;
-        overflow:hidden;
+        overflow: hidden;
     }
 
-    .playlist-table tr td{
-        padding:0;
-    }
+        .playlist-table tr td {
+            padding: 0;
+        }
+
         .playlist-table tr:nth-child(even) td {
             background-color: rgb(244,244,244);
         }
 
-    .playlist-table-playerLink{
-        width:100%;
-        display:inline-block;
-        padding:.5em 0 .5em .5em;
-        color:black;
-        text-decoration:none;
+    .playlist-table-playerLink {
+        color: black;
+        text-decoration: none;
+        padding: .5em 0 .5em .5em;
+    }
+
+    .playlist-table-link {
+        width: 100%;
+        display: inline-block;
     }
 
     .playlist-table-editLink {
-        width: 100%;
-        display: inline-block;
-        padding: .5em 0 .5em 0;
         color: black;
         text-decoration: none;
+        padding: .5em 0 .5em 0;
     }
+
         .playlist-table-playerLink:hover, .playlist-table-editLink:hover {
             background-color: rgb(200,200,200);
         }
 
+    .playlist-table-deleteLink {
+        color: red;
+        text-decoration: none;
+        padding: .5em 0 .5em 0;
+    }
+
+        .playlist-table-deleteLink:hover {
+            background-color: rgba(255,187,187,.6);
+            color:red;
+        }
 </style>
 
 <div>
@@ -105,25 +118,34 @@ else
     <table class="playlist-table">
         <colgroup>
             <col width="100" />
+            <col width="100" />
             <col />
         </colgroup>
         <tr>
             <th>
             </th>
             <th>
+            </th>
+            <th>
                 プレイリスト名
-                </th>
+            </th>
         </tr>
         @foreach (var item in Model.managePlayListItems)
         {
             <tr>
                 <td style="text-align:center;">
-                    <a class="playlist-table-editLink" href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
+                    <a class="playlist-table-link playlist-table-editLink" href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
                         編集
                     </a>
                 </td>
+                <td style="text-align:center;">
+                    <a class="playlist-table-link playlist-table-deleteLink" href="@Url.Action("Delete","PlayList",new { playListHeaderId = @item.PlayListHeaderId , model = Model})"
+                       onclick="return confirm('プレイリスト「@item.PlayListName」を削除します。よろしいですか？');">
+                        削除
+                    </a>
+                </td>
                 <td>
-                    <a class="playlist-table-playerLink" href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
+                    <a class="playlist-table-playerLink playlist-table-link " href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
                         @item.PlayListName
                     </a>
                 </td>

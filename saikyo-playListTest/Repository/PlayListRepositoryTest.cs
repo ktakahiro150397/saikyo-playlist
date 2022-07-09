@@ -1159,9 +1159,86 @@ namespace saikyo_playListTest.Repository
 
         }
 
+        /// <summary>
+        /// プレイリストの削除
+        /// </summary>
+        [Fact]
+        public async Task Delete_Success()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
 
+            //Act
+            var result = await _repo.DeletePlayListAsync("playlistheadersentityid_1", userMoq.Object);
 
+            //Assert
+            //データが削除され、存在しないことを確認
+            var header = ApplicationDbContext.PlayListHeaders
+                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_1" && header.AspNetUserdId == "test_user_id")
+                .FirstOrDefault();
 
+            Assert.Null(header);
+            Assert.Equal(PlayListOperationResultType.Success, result.OperationResult);
+
+            //結果セット内のAssert
+            Assert.Null(result.Exception);
+            Assert.Null(result.HeaderEntity);
+        }
+
+        /// <summary>
+        /// プレイリストの削除
+        /// </summary>
+        [Fact]
+        public async Task Delete_TryDeleteOtherUser()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            //Act
+            var result = await _repo.DeletePlayListAsync("playlistheadersentityid_3", userMoq.Object);
+
+            //Assert
+            //データが削除されていないことを確認
+            var header = ApplicationDbContext.PlayListHeaders
+                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_3")
+                .FirstOrDefault();
+
+            Assert.NotNull(header);
+            Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
+
+            //結果セット内のAssert
+            Assert.Null(result.Exception);
+            Assert.Null(result.HeaderEntity);
+        }
+
+        /// <summary>
+        /// プレイリストの削除
+        /// </summary>
+        [Fact]
+        public async Task Delete_TryDeleteNotExistId()
+        {
+            //Arrange
+            ApplicationDbContext.Database.EnsureClean();
+            SeedPlayListData();
+
+            //Act
+            var result = await _repo.DeletePlayListAsync("playlistheadersentityid_notexist", userMoq.Object);
+
+            //Assert
+            //データが存在しないことを確認
+            var header = ApplicationDbContext.PlayListHeaders
+                .Where(header => header.PlayListHeadersEntityId == "playlistheadersentityid_notexist")
+                .FirstOrDefault();
+
+            Assert.Null(header);
+            Assert.Equal(PlayListOperationResultType.NotFound, result.OperationResult);
+
+            //結果セット内のAssert
+            Assert.Null(result.Exception);
+            Assert.Null(result.HeaderEntity);
+        }
 
 
 

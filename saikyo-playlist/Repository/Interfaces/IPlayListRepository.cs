@@ -72,6 +72,12 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <returns></returns>
         public PlayListOperationResult GetPlayList(string headerEntityId, IdentityUser user);
 
-
+        /// <summary>
+        /// 指定されたプレイリストIDの削除を行います。
+        /// </summary>
+        /// <param name="headerEntityId"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<PlayListOperationResult> DeletePlayListAsync(string headerEntityId, IdentityUser user);
     }
 }

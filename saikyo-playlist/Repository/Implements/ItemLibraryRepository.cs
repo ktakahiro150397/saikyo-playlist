@@ -89,6 +89,7 @@ namespace saikyo_playlist.Repository.Implements
         {
             var ret = await dbContext.ItemLibraries
                 .Where(item => item.AspNetUserdId == user.Id)
+                .OrderByDescending(item => item.ItemAddDate)
                 .ToListAsync();
 
             return ret;
@@ -120,6 +121,7 @@ namespace saikyo_playlist.Repository.Implements
                         AspNetUserdId = user.Id,
                         Platform = platform,
                         PlayCount = 0,
+                        ItemAddDate = DateTime.Now,
                     };
 
                     dbContext.ItemLibraries.Add(addItem);

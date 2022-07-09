@@ -235,6 +235,10 @@ namespace saikyo_playlist.Data.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasComment("このアイテムを所有しているユーザーのID。");
 
+                    b.Property<DateTime>("ItemAddDate")
+                        .HasColumnType("datetime2")
+                        .HasComment("アイテムがライブラリに追加された日付");
+
                     b.Property<string>("ItemId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
