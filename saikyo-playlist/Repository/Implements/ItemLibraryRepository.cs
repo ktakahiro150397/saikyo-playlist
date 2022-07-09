@@ -17,6 +17,41 @@ namespace saikyo_playlist.Repository.Implements
             //this.user = user;
         }
 
+        public async Task<ItemLibraryOperationResult> AddPlayCount(string libraryEntityId, int addCount = 1)
+        {
+            var ret = new ItemLibraryOperationResult();
+
+            try
+            {
+                var addTarget = dbContext.ItemLibraries
+                    .Where(item => item.ItemLibrariesEntityId == libraryEntityId)
+                    .FirstOrDefault();
+
+                if (addTarget != null)
+                {
+                    //加算対象が存在
+                    addTarget.PlayCount += addCount;
+                    dbContext.Entry(addTarget).State = EntityState.Modified;
+                    await dbContext.SaveChangesAsync();
+
+                    ret.OperationResult = ItemLibraryOperationResultType.Success;
+                    ret.PlayCount = addTarget.PlayCount;
+                }
+                else
+                {
+                    ret.OperationResult = ItemLibraryOperationResultType.NotFound;
+                }
+                
+
+            }catch(Exception ex)
+            {
+                ret.OperationResult = ItemLibraryOperationResultType.UnExpectedError;
+                ret.Exception = ex;
+            }
+
+            return ret;
+        }
+
         public async Task<ItemLibraryOperationResult> DeleteAsync(string libraryEntityId, IdentityUser user)
         {
             var ret = new ItemLibraryOperationResult();
@@ -54,6 +89,7 @@ namespace saikyo_playlist.Repository.Implements
         {
             var ret = await dbContext.ItemLibraries
                 .Where(item => item.AspNetUserdId == user.Id)
+                .OrderByDescending(item => item.ItemAddDate)
                 .ToListAsync();
 
             return ret;
@@ -85,6 +121,7 @@ namespace saikyo_playlist.Repository.Implements
                         AspNetUserdId = user.Id,
                         Platform = platform,
                         PlayCount = 0,
+                        ItemAddDate = DateTime.Now,
                     };
 
                     dbContext.ItemLibraries.Add(addItem);
@@ -127,6 +164,11 @@ namespace saikyo_playlist.Repository.Implements
         /// エラーが発生している場合、その例外オブジェクト。
         /// </summary>
         public Exception? Exception { get; set; }
+
+        /// <summary>
+        /// 加算後の再生回数。
+        /// </summary>
+        public int? PlayCount { get; set; }
     }
 
     /// <summary>

@@ -8,11 +8,13 @@
 
 <div>
     <div>
-        <form method="post">
+        <form id="form-submit" method="post">
             <h2>
                 新しいプレイリストを作成します。
             </h2>
             <hr />
+
+            <span>@Model.ErrorMessage</span>
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating">
@@ -21,31 +23,34 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            <div style="display:flex;">
-
-                <div>
-                        @foreach(var item in Model.Libraries)
-            {
-
-                <a class="library-item-elem">
-                    
-
-                    <span class="library-item-elem-text">@item.Title</span>
-                    <br/>
-                    <span  class="library-item-elem-text">@item.PlayCount</span>
-                </a>
-            }
-                </div>
-
-                <div>
-                    aaabbb
-                </div>
-
-
+            <div style="margin-top:2em;">
+                <p>プレイリストに追加するアイテムをクリックして追加してください。</p>
             </div>
 
+            <div style="display:flex;justify-content:space-between;margin-top:2em;width:100%;">
+                <div style="width:50%;">
+                    <h3>ライブラリ</h3>
+                    <div class="library-item-list">
+                        @foreach (var item in Model.Libraries)
+                        {
+                            <a class="library-item-elem" data-entityId="@item.ItemLibrariesEntityId" data-title="@item.Title" title="@item.Title" onclick="onLibraryItemClick(this);">
+                                <span class="library-item-elem-text">@item.Title</span>
+                            </a>
+                        }
+                    </div>
+                </div>
 
-            <button id="createSubmit" type="submit">プレイリスト作成</button>
+                <div style="width:50%;">
+                    <div>
+                        <h3>プレイリスト</h3>
+                    </div>
+
+                    <div id="playlist-div" class="library-item-list">
+                        @*ここにプレイリスト要素を追加*@
+                    </div>
+                </div>
+            </div>
+            <button id="createSubmit" type="submit" onclick="onClickSubmit();">プレイリスト作成</button>
         </form>
     </div>
 </div>
@@ -53,30 +58,255 @@
 
 
 <style>
-    /* 要素ごとに適用 */
-    .library-item-elem{
-        display:block;
-        background-color:orange;
-        border:1px solid gray;
-        padding:1px;
-        margin-bottom:1px;
+
+    .library-item-list {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        height: 300px;
+        overflow-y: scroll;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        background-color: rgb(249,249,249);
+        width: 95%;
     }
 
-    /* 要素のホバーCSS */
-    .library-item-elem:hover{
-        cursor:grab;
-        background-color:cyan;
+    /* 要素ごとに適用 */
+    .library-item-elem {
+        display: block;
+        padding-top: .5em;
+        padding-bottom: .5em;
+        padding-left: 1em;
+        width: 100%;
+        text-decoration: none;
     }
+
+        /* 要素のホバーCSS */
+        .library-item-elem:hover {
+            cursor: pointer;
+            background-color: rgb(200, 200, 200);
+        }
 
     /* 要素ごとのテキストに適用 */
-    .library-item-elem-text{
-        color:black;
+    .library-item-elem-text {
+        color: black;
+        display: block;
+        width: 95%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     /* 要素のドラッグ中に適用 */
-    .library-item-elem-dragging{
-        cursor:grabbing;
+    .library-item-elem-dragging {
+        cursor: grabbing;
     }
-
 </style>
 
+<script>
+
+    /* ライブラリアイテムクリック時イベント */
+    function onLibraryItemClick(sender) {
+
+        //タイトル・IDを取得
+        let id = sender.getAttribute("data-entityId");
+        let title = sender.getAttribute("data-title");
+
+        //プレイリスト一覧に要素を追加
+        additemToPlayList(id, title);
+    }
+
+    /**
+     * 指定ID、タイトルのライブラリアイテムをプレイリスト末尾に追加します。
+     */
+    function additemToPlayList(id, title) {
+        console.log(id + " / " + title);
+
+        //追加する要素を生成
+        //プレイリスト親要素
+        let playListElem = document.getElementById("playlist-div");
+
+        //インデックスを取得
+        let index = getLastIndex(playListElem);
+
+        //親要素のaタグ
+        var aElem = document.createElement("a");
+        aElem.setAttribute("data-entityId", id);
+        aElem.setAttribute("data-title", title);
+        aElem.setAttribute("data-index", index);
+        aElem.classList.add("library-item-elem");
+        aElem.draggable = true;
+        aElem.id = "playlist-a-" + id + "-" + index;
+
+        //クリック時イベント
+        aElem.onclick = function () {
+            //クリック対象を削除
+            var index = this.getAttribute("data-index");
+            deleteItemFromPlayList(index);
+        }
+        //ドラッグイベント
+        aElem.ondragstart = playListItemDragStart;
+        aElem.ondragend = playListItemDragEnd;
+        aElem.ondragover = playListItemDragOver;
+
+        //内部のdivタグ
+        var flexDivTag = document.createElement("div");
+        flexDivTag.style = "display:flex;width:100%;";
+
+        //インデックスを表すdivタグ
+        var indexDivTag = document.createElement("div");
+        indexDivTag.style = "padding-right:.5em;width:8%;";
+        var indexSpanTag = document.createElement("span");
+        indexSpanTag.classList.add("library-item-elem-text");
+        indexSpanTag.innerText = index + 1;
+
+        var indexSpanId = getUniqueStr();
+        indexSpanTag.id = indexSpanId;
+        //a要素に保存
+        aElem.setAttribute("data-indexSpanId", indexSpanId);
+
+        indexDivTag.appendChild(indexSpanTag);
+
+        //曲名を表すdivタグ
+        var itemDivTag = document.createElement("div");
+        itemDivTag.style = "width:92%;";
+        var itemSpanTag = document.createElement("span");
+        itemSpanTag.classList.add("library-item-elem-text");
+        itemSpanTag.innerText = title;
+        itemDivTag.appendChild(itemSpanTag);
+
+        //タグ組み立て
+        flexDivTag.appendChild(indexDivTag);
+        flexDivTag.appendChild(itemDivTag);
+        aElem.appendChild(flexDivTag);
+
+        playListElem.appendChild(aElem);
+
+        //追加後、プレイリスト末尾までスクロールする
+        playListElem.scrollTo(0, playListElem.scrollHeight);
+
+    }
+
+    /* 現在のプレイリストの最終インデックスを返します。 */
+    function getLastIndex(playListElem){
+        let aElems = playListElem.getElementsByTagName("a");
+        return aElems.length;
+    }
+
+
+    /* 指定したdata-indexのライブラリアイテムをプレイリストから削除します。 */
+    function deleteItemFromPlayList(index) {
+
+        let playList = document.getElementById("playlist-div");
+        let playListaTags = playList.getElementsByTagName("a");
+
+        //削除対象の取得
+        let deleteTag = Array.from(playListaTags).filter(elem => elem.getAttribute("data-index") == index);
+
+        if (deleteTag.length == 1) {
+
+            //指定要素の削除
+            playList.removeChild(deleteTag[0]);
+
+            //seqの振り直し
+
+            //上から振り直していく
+            for (var i = 0; i < playListaTags.length; i++) {
+
+                var indexSpanId = playListaTags[i].getAttribute("data-indexSpanId");
+
+                playListaTags[i].setAttribute("data-index", i);
+                document.getElementById(indexSpanId).innerText = i + 1;
+            }
+        } else {
+            console.error("id: " + id + " の要素が見つかりませんでした。");
+        }
+        
+
+    }
+
+    /* 現在の日付・乱数からユニークっぽいIDを生成します。 */
+    function getUniqueStr(myStrong) {
+        var strong = 1000;
+        if (myStrong) strong = myStrong;
+        return new Date().getTime().toString(16) + Math.floor(strong * Math.random()).toString(16)
+    }
+
+
+    /* プレイリストアイテムのドラッグスタートイベントハンドラ。 */
+    function playListItemDragStart(event) {
+        console.log("dragStart");
+        console.log(event);
+
+    }
+
+    function playListItemDragEnd(event) {
+        console.log("dragend");
+        console.log(event);
+    }
+
+    function playListItemDragOver(event) {
+        console.log("dragover");
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        console.log(event);
+    }
+
+
+
+    /* プレイリスト作成ボタン押下時イベント */
+    function onClickSubmit() {
+        //選択されているプレイリスト内容をinputに設定
+
+        //プレイリスト要素を取得
+        let playListElem = document.getElementById("playlist-div");
+        let aTags = playListElem.getElementsByTagName("a");
+
+        for(let i=0;i<aTags.length;i++){
+            //プレイリスト要素内のa要素を取得
+            let aElem = aTags[i];
+
+            //アイテムエンティティIDを取得
+            let entityId = aElem.getAttribute("data-entityId");
+            //indexを取得
+            let index = aElem.getAttribute("data-index");
+            
+            //formに設定するinput要素を作成
+            let inputElem_DetailId = document.createElement("input");
+            inputElem_DetailId.setAttribute("type", "hidden");
+            inputElem_DetailId.setAttribute("name", "SelectedLibraryInfo[" + i + "].ItemLibraryEntityId");
+            inputElem_DetailId.value = entityId;
+
+            let inputElem_ItemSeq = document.createElement("input");
+            inputElem_ItemSeq.setAttribute("type", "hidden");
+            inputElem_ItemSeq.setAttribute("name", "SelectedLibraryInfo[" + i + "].ItemSeq");
+            inputElem_ItemSeq.value = index;
+
+            //formに追加
+            document.getElementById("form-submit").appendChild(inputElem_DetailId);
+            document.getElementById("form-submit").appendChild(inputElem_ItemSeq);
+
+        }
+
+        
+        console.log("aaa");
+        
+
+        @* <input id="select_1"
+                   name="SelectedLibraryInfo[0].PlayListDetailsEntityId"
+                   type="hidden"
+                   value="detailId_1">
+            <input id="select_2"
+                   name="SelectedLibraryInfo[0].ItemLibraryEntityId"
+                   type="hidden"
+                   value="detailId_1">
+            <input id="select_1"
+                   name="SelectedLibraryInfo[0].itemSeq"
+                   type="hidden"
+                   value="0"> *@
+
+        
+
+        
+    }
+
+</script>

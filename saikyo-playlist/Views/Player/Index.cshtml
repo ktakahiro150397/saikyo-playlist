@@ -1,27 +1,102 @@
-﻿@model  PlayListModel
+﻿@model PlayListModel
 
-<h1>
-    @Model.PlayListName
-</h1>
+<p>@Model.PlayListName</p>
 
-<div id="player"></div>
+<div class="player-container">
 
-<div>
-    @foreach (var item in Model.PlayLists)
-    {
-        <div>
-
-            <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
-
-            <a onclick="javascript:onPlayListItemClick(this);" item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
-                @(item.ItemSeq + " / " + item.Title + " / " + item.TitleAlias + " / ")
-                <span id="playCount_@item.ItemSeq">@item.PlayCount</span>
-            </a>
+    <div id="player"></div>
 
 
-        </div>
-    }
+    <div class="playlist-list-container">
+
+
+        @foreach (var item in Model.PlayLists)
+        {
+            <div class="playlist-item-elem">
+
+                <a class="playlist-item-a" onclick="javascript:onPlayListItemClick(this);" item-itemLibraryEntityId=@item.ItemLibraryEntityId item-itemId=@item.ItemId item-itemSeq=@item.ItemSeq>
+
+                    <img src="https://img.youtube.com/vi/@item.ItemId/2.jpg" />
+                    <div class="playlist-item-inner-container">
+                        <p>
+                            <span style="padding-right:.5em;width:8%;color:gray;">@(item.ItemSeq + 1)</span>
+                            <span style="width:92%;">@item.Title</span>
+                        </p>
+                        <span class="playlist-item-playCount">
+                            再生回数：<span id="playCount_@item.ItemSeq">@item.PlayCount</span>
+                        </span>
+                    </div>
+                </a>
+
+
+            </div>
+        }
+    </div>
+
 </div>
+
+
+<style>
+
+    .player-container {
+        display: flex;
+    }
+
+    .playlist-list-container {
+        margin-left: 1em;
+        height: 70vh;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+    }
+
+    .playlist-item-elem {
+        display: flex;
+        padding: .5em;
+        background-color: rgb(244,244,244);
+    }
+
+    .playlist-item-elem {
+        display: flex;
+        justify-content: left;
+        padding: .5em;
+        background-color: rgb(244,244,244);
+    }
+
+        .playlist-item-elem:hover {
+            cursor: pointer;
+            background-color: rgb(200, 200, 200);
+        }
+
+    .playlist-item-a {
+        @*margin-left: .5em;*@
+        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        color: black;
+        text-decoration: none;
+        width:100%;
+    }
+
+        .playlist-item-a:hover {
+            color: black;
+        }
+
+    .playlist-item-inner-container {
+        margin-left:.5em;
+    }
+
+    .playlist-item-playCount {
+        font-size: .9em;
+        padding: 0 .5em 0 .5em;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+    }
+
+    .playlist-item-playing {
+        background-color: rgb(150,150,150);
+    }
+</style>
 
 <script>
 
@@ -62,6 +137,7 @@
 
     function onPlayerReady(event) {
         console.log('onPlayerReady');
+        playItem(0);
     }
 
     function onPlayerStateChange(event) {
@@ -86,6 +162,10 @@
     function playNextVideo() {
 
         var prevIndex = currentIndex;
+        var addCountEntityId = playList[prevIndex].itemLibraryId;
+
+        //再生回数を加算
+        addPlayCount(addCountEntityId, prevIndex);
 
         //インデックスを加算
         if (currentIndex === maxIndex) {
@@ -95,34 +175,65 @@
         }
 
         console.log("currentIndex : " + currentIndex);
-        player.loadVideoById(playList[currentIndex].itemId);
+        playItem(currentIndex);
+        //player.loadVideoById(playList[currentIndex].itemId);
 
-        //再生回数を加算
-        addPlayCount(playListHeaderId, prevIndex);
+
     }
 
-function onPlayListItemClick(sender) {
-    console.log("次に再生するID：" + sender.getAttribute("item-itemId"));
-
-    //インデックスを変更
-    currentIndex = parseInt(sender.getAttribute("item-itemSeq"));
-    player.loadVideoById(sender.getAttribute("item-itemId"));
+    function onPlayListItemClick(sender) {
+        console.log("次に再生するID：" + sender.getAttribute("item-itemId"));
 
 
-}
+        //インデックスを変更
+        //currentIndex = parseInt(sender.getAttribute("item-itemSeq"));
+        //player.loadVideoById(sender.getAttribute("item-itemId"));
 
-    function addPlayCount(playListId,seq) {
+        playItem(parseInt(sender.getAttribute("item-itemSeq")));
+
+    }
+
+    /* 指定した連番のアイテムを再生します。 */
+    function playItem(seq) {
+
+        currentIndex = seq;
+        let itemId = playList[seq].itemId;
+
+        //指定したIDのYoutubeビデオを再生
+        player.loadVideoById(itemId);
+
+        //指定したitem-seqにCSSクラスを付与
+        //クラス名から取得
+        let aTags = document.getElementsByClassName("playlist-item-a");
+
+        for (var i = 0; i < aTags.length; i++) {
+
+            var itemSeq = aTags[i].getAttribute("item-itemSeq");
+            if (itemSeq == seq) {
+                //一致
+                aTags[i].parentNode.classList.add("playlist-item-playing");
+            } else {
+                aTags[i].parentNode.classList.remove("playlist-item-playing");
+            }
+
+        }
+
+
+    }
+
+    /* 指定したアイテムの再生回数を加算します。 */
+    function addPlayCount(itemLibrariesEntityId, index) {
         //対象のパラメータで再生回数を増やすAPIを呼び出す
         var req = new XMLHttpRequest();
 
-        req.onreadystatechange = function () {
+        req.onreadystatechange = function() {
             if (req.readyState == 4) {
                 //通信完了
                 if (req.status == 200) {
                     console.log("addPlayCount 200OK");
                     console.log("responseText : " + req.responseText);
                     console.log("parsed : " + JSON.parse(req.responseText));
-                    document.getElementById("playCount_" + seq).innerText = JSON.parse(req.responseText)["playCount"];
+                    document.getElementById("playCount_" + index).innerText = JSON.parse(req.responseText)["playCount"];
 
                 }
             } else {
@@ -130,7 +241,7 @@ function onPlayListItemClick(sender) {
             }
         }
 
-        req.open("GET", "/Player/addPlayCount?playListHeaderId=" + playListId + "&itemSeq=" + seq);
+        req.open("GET", "/Player/addPlayCount?itemLibrariesEntityId=" + itemLibrariesEntityId);
         req.send(null);
 
     }

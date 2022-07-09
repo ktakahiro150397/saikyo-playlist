@@ -28,12 +28,15 @@ namespace saikyo_playlist.Models.PlayListManage
         /// </summary>
         public List<PlayListEditorDisplayData> SelectedLibraryInfo { get; set; }
 
+        public string Url { get; set; }
+
         public string ErrorMessage { get; set; }
 
         public CreateEditDeletePlayListViewModel()
         {
             PlayListHeaderId = "";
             Title = "";
+            Url = "";
             Libraries = new List<ItemLibrariesEntity>();
             SelectedLibraryInfo = new List<PlayListEditorDisplayData>();
             ErrorMessage = "";
