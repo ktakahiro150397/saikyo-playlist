@@ -46,11 +46,19 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <summary>
         /// プレイリストから、対象のアイテムを削除します。
         /// </summary>
-        /// <param name="header">削除対象のプレイリストヘッダーエンティティ。</param>
+        /// <param name="header">削除対象のプレイリストヘッダーエンティティID。</param>
         /// <param name="playListDetailId">削除を行うプレイリスト詳細のID。</param>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
         public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(string headerEntityId, string playListDetailId, IdentityUser user);
+
+        /// <summary>
+        /// プレイリスト内のアイテムをすべて削除します。
+        /// </summary>
+        /// <param name="header">削除対象のプレイリストヘッダーエンティティID。</param>
+        /// <param name="user">ログインユーザー</param>
+        /// <returns></returns>
+        public Task<PlayListOperationResult> RemoveItemAllFromPlayListAsync(string headerEntityId, IdentityUser user);
 
         /// <summary>
         /// プレイリスト詳細アイテムの順序を指定した値で更新します。

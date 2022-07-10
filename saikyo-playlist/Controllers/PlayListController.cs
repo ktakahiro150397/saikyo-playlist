@@ -186,11 +186,8 @@ namespace saikyo_playlist.Controllers
                     var playList = PlayListRepository.GetPlayList(model.PlayListHeaderId, user);
 
                     //このプレイリストの詳細を削除
-                    foreach (var detail in playList.HeaderEntity!.Details)
-                    {
-                        await PlayListRepository.RemoveItemFromPlayListAsync(model.PlayListHeaderId, detail.PlayListDetailsEntityId, user);
-                    }
-
+                    await PlayListRepository.RemoveItemAllFromPlayListAsync(model.PlayListHeaderId, user);
+                   
                     //画面で選択されたデータを追加
                     //選択されているヘッダーIDから追加するライブラリを取得
                     var libItems = await ItemLibraryRepository.GetAllAsync(user);
