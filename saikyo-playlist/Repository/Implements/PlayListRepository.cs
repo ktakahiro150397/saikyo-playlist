@@ -2,6 +2,7 @@
 using saikyo_playlist.Data;
 using saikyo_playlist.Repository.Interfaces;
 using System.Web;
+using Microsoft.EntityFrameworkCore;
 
 namespace saikyo_playlist.Repository.Implements
 {
@@ -485,7 +486,7 @@ namespace saikyo_playlist.Repository.Implements
 
 
                 //削除対象のプレイリスト詳細を取得
-                var detail = dbContext.PlayListDetails.SingleOrDefault(detail => detail.PlayListDetailsEntityId == playListDetailId);
+                var detail = header.Details.SingleOrDefault(detail => detail.PlayListDetailsEntityId == playListDetailId);
                 if (detail == null)
                 {
                     ret.OperationResult = PlayListOperationResultType.NotFound;
@@ -525,6 +526,24 @@ namespace saikyo_playlist.Repository.Implements
                     ret.Exception = new ApplicationException("他ユーザーのプレイリストデータを取得しようとしました。");
                     return ret;
                 }
+
+                playListInfo.Details = dbContext.PlayListDetails
+                    .Where(elem => elem.PlayListHeadersEntityId == headerEntityId)
+                    .Join(
+                        dbContext.ItemLibraries,
+                        detail => detail.ItemLibrariesEntityId,
+                        lib => lib.ItemLibrariesEntityId,
+                        (detail, lib) => new PlayListDetailsEntity()
+                        {
+                            ItemLibrariesEntity = lib,
+                            PlayListDetailsEntityId = detail.PlayListDetailsEntityId,
+                            ItemSeq = detail.ItemSeq,
+                            TimeStamp = detail.TimeStamp,
+                            ItemLibrariesEntityId = lib.ItemLibrariesEntityId,
+                        }
+                    )
+                    .OrderBy(elem => elem.ItemSeq)
+                    .ToList();
 
                 ret.OperationResult = PlayListOperationResultType.Success;
                 ret.HeaderEntity = playListInfo;
@@ -642,7 +661,7 @@ namespace saikyo_playlist.Repository.Implements
             var deleteTargetElement = dbContext.PlayListHeaders
                 .FirstOrDefault(elem => elem.PlayListHeadersEntityId == headerEntityId && elem.AspNetUserdId == user.Id);
 
-            if(deleteTargetElement == null)
+            if (deleteTargetElement == null)
             {
                 //削除対象の要素が存在しない
                 ret.OperationResult = PlayListOperationResultType.NotFound;
@@ -658,6 +677,51 @@ namespace saikyo_playlist.Repository.Implements
 
             return ret;
             throw new NotImplementedException();
+        }
+
+        public async Task<PlayListOperationResult> RemoveItemAllFromPlayListAsync(string headerEntityId, IdentityUser user)
+        {
+            var ret = new PlayListOperationResult();
+
+            var details = dbContext.PlayListDetails.Where(elem => elem.PlayListHeadersEntityId == headerEntityId).ToList();
+
+            if (details.Count == 0)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+                ret.Exception = new ApplicationException("プレイリストが存在しませんでした。");
+            }
+            else
+            {
+                //DELETE文発行
+                dbContext.Database.ExecuteSqlInterpolated($"DELETE FROM [PlayListDetails] WHERE PlayListHeadersEntityId = {headerEntityId}");
+
+                //EFCoreのトラッカーをクリアする
+                dbContext.ChangeTracker.Clear();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+            }
+
+            return ret;
+        }
+
+        public async Task<PlayListOperationResult> UpdatePlayListAsync(string headerEntityId, string playListName)
+        {
+            var ret = new PlayListOperationResult();
+            var header = dbContext.PlayListHeaders.Where(elem => elem.PlayListHeadersEntityId == headerEntityId).FirstOrDefault();
+
+            if(header == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+            }
+            else
+            {
+                header.Name = playListName;
+                await dbContext.SaveChangesAsync();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+            }
+
+            return ret;
         }
     }
 
