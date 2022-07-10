@@ -26,6 +26,14 @@ namespace saikyo_playlist.Repository.Interfaces
         public Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName, IdentityUser user);
 
         /// <summary>
+        /// プレイリストヘッダーの更新を行います。
+        /// </summary>
+        /// <param name="headerEntityId">更新するのプレイリストヘッダーID。</param>
+        /// <param name="playListName">更新後のプレイリスト名。</param>
+        /// <returns></returns>
+        public Task<PlayListOperationResult> UpdatePlayListAsync(string headerEntityId,string playListName);
+
+        /// <summary>
         /// プレイリストに新しくアイテムを追加します。
         /// </summary>
         /// <param name="header">追加対象のプレイリストヘッダーエンティティ。</param>

@@ -207,9 +207,11 @@ namespace saikyo_playlist.Controllers
                         detailItems.Add(detailItem);
                     }
 
+                    //プレイリストの更新
                     var detailResult = await PlayListRepository.AddItemToPlayListAsync(model.PlayListHeaderId, detailItems, user);
+                    var headerResult = await PlayListRepository.UpdatePlayListAsync(model.PlayListHeaderId, model.Title);
 
-                    if (detailResult.OperationResult != PlayListOperationResultType.Success)
+                    if (detailResult.OperationResult != PlayListOperationResultType.Success || headerResult.OperationResult != PlayListOperationResultType.Success)
                     {
                         model.ErrorMessage = $"エラーが発生しました。: {detailResult.Exception!.Message}";
                         return View(model);

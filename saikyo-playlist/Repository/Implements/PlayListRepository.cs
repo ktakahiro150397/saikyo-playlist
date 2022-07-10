@@ -703,6 +703,26 @@ namespace saikyo_playlist.Repository.Implements
 
             return ret;
         }
+
+        public async Task<PlayListOperationResult> UpdatePlayListAsync(string headerEntityId, string playListName)
+        {
+            var ret = new PlayListOperationResult();
+            var header = dbContext.PlayListHeaders.Where(elem => elem.PlayListHeadersEntityId == headerEntityId).FirstOrDefault();
+
+            if(header == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+            }
+            else
+            {
+                header.Name = playListName;
+                await dbContext.SaveChangesAsync();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+            }
+
+            return ret;
+        }
     }
 
     public class GetPlayListOperationResult
