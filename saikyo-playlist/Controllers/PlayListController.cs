@@ -135,6 +135,11 @@ namespace saikyo_playlist.Controllers
                 if (model.SelectedLibraryInfo.Count == 0)
                 {
                     model.ErrorMessage = "プレイリストに追加するアイテムを選択してください。";
+
+                    //表示するプレイリストを設定
+                    var playList = await ItemLibraryRepository.GetAllAsync(user);
+                    model.Libraries = playList.ToList();
+
                     return View(model);
                 }
 
