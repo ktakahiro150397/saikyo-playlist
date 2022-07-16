@@ -369,6 +369,17 @@ namespace saikyo_playlist.Repository.Implements
             var result = dbContext.PlayListHeaders.Where(header => header.AspNetUserdId == user.Id)
                             .OrderByDescending(header => header.LastPlayedDate)
                             .ToList();
+
+            foreach(var header in result)
+            {
+                //詳細の最初の1データを設定
+                header.Details = dbContext.PlayListDetails
+                                    .Include(item => item.ItemLibrariesEntity)
+                                    .Where(item => item.PlayListHeadersEntityId == header.PlayListHeadersEntityId)
+                                    .Where(item => item.ItemSeq == 0)
+                                    .ToList();
+            }
+
             return result;
         }
 

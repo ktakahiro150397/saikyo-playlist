@@ -99,7 +99,8 @@ namespace saikyo_playlist.Models
                             Title = lib.Title,
                             TitleAlias = lib.TitleAlias,
                             PlayCount = lib.PlayCount,
-                            ItemSeq = joined.ItemSeq
+                            ItemSeq = joined.ItemSeq,
+                            ItemThumbnailUrl = lib.ItemThumbNailUrl
                         }
                     )
                     .OrderBy(item => item.ItemSeq)
@@ -166,6 +167,12 @@ namespace saikyo_playlist.Models
         /// </summary>
         [JsonPropertyName("titleAlias")]
         public string TitleAlias { get; set; }
+
+        /// <summary>
+        /// サムネイルの画像
+        /// </summary>
+        [JsonPropertyName("itemThumbnailUrl")]
+        public string ItemThumbnailUrl { get; set; }
 
         /// <summary>
         /// 再生回数。
