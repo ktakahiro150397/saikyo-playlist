@@ -13,12 +13,16 @@ namespace saikyo_playlist.Controllers
 
         private ApplicationDbContext ApplicationDbContext { get; set; }
 
+        private IPlayListRepository PlayListRepository { get; set; }
+
         private IItemLibraryRepository ItemLibraryRepository { get; set; }
 
         public PlayerController(ApplicationDbContext dbContext,
+            IPlayListRepository playListRepository,
             IItemLibraryRepository itemLibraryRepository)
         {
             ApplicationDbContext = dbContext;
+            PlayListRepository = playListRepository;
             ItemLibraryRepository = itemLibraryRepository;
         }
 
@@ -31,8 +35,11 @@ namespace saikyo_playlist.Controllers
         }
 
         [HttpGet]
-        public IActionResult Play(string playListHeaderId)
+        public async Task<IActionResult> Play(string playListHeaderId)
         {
+            //アクセス時、現在時刻を最終再生時間として更新
+            await PlayListRepository.UpdatePlayListPlayTime(playListHeaderId, DateTime.Now);
+
             var playListModel = new PlayListModel(ApplicationDbContext, playListHeaderId);
             return View("Index", playListModel);
         }

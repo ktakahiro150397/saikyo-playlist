@@ -388,6 +388,7 @@ namespace saikyo_playlist.Repository.Implements
                     Name = playListName,
                     AspNetUserdId = user.Id,
                     PlayListHeadersEntityId = GetUniqueId(),
+                    LastPlayedDate = DateTime.Now
                 };
                 dbContext.PlayListHeaders.Add(header);
 
@@ -716,6 +717,26 @@ namespace saikyo_playlist.Repository.Implements
             else
             {
                 header.Name = playListName;
+                await dbContext.SaveChangesAsync();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+            }
+
+            return ret;
+        }
+
+        public async Task<PlayListOperationResult> UpdatePlayListPlayTime(string headerEntityId, DateTime dateTime)
+        {
+            var ret = new PlayListOperationResult();
+            var header = dbContext.PlayListHeaders.Where(elem => elem.PlayListHeadersEntityId == headerEntityId).FirstOrDefault();
+
+            if (header == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+            }
+            else
+            {
+                header.LastPlayedDate = dateTime;
                 await dbContext.SaveChangesAsync();
 
                 ret.OperationResult = PlayListOperationResultType.Success;
