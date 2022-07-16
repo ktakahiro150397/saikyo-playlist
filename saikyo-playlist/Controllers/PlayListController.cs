@@ -126,6 +126,9 @@ namespace saikyo_playlist.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePlayList(CreateEditDeletePlayListViewModel model)
         {
+
+            var user = await UserManager.GetUserAsync(User);
+
             if (ModelState.IsValid)
             {
                 //URLが選択されているかどうかを確認
@@ -134,8 +137,6 @@ namespace saikyo_playlist.Controllers
                     model.ErrorMessage = "プレイリストに追加するアイテムを選択してください。";
                     return View(model);
                 }
-
-                var user = await UserManager.GetUserAsync(User);
 
                 if (model.IsCreateNew)
                 {
@@ -232,10 +233,29 @@ namespace saikyo_playlist.Controllers
                 //入力不備あり
                 if (String.IsNullOrEmpty(model.Title))
                 {
+                    //表示するプレイリストを設定
+                    var playList = await ItemLibraryRepository.GetAllAsync(user);
+                    model.Libraries = playList.ToList();
+
+                    foreach(var item in model.SelectedLibraryInfo)
+                    {
+                        if (String.IsNullOrEmpty(item.ItemLibraryName))
+                        {
+                            //名称を取得
+                            var libItem = await ItemLibraryRepository.GetItemAsync(item.ItemLibraryEntityId, user);
+                            if(libItem != null)
+                            {
+                                item.ItemLibraryName = libItem.Title;
+                            }
+                        }
+                    }
+
                     model.ErrorMessage = "プレイリストのタイトルを入力してください。";
                     return View(model);
                 }
             }
+
+
 
             return View(model);
         }

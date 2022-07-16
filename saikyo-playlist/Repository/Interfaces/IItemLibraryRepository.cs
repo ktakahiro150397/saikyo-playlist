@@ -36,6 +36,15 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <returns></returns>
         public Task<IEnumerable<ItemLibrariesEntity>> GetAllAsync(IdentityUser user);
 
+
+        /// <summary>
+        /// ログインユーザーの指定のアイテムライブラリを取得します。
+        /// </summary>
+        /// <param name="itemId">アイテムID。</param>
+        /// <param name="user">ユーザー。</param>
+        /// <returns></returns>
+        public Task<ItemLibrariesEntity?> GetItemAsync(string itemId, IdentityUser user);
+
         /// <summary>
         /// 指定したIDのアイテムをライブラリから削除します。
         /// </summary>
