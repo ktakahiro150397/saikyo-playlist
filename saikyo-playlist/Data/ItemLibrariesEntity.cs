@@ -64,6 +64,23 @@ namespace saikyo_playlist.Data
         [Timestamp]
         public byte[] TimeStamp { get; set; }
 
+        /// <summary>
+        /// このアイテムのサムネイル画像URL。
+        /// </summary>
+        public string ItemThumbNailUrl
+        {
+            get
+            {
+                switch (Platform)
+                {
+                    case LibraryItemPlatform.Youtube:
+                        return $"https://img.youtube.com/vi/{ItemId}/2.jpg";
+                    default:
+                        return "";
+                }
+            }
+        }
+
         public ItemLibrariesEntity()
         {
             ItemLibrariesEntityId = "";
