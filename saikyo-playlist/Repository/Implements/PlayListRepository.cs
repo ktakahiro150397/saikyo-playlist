@@ -366,7 +366,9 @@ namespace saikyo_playlist.Repository.Implements
 
         public IEnumerable<PlayListHeadersEntity> GetPlayListHeaderAll(IdentityUser user)
         {
-            var result = dbContext.PlayListHeaders.Where(header => header.AspNetUserdId == user.Id).ToList();
+            var result = dbContext.PlayListHeaders.Where(header => header.AspNetUserdId == user.Id)
+                            .OrderByDescending(header => header.LastPlayedDate)
+                            .ToList();
             return result;
         }
 
