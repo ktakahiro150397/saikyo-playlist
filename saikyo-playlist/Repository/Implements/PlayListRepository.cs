@@ -366,7 +366,9 @@ namespace saikyo_playlist.Repository.Implements
 
         public IEnumerable<PlayListHeadersEntity> GetPlayListHeaderAll(IdentityUser user)
         {
-            var result = dbContext.PlayListHeaders.Where(header => header.AspNetUserdId == user.Id).ToList();
+            var result = dbContext.PlayListHeaders.Where(header => header.AspNetUserdId == user.Id)
+                            .OrderByDescending(header => header.LastPlayedDate)
+                            .ToList();
             return result;
         }
 
@@ -388,6 +390,7 @@ namespace saikyo_playlist.Repository.Implements
                     Name = playListName,
                     AspNetUserdId = user.Id,
                     PlayListHeadersEntityId = GetUniqueId(),
+                    LastPlayedDate = DateTime.Now
                 };
                 dbContext.PlayListHeaders.Add(header);
 
@@ -716,6 +719,26 @@ namespace saikyo_playlist.Repository.Implements
             else
             {
                 header.Name = playListName;
+                await dbContext.SaveChangesAsync();
+
+                ret.OperationResult = PlayListOperationResultType.Success;
+            }
+
+            return ret;
+        }
+
+        public async Task<PlayListOperationResult> UpdatePlayListPlayTime(string headerEntityId, DateTime dateTime)
+        {
+            var ret = new PlayListOperationResult();
+            var header = dbContext.PlayListHeaders.Where(elem => elem.PlayListHeadersEntityId == headerEntityId).FirstOrDefault();
+
+            if (header == null)
+            {
+                ret.OperationResult = PlayListOperationResultType.NotFound;
+            }
+            else
+            {
+                header.LastPlayedDate = dateTime;
                 await dbContext.SaveChangesAsync();
 
                 ret.OperationResult = PlayListOperationResultType.Success;

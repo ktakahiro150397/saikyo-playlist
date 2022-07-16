@@ -28,10 +28,18 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <summary>
         /// プレイリストヘッダーの更新を行います。
         /// </summary>
-        /// <param name="headerEntityId">更新するのプレイリストヘッダーID。</param>
+        /// <param name="headerEntityId">更新するプレイリストヘッダーID。</param>
         /// <param name="playListName">更新後のプレイリスト名。</param>
         /// <returns></returns>
         public Task<PlayListOperationResult> UpdatePlayListAsync(string headerEntityId,string playListName);
+
+        /// <summary>
+        /// プレイリストヘッダーの最終再生時間を指定した時間で更新します。
+        /// </summary>
+        /// <param name="headerEntityId">更新するプレイリストヘッダーID。</param>
+        /// <param name="dateTime">更新する時間。</param>
+        /// <returns></returns>
+        public Task<PlayListOperationResult> UpdatePlayListPlayTime(string headerEntityId,DateTime dateTime);
 
         /// <summary>
         /// プレイリストに新しくアイテムを追加します。

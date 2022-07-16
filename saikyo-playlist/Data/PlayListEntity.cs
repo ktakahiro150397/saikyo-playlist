@@ -29,6 +29,13 @@ namespace saikyo_playlist.Data
         public string Name { get; set; }
 
         /// <summary>
+        /// プレイリストが最後に再生された日付。
+        /// 新規作成時は作成日と同じ。
+        /// </summary>
+        [Comment("プレイリストが最後に再生された日付。")]
+        public DateTime LastPlayedDate { get; set; }
+
+        /// <summary>
         /// タイムスタンプ。
         /// </summary>
         [Comment("タイムスタンプ。")]
