@@ -95,6 +95,17 @@ namespace saikyo_playlist.Repository.Implements
             return ret;
         }
 
+        public async Task<ItemLibrariesEntity?> GetItemAsync(string itemId, IdentityUser user)
+        {
+            var ret = await dbContext.ItemLibraries
+                .Where(item => item.AspNetUserdId == user.Id)
+                .Where(item => item.ItemLibrariesEntityId == itemId)
+                .OrderByDescending(item => item.ItemAddDate)
+                .FirstOrDefaultAsync();
+
+            return ret;
+        }
+
         public async Task<ItemLibraryOperationResult> InsertAsync(LibraryItemPlatform platform, string itemId, string title, IdentityUser user)
         {
             var ret = new ItemLibraryOperationResult();
