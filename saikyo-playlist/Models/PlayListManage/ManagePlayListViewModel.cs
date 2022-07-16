@@ -13,34 +13,6 @@ namespace saikyo_playlist.Models.PlayListManage
 
         private IdentityUser User { get; set; }
 
-        public ManagePlayListViewModel()
-        {
-            {
-                var ManagePlayListItem = new ManagePlayListItem();
-                ManagePlayListItem.PlayListName = "playlistName1";
-                ManagePlayListItem.UserId = "user1";
-                managePlayListItems.Add(ManagePlayListItem);
-            }
-            {
-                var ManagePlayListItem = new ManagePlayListItem();
-                ManagePlayListItem.PlayListName = "playlistName2";
-                ManagePlayListItem.UserId = "user2";
-                managePlayListItems.Add(ManagePlayListItem);
-            }
-            {
-                var ManagePlayListItem = new ManagePlayListItem();
-                ManagePlayListItem.PlayListName = "playlistName3";
-                ManagePlayListItem.UserId = "user3";
-                managePlayListItems.Add(ManagePlayListItem);
-            }
-            {
-                var ManagePlayListItem = new ManagePlayListItem();
-                ManagePlayListItem.PlayListName = "playlistName4";
-                ManagePlayListItem.UserId = "user4";
-                managePlayListItems.Add(ManagePlayListItem);
-            }
-        }
-
         public ManagePlayListViewModel(IPlayListRepository playListRepos,IdentityUser user)
         {
             PlayListRepository = playListRepos;
@@ -66,7 +38,8 @@ namespace saikyo_playlist.Models.PlayListManage
                     {
                         PlayListHeaderId = elem.PlayListHeadersEntityId,
                         PlayListName = elem.Name,
-                        UserId = elem.AspNetUserdId
+                        UserId = elem.AspNetUserdId,
+                        FirstItemThumbNailSrcUrl = elem.Details[0].ItemLibrariesEntity.ItemThumbNailUrl
                     }).ToList();
             }
         }
@@ -82,11 +55,14 @@ namespace saikyo_playlist.Models.PlayListManage
 
         public string PlayListHeaderId { get; set; }
 
+        public string FirstItemThumbNailSrcUrl { get; set; }
+
         public ManagePlayListItem()
         {
             PlayListName = "";
             UserId = "";
             PlayListHeaderId = "";
+            FirstItemThumbNailSrcUrl = "";
         }
     }
 }

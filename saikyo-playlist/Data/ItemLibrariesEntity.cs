@@ -74,7 +74,7 @@ namespace saikyo_playlist.Data
                 switch (Platform)
                 {
                     case LibraryItemPlatform.Youtube:
-                        return $"https://img.youtube.com/vi/{ItemId}/2.jpg";
+                        return $"https://i.ytimg.com/vi/{ItemId}/mqdefault.jpg";
                     default:
                         return "";
                 }
