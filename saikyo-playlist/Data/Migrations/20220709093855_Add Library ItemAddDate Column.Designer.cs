@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using saikyo_playlist.Data;
 
@@ -11,9 +12,10 @@ using saikyo_playlist.Data;
 namespace saikyo_playlist.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220709093855_Add Library ItemAddDate Column")]
+    partial class AddLibraryItemAddDateColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,10 +320,6 @@ namespace saikyo_playlist.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasComment("このプレイリストを作成したユーザーのID。");
-
-                    b.Property<DateTime>("LastPlayedDate")
-                        .HasColumnType("datetime2")
-                        .HasComment("プレイリストが最後に再生された日付。");
 
                     b.Property<string>("Name")
                         .IsRequired()

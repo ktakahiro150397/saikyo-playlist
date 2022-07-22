@@ -54,8 +54,16 @@
 
     .playlist-table-link {
         width: 100%;
-        display: inline-block;
+        height:100%;
+        display:inline-block;
     }
+
+    .playlist-table-playlistLink {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+    }
+
 
     .playlist-table-editLink {
         color: black;
@@ -77,6 +85,12 @@
             background-color: rgba(255,187,187,.6);
             color:red;
         }
+
+    .playlist-thumbnail{
+        margin:3px 3px 3px 10px;
+        height:60px;
+        border-radius:3px;
+    }
 </style>
 
 <div>
@@ -122,10 +136,8 @@ else
             <col />
         </colgroup>
         <tr>
-            <th>
-            </th>
-            <th>
-            </th>
+            <th></th>
+            <th></th>
             <th>
                 プレイリスト名
             </th>
@@ -134,19 +146,20 @@ else
         {
             <tr>
                 <td style="text-align:center;">
-                    <a class="playlist-table-link playlist-table-editLink" href="@Url.Action("Edit","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
-                        編集
-                    </a>
+                    <img class="playlist-thumbnail" src="@item.FirstItemThumbNailSrcUrl" />
                 </td>
                 <td style="text-align:center;">
+                    <a class="playlist-table-link playlist-table-editLink" href="@Url.Action("EditPlayList","PlayList",new { playListHeaderId = @item.PlayListHeaderId })">
+                        編集
+                    </a>
                     <a class="playlist-table-link playlist-table-deleteLink" href="@Url.Action("Delete","PlayList",new { playListHeaderId = @item.PlayListHeaderId , model = Model})"
                        onclick="return confirm('プレイリスト「@item.PlayListName」を削除します。よろしいですか？');">
                         削除
                     </a>
                 </td>
-                <td>
-                    <a class="playlist-table-playerLink playlist-table-link " href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
-                        @item.PlayListName
+                <td style="position:relative;">
+                    <a class="playlist-table-playerLink playlist-table-link playlist-table-playlistLink" href="@Url.Action("Play","Player",new { playListHeaderId = @item.PlayListHeaderId })">
+                        <span style="line-height:55px;">@item.PlayListName</span>
                     </a>
                 </td>
             </tr>

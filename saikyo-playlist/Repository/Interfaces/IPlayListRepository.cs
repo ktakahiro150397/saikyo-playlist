@@ -26,6 +26,22 @@ namespace saikyo_playlist.Repository.Interfaces
         public Task<PlayListOperationResult> CreateNewPlayListAsync(string playListName, IdentityUser user);
 
         /// <summary>
+        /// プレイリストヘッダーの更新を行います。
+        /// </summary>
+        /// <param name="headerEntityId">更新するプレイリストヘッダーID。</param>
+        /// <param name="playListName">更新後のプレイリスト名。</param>
+        /// <returns></returns>
+        public Task<PlayListOperationResult> UpdatePlayListAsync(string headerEntityId,string playListName);
+
+        /// <summary>
+        /// プレイリストヘッダーの最終再生時間を指定した時間で更新します。
+        /// </summary>
+        /// <param name="headerEntityId">更新するプレイリストヘッダーID。</param>
+        /// <param name="dateTime">更新する時間。</param>
+        /// <returns></returns>
+        public Task<PlayListOperationResult> UpdatePlayListPlayTime(string headerEntityId,DateTime dateTime);
+
+        /// <summary>
         /// プレイリストに新しくアイテムを追加します。
         /// </summary>
         /// <param name="header">追加対象のプレイリストヘッダーエンティティ。</param>
@@ -46,11 +62,19 @@ namespace saikyo_playlist.Repository.Interfaces
         /// <summary>
         /// プレイリストから、対象のアイテムを削除します。
         /// </summary>
-        /// <param name="header">削除対象のプレイリストヘッダーエンティティ。</param>
+        /// <param name="header">削除対象のプレイリストヘッダーエンティティID。</param>
         /// <param name="playListDetailId">削除を行うプレイリスト詳細のID。</param>
         /// <param name="user">ログインユーザー</param>
         /// <returns></returns>
         public Task<PlayListOperationResult> RemoveItemFromPlayListAsync(string headerEntityId, string playListDetailId, IdentityUser user);
+
+        /// <summary>
+        /// プレイリスト内のアイテムをすべて削除します。
+        /// </summary>
+        /// <param name="header">削除対象のプレイリストヘッダーエンティティID。</param>
+        /// <param name="user">ログインユーザー</param>
+        /// <returns></returns>
+        public Task<PlayListOperationResult> RemoveItemAllFromPlayListAsync(string headerEntityId, IdentityUser user);
 
         /// <summary>
         /// プレイリスト詳細アイテムの順序を指定した値で更新します。

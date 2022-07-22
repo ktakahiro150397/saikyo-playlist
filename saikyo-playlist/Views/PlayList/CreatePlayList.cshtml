@@ -10,18 +10,27 @@
     <div>
         <form id="form-submit" method="post">
             <h2>
-                新しいプレイリストを作成します。
+                @if (Model.IsCreateNew)
+                {
+                    <span>新しいプレイリストを作成します。</span>
+                }
+                else
+                {
+                    <span>プレイリストを編集します。</span>
+                }
             </h2>
             <hr />
 
-            <span>@Model.ErrorMessage</span>
+            <span class="text-danger">@Model.ErrorMessage</span>
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating">
                 <input asp-for="Title" class="form-control" />
                 <label asp-for="Title"></label>
-                <span asp-validation-for="Title" class="text-danger"></span>
+                @*<span asp-validation-for="Title" class="text-danger"></span>*@
             </div>
+
+            <input type="hidden" asp-for="PlayListHeaderId" />
 
             <div style="margin-top:2em;">
                 <p>プレイリストに追加するアイテムをクリックして追加してください。</p>
@@ -50,7 +59,7 @@
                     </div>
                 </div>
             </div>
-            <button id="createSubmit" type="submit" onclick="onClickSubmit();">プレイリスト作成</button>
+            <button id="createSubmit" type="submit" onclick="onClickSubmit();" asp-action="CreatePlayList">プレイリスト作成</button>
         </form>
     </div>
 </div>
@@ -100,9 +109,26 @@
     .library-item-elem-dragging {
         cursor: grabbing;
     }
+
+    /* 要素がドラッグされ、要素上を通過中に適用されるCSS */
+    .library-item-elem-dragover {
+        background-color: red;
+    }
 </style>
 
 <script>
+
+    document.onreadystatechange = function () {
+        if (document.readyState === "complete") {
+            var selectedPlayListInfo = @Html.Raw(@Model.SelectedLibraryInfoJsonString);
+            console.log(selectedPlayListInfo);
+
+            for (var i = 0; i < selectedPlayListInfo.length; i++) {
+                additemToPlayList(selectedPlayListInfo[i].ItemLibraryEntityId, selectedPlayListInfo[i].ItemLibraryName);
+            }
+
+        }
+    }
 
     /* ライブラリアイテムクリック時イベント */
     function onLibraryItemClick(sender) {
@@ -147,6 +173,9 @@
         aElem.ondragstart = playListItemDragStart;
         aElem.ondragend = playListItemDragEnd;
         aElem.ondragover = playListItemDragOver;
+        aElem.ondrop = playListItemDrop;
+        aElem.ondragleave = playListItemDragLeave;
+        aElem.ondragenter = playListItemDragEnter;
 
         //内部のdivタグ
         var flexDivTag = document.createElement("div");
@@ -220,7 +249,7 @@
         } else {
             console.error("id: " + id + " の要素が見つかりませんでした。");
         }
-        
+
 
     }
 
@@ -235,8 +264,10 @@
     /* プレイリストアイテムのドラッグスタートイベントハンドラ。 */
     function playListItemDragStart(event) {
         console.log("dragStart");
+        //ドラッグ対象のHTML要素を保存する
+        event.dataTransfer.setData("text/plain", event.target.id);
+        console.log("setData : " + event.dataTransfer.getData("text/plain"));
         console.log(event);
-
     }
 
     function playListItemDragEnd(event) {
@@ -245,13 +276,58 @@
     }
 
     function playListItemDragOver(event) {
-        console.log("dragover");
         event.preventDefault();
-        event.dataTransfer.dropEffect = "move";
-        console.log(event);
+        //console.log("dragover");
+        //event.dataTransfer.dropEffect = "move";
+        //console.log(event);
     }
 
+    function playListItemDragEnter() {
+        event.preventDefault();
+        console.log("dragenter");
+        event.target.classList.add("library-item-elem-dragover");
+    }
 
+    function playListItemDragLeave() {
+        event.preventDefault();
+        console.log("dragleave");
+        event.target.classList.remove("library-item-elem-dragover");
+
+    }
+
+    function playListItemDrop(event) {
+        console.log("drop!");
+        var draggingId = event.dataTransfer.getData("text/plain");
+        //document.getElementById(draggingId).classList.remove("library-item-elem-dragover");
+        event.target.classList.remove("library-item-elem-dragover");
+
+        console.log(draggingId);
+        console.log(event.target);
+        event.preventDefault();
+    }
+
+    /* 対象の要素から、指定したクラス名を持つ親要素を取得します。 */
+    function getParentElementByClassNameRecursive(element, className) {
+
+        if ("classList" in element) {
+            if (element.classList.contains(className)) {
+                //要素がクラス名を含んでいる
+                return element;
+            } else {
+                //要素がクラス名を含まない
+                //親要素に対して再帰呼び出し
+                if (element.parentElement == null) {
+                    //親要素が存在しない
+                    return null;
+                } else {
+                    return getParentElementByClassNameRecursive(element.parentElement, className);
+                }
+            }
+        } else {
+            //classList定義なし
+            return null;
+        }
+    }
 
     /* プレイリスト作成ボタン押下時イベント */
     function onClickSubmit() {
@@ -269,7 +345,7 @@
             let entityId = aElem.getAttribute("data-entityId");
             //indexを取得
             let index = aElem.getAttribute("data-index");
-            
+
             //formに設定するinput要素を作成
             let inputElem_DetailId = document.createElement("input");
             inputElem_DetailId.setAttribute("type", "hidden");
@@ -287,26 +363,6 @@
 
         }
 
-        
-        console.log("aaa");
-        
-
-        @* <input id="select_1"
-                   name="SelectedLibraryInfo[0].PlayListDetailsEntityId"
-                   type="hidden"
-                   value="detailId_1">
-            <input id="select_2"
-                   name="SelectedLibraryInfo[0].ItemLibraryEntityId"
-                   type="hidden"
-                   value="detailId_1">
-            <input id="select_1"
-                   name="SelectedLibraryInfo[0].itemSeq"
-                   type="hidden"
-                   value="0"> *@
-
-        
-
-        
     }
 
 </script>
