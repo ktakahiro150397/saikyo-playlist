@@ -9,14 +9,18 @@ namespace saikyo_playlist.Models.PlayListManage
 
         public IList<ManagePlayListItem> managePlayListItems { get; set; } = new List<ManagePlayListItem>();
 
-        private IPlayListRepository PlayListRepository { get; set; }
+        private IPlayListRepository? PlayListRepository { get; set; }
 
-        private IdentityUser User { get; set; }
+        private IdentityUser? User { get; set; }
 
         public ManagePlayListViewModel(IPlayListRepository playListRepos,IdentityUser user)
         {
             PlayListRepository = playListRepos;
             User = user;
+        }
+
+        public ManagePlayListViewModel()
+        {
         }
 
         /// <summary>
