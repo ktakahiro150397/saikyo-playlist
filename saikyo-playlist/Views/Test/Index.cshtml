@@ -12,21 +12,23 @@
 </script>
 
 <style>
-    .rangeControl{
-        -webkit-appearance:none;
-        appearance:none;
-        cursor:pointer;
-        height:10px;
-        width:400px;
+    .rangeControl {
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        height: 10px;
+        width: 400px;
         /*背景*/
         background: #d3d3d3;
-        border:1px solid #87cefa;
-        border-radius:5px;
+        border: 1px solid #87cefa;
+        border-radius: 5px;
     }
 
-    .rangeControl:focus,.rangeControl:active{
-        outline:none;
-    }
+        .rangeControl:focus, .rangeControl:active {
+            outline: none;
+        }
+
+
 </style>
 
 
@@ -36,4 +38,23 @@
     CurrentValue : <span id="currentRangeValue"></span>
 </div>
 
+<h3>汎用ボタン</h3>
+<div>
+    <button type="button" class="general-button">
+        普通の汎用ボタン
+    </button>
+</div>
+
+<div>
+    <button type="button" class="general-button">
+        <img src="icon\iconmonstr-sound-thin.svg" />
+        svgアイコン(非ミュート)
+    </button>
+
+    <button type="button" class="general-button">
+        <img src="icon\iconmonstr-sound-off-thin.svg" />
+        svgアイコンつき(ミュート)
+    </button>
+
+</div>
 
