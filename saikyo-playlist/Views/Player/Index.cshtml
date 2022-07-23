@@ -4,9 +4,21 @@
 
 <div class="player-container">
 
-    <div id="player"></div>
+    @*プレイヤー要素*@
+    <div class="player-element-container">
+        <div id="player"></div>
 
+        <div class="player-control">
+            <p>
+                音量 : <span id="current-volume-value"></span>%
+                <span id="current-mute-status">(ミュート中)</span>
+            </p>
+            <input type="range" id="volumeControl" class="rangeControl"
+                   min="0" max="100" step="1" oninput="onVolumeControlRangeChange();" />
+        </div>
+    </div>
 
+    @*プレイリスト一覧*@
     <div class="playlist-list-container">
 
 
@@ -39,6 +51,34 @@
 
 <style>
 
+    .player-element-container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 40%;
+        align-content: flex-start;
+    }
+
+    .player-control {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .rangeControl {
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        height: 10px;
+        width: 100%;
+        /*背景*/
+        background: #d3d3d3;
+        border: 1px solid #87cefa;
+        border-radius: 5px;
+    }
+
+        .rangeControl:focus, .rangeControl:active {
+            outline: none;
+        }
+
     .player-container {
         display: flex;
     }
@@ -49,7 +89,7 @@
         overflow-y: auto;
         border: 1px solid #ced4da;
         border-radius: 5px;
-        width:80%;
+        width: 60%;
     }
 
     .playlist-item-elem {
@@ -71,13 +111,12 @@
         }
 
     .playlist-item-a {
-        @*margin-left: .5em;*@
-        vertical-align: middle;
+    @*margin-left: .5em;*@ vertical-align: middle;
         display: flex;
         align-items: center;
         color: black;
         text-decoration: none;
-        width:100%;
+        width: 100%;
     }
 
         .playlist-item-a:hover {
@@ -85,7 +124,7 @@
         }
 
     .playlist-item-inner-container {
-        margin-left:.5em;
+        margin-left: .5em;
     }
 
     .playlist-item-playCount {
@@ -145,6 +184,10 @@
 
     function onPlayerReady(event) {
         console.log('onPlayerReady');
+
+        //画面に現在の音量状態を反映
+        displayCurrentVolumeStatus();
+
         playItem(0);
     }
 
@@ -254,4 +297,35 @@
 
     }
 
+
+
+    function onVolumeControlRangeChange() {
+        var rangeValue = document.getElementById("volumeControl").value;
+
+        //プレイヤーの音量をセット
+        player.setVolume(rangeValue);
+
+        //表示反映
+        displayCurrentVolumeStatus();
+
+    }
+
+    /* 現在のプレイヤーの音量の状態を画面に反映します */
+    function displayCurrentVolumeStatus() {
+
+        //ミュート状態の表示切り替え
+        var isMute = player.isMuted();
+        var muteDisplayControl = document.getElementById("current-mute-status");
+        if (isMute) {
+            muteDisplayControl.style.display = "";
+        } else {
+            muteDisplayControl.style.display = "none";
+        }
+
+        //プレイヤーの音量反映
+        var volumeSpan = document.getElementById("current-volume-value");
+        var currentVolume = player.getVolume();
+
+        volumeSpan.innerText = currentVolume;
+    }
 </script>
