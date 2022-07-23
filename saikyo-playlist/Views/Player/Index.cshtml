@@ -4,9 +4,24 @@
 
 <div class="player-container">
 
-    <div id="player"></div>
+    @*プレイヤー要素*@
+    <div class="player-element-container">
+        <div id="player"></div>
 
+        <div class="player-control">
+            <span id="mute-icon" class="no-display"><img src="~/icon/iconmonstr-sound-off-thin.svg" /></span>
+            <span id="unmute-icon" class="no-display"><img src="~/icon/iconmonstr-sound-thin.svg" /></span>
+            <span id="current-volume-value"></span>%
+            /
+            <button class="general-button" onclick="onMuteToggleButtonClick();">
+                ミュート切替
+            </button>
+            <input type="range" id="volumeControl" class="rangeControl"
+                   min="0" max="100" step="1" oninput="onVolumeControlRangeChange();" />
+        </div>
+    </div>
 
+    @*プレイリスト一覧*@
     <div class="playlist-list-container">
 
 
@@ -39,6 +54,34 @@
 
 <style>
 
+    .player-element-container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 40%;
+        align-content: flex-start;
+    }
+
+    .player-control {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .rangeControl {
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        height: 10px;
+        width: 100%;
+        /*背景*/
+        background: #d3d3d3;
+        border: 1px solid #87cefa;
+        border-radius: 5px;
+    }
+
+        .rangeControl:focus, .rangeControl:active {
+            outline: none;
+        }
+
     .player-container {
         display: flex;
     }
@@ -49,7 +92,7 @@
         overflow-y: auto;
         border: 1px solid #ced4da;
         border-radius: 5px;
-        width:80%;
+        width: 60%;
     }
 
     .playlist-item-elem {
@@ -71,13 +114,12 @@
         }
 
     .playlist-item-a {
-        @*margin-left: .5em;*@
-        vertical-align: middle;
+    @*margin-left: .5em;*@ vertical-align: middle;
         display: flex;
         align-items: center;
         color: black;
         text-decoration: none;
-        width:100%;
+        width: 100%;
     }
 
         .playlist-item-a:hover {
@@ -85,7 +127,7 @@
         }
 
     .playlist-item-inner-container {
-        margin-left:.5em;
+        margin-left: .5em;
     }
 
     .playlist-item-playCount {
@@ -103,6 +145,10 @@
         margin: 3px 3px 3px 10px;
         height: 60px;
         border-radius: 3px;
+    }
+
+    .no-display {
+        display: none;
     }
 </style>
 
@@ -145,6 +191,11 @@
 
     function onPlayerReady(event) {
         console.log('onPlayerReady');
+
+        //画面に現在の音量状態を反映
+        document.getElementById("volumeControl").value = player.getVolume();
+        displayCurrentVolumeStatus();
+
         playItem(0);
     }
 
@@ -252,6 +303,59 @@
         req.open("GET", "/Player/addPlayCount?itemLibrariesEntityId=" + itemLibrariesEntityId);
         req.send(null);
 
+    }
+
+
+
+    function onVolumeControlRangeChange() {
+        var rangeValue = document.getElementById("volumeControl").value;
+
+        //プレイヤーの音量をセット
+        player.setVolume(rangeValue);
+
+        console.log("音量セット:" + rangeValue);
+
+        setTimeout(() => { displayCurrentVolumeStatus(); }, 100)
+
+    }
+
+    /* 現在のプレイヤーの音量の状態を画面に反映します */
+    function displayCurrentVolumeStatus() {
+
+        //ミュート状態の表示切り替え
+        var isMute = player.isMuted();
+        var muteIcon = document.getElementById("mute-icon");
+        var unmuteIcon = document.getElementById("unmute-icon");
+        if (isMute) {
+            muteIcon.classList.remove("no-display");
+            unmuteIcon.classList.add("no-display");
+        } else {
+            muteIcon.classList.add("no-display");
+            unmuteIcon.classList.remove("no-display");
+        }
+
+        //プレイヤーの音量反映
+        var volumeSpan = document.getElementById("current-volume-value");
+        var currentVolume = player.getVolume();
+
+        volumeSpan.innerText = currentVolume;
+
+        console.log("ミュート状態:" + isMute + "  音量:" + currentVolume);
+    }
+
+    /* プレイヤーのミュート状態を切り替えます。 */
+    function onMuteToggleButtonClick() {
+        //ミュート状態の切り替え
+        var isMute = player.isMuted();
+
+        if (isMute) {
+            player.unMute();
+        } else {
+            player.mute();
+        }
+
+        //表示反映
+        setTimeout(() => { displayCurrentVolumeStatus(); }, 100)
     }
 
 </script>

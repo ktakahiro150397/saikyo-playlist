@@ -1,0 +1,60 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<script type="text/javascript">
+    function onRangeChange() {
+        console.log(document.getElementById("rangeControl").value);
+        document.getElementById("currentRangeValue").innerText = document.getElementById("rangeControl").value;
+    }
+</script>
+
+<style>
+    .rangeControl {
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        height: 10px;
+        width: 400px;
+        /*背景*/
+        background: #d3d3d3;
+        border: 1px solid #87cefa;
+        border-radius: 5px;
+    }
+
+        .rangeControl:focus, .rangeControl:active {
+            outline: none;
+        }
+
+
+</style>
+
+
+<h3>ボリュームコントロールつまみ</h3>
+<div>
+    <input type="range" id="rangeControl" class="rangeControl" min="0" max="100" step="1" onchange="onRangeChange();" />
+    CurrentValue : <span id="currentRangeValue"></span>
+</div>
+
+<h3>汎用ボタン</h3>
+<div>
+    <button type="button" class="general-button">
+        普通の汎用ボタン
+    </button>
+</div>
+
+<div>
+    <button type="button" class="general-button">
+        <img src="icon\iconmonstr-sound-thin.svg" />
+        svgアイコン(非ミュート)
+    </button>
+
+    <button type="button" class="general-button">
+        <img src="icon\iconmonstr-sound-off-thin.svg" />
+        svgアイコンつき(ミュート)
+    </button>
+
+</div>
+

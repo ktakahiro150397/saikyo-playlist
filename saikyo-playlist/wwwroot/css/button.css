@@ -1,0 +1,15 @@
+﻿/*サイト内で使用する汎用的なボタンのスタイル*/
+
+.general-button {
+    position: relative;
+    background: none;
+    padding: 5px;
+    display: inline-block;
+    border: none;
+    /*border: 1px solid rgb(200,200,200);*/
+    border-radius: 5px;
+}
+
+    .general-button:hover {
+        background-color: rgb(200,200,200);
+    }
