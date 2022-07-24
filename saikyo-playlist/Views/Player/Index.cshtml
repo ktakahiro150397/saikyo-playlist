@@ -9,13 +9,16 @@
         <div id="player"></div>
 
         <div class="player-control">
-            <span id="mute-icon" class="no-display"><img src="~/icon/iconmonstr-sound-off-thin.svg" /></span>
-            <span id="unmute-icon" class="no-display"><img src="~/icon/iconmonstr-sound-thin.svg" /></span>
-            <span id="current-volume-value"></span>%
-            /
             <button class="general-button" onclick="onMuteToggleButtonClick();">
-                ミュート切替
+                <span id="mute-icon" class="no-display"><img src="~/icon/iconmonstr-sound-off-thin.svg" /></span>
+                <span id="unmute-icon" class="no-display"><img src="~/icon/iconmonstr-sound-thin.svg" /></span>
+                <span id="current-volume-value"></span>%
             </button>
+            /
+            <button class="general-button" onclick="onRepeatToggleButtonClick();">
+                <span id="repeat-icon" class=""><img src="~/icon/iconmonstr-repeat.svg" /></span>
+            </button>
+            
             <input type="range" id="volumeControl" class="rangeControl"
                    min="0" max="100" step="1" oninput="onVolumeControlRangeChange();" />
         </div>
@@ -150,6 +153,10 @@
     .no-display {
         display: none;
     }
+
+    .repeat-icon-deactive{
+        opacity:.3;
+    }
 </style>
 
 <script>
@@ -159,6 +166,7 @@
     var playList = @Html.Raw(Model.PlayListJson);
     var currentIndex = 0;
     var maxIndex = playList.length - 1;
+    var isRepeat = false;
 
     var player;
     console.log(playList);
@@ -226,18 +234,19 @@
         //再生回数を加算
         addPlayCount(addCountEntityId, prevIndex);
 
-        //インデックスを加算
-        if (currentIndex === maxIndex) {
-            currentIndex = 0;
+        if (isRepeat) {
+            //リピート状態ならプレイリストインデックスを加算しない
         } else {
-            currentIndex += 1;
+            //インデックスを加算
+            if (currentIndex === maxIndex) {
+                currentIndex = 0;
+            } else {
+                currentIndex += 1;
+            }
         }
 
         console.log("currentIndex : " + currentIndex);
         playItem(currentIndex);
-        //player.loadVideoById(playList[currentIndex].itemId);
-
-
     }
 
     function onPlayListItemClick(sender) {
@@ -334,6 +343,14 @@
             unmuteIcon.classList.remove("no-display");
         }
 
+        //リピート状態の表示切り替え
+        var repeatIcon = document.getElementById("repeat-icon");
+        if (isRepeat) {
+            repeatIcon.classList.remove("repeat-icon-deactive");
+        } else {
+            repeatIcon.classList.add("repeat-icon-deactive");
+        }
+
         //プレイヤーの音量反映
         var volumeSpan = document.getElementById("current-volume-value");
         var currentVolume = player.getVolume();
@@ -357,5 +374,14 @@
         //表示反映
         setTimeout(() => { displayCurrentVolumeStatus(); }, 100)
     }
+
+    /* プレイヤーのリピート状態を切り替えます。 */
+function onRepeatToggleButtonClick() {
+    //リピート状態を反転
+    isRepeat = !isRepeat;
+
+    //表示反映
+    setTimeout(() => { displayCurrentVolumeStatus(); }, 100)
+}
 
 </script>
